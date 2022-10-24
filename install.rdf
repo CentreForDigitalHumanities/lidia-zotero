@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+    <Description about="urn:mozilla:install-manifest">
+        <em:id>lidia-annotations@dig.hum.uu.nl</em:id>
+        <em:name>LIDIA Annotations</em:name>
+        <em:version>0.1.0</em:version>
+        <em:multiprocessCompatible>true</em:multiprocessCompatible>
+        <em:updateURL>https://dhstatic.hum.uu.nl/LIDIA/releases/updates.json</em:updateURL>
+        <em:localized>
+            <Description>
+                <em:locale>en-US</em:locale>
+                <em:name>LIDIA Annotations </em:name>
+                <em:description>Structured input for LIDIA PDF annotations</em:description>
+            </Description>
+        </em:localized>
+
+        <em:creator>Utrecht Digital Humanities Lab</em:creator>
+        <em:type>2</em:type> <!-- type=extension -->
+        <em:iconURL>chrome://lidia-annotations/skin/icon.png</em:iconURL>
+        <em:icon64URL>chrome://lidia-annotations/skin/icon64.png</em:icon64URL>
+        <em:bootstrap>true</em:bootstrap>
+
+        <em:targetApplication>
+            <Description>
+                <em:id>zotero@chnm.gmu.edu</em:id>
+                <em:minVersion>6.0</em:minVersion>
+                <em:maxVersion>*</em:maxVersion>
+            </Description>
+        </em:targetApplication>
+    </Description>
+</RDF>
