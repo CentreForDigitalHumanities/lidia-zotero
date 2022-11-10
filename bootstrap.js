@@ -11,7 +11,7 @@ if (typeof Zotero == 'undefined') {
 }
 
 function log(msg) {
-	Zotero.debug("LIDIA: " + msg);
+	Zotero.debug("\033[47m\033[1;31mLIDIA extension:\033[0m " + msg);
 }
 
 // In Zotero 6, bootstrap methods are called before Zotero is initialized, and using include.js
@@ -110,10 +110,12 @@ async function startup({ id, version, resourceURI, rootURI = resourceURI.spec })
 	}
 
 	Services.scriptloader.loadSubScript(rootURI + 'lib.js');
+
+	Zotero.Lidia.init();
 }
 
 function shutdown() {
-	log("Shutting down");
+	log("Shutting down...");
 
 	// Remove stylesheet
 	var zp = Zotero.getActiveZoteroPane();
