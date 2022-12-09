@@ -10,6 +10,8 @@ if (!Zotero.Lidia) {
             this.win = Zotero.getMainWindow();
             this.stringBundle = Services.strings.createBundle('chrome://lidia-annotations/locale/lidia.properties');
             Services.scriptloader.loadSubScript(this.rootURI + 'panel.js');
+            Services.scriptloader.loadSubScript(this.rootURI + 'selectbutton.js');
+            Services.scriptloader.loadSubScript(this.rootURI + 'serialize.js');
             this.Panel.initialize();
         },
     };
