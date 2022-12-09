@@ -96,6 +96,10 @@ if (!Zotero.Lidia.SelectButton) {
                     this.onAnnotationActivated(annotationItem, true);
                     e.preventDefault();
                 });
+                annotationWrapper.addEventListener("click", (e) => {
+                    this.onAnnotationActivated(annotationItem, true);
+                    e.preventDefault();
+                });
                 translateAnnotationButton.addEventListener(
                     "mouseover",
                     (e) => {
