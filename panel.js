@@ -15,7 +15,7 @@ if (!Zotero.Lidia.Panel) {
         },{
             "id": "description",
             "label": "lidiaArgumentDescription.label",
-            "type": "input"
+            "type": "textarea"
         }],
         initialize: function() {
             this.win = Zotero.getMainWindow();
@@ -43,6 +43,8 @@ if (!Zotero.Lidia.Panel) {
                         }
                         await reader._initPromise;
                         this.onReaderSelect(reader);
+                    } else if (event == "add" && type == "item") {
+                        Zotero.Lidia.SelectButton.addButton();
                     }
                 }
             }
@@ -184,6 +186,10 @@ if (!Zotero.Lidia.Panel) {
                     label.textContent = getString(field.label) + ":";
                     // So far we only support textbox
                     let input = this.win.document.createElement("textbox");
+                    if (field.type === "textarea") {
+                        input.setAttribute("multiline", true);
+                        input.setAttribute("rows", 7);
+                    }
                     input.setAttribute("id", "lidia-" + field.id);
                     row.append(label, input);
                     rows.append(row);
