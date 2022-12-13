@@ -1,5 +1,7 @@
 if (!Zotero.Lidia.Panel) {
     Zotero.Lidia.Panel = {
+        /* fields: definition of LIDIA annotation fields that we want to
+         * edit with this Zotero extension. */
         fields: [{
             "id": "argname",
             "label": "lidiaArgumentName.label",
@@ -21,7 +23,7 @@ if (!Zotero.Lidia.Panel) {
             this.win = Zotero.getMainWindow();
             this.stringBundle = Services.strings.createBundle('chrome://lidia-annotations/locale/lidia.properties');
             this.notifierCallback = {
-                // Call view.updateTranslatePanels when a tab is added or selected
+                // After zotero-pdf-translate
                 notify: async (
                     event,
                     type,
@@ -68,6 +70,9 @@ if (!Zotero.Lidia.Panel) {
         },
 
         buildSideBarPanel: async function() {
+            /**
+             * Create the sidebar panel (after zotero-pdf-translate extension)
+             */
             log("Building LIDIA panel");
             var tab = this.tab;
             if (!tab) {
@@ -117,7 +122,7 @@ if (!Zotero.Lidia.Panel) {
                 );
                 button.setAttribute("flex", "1");
                 button.addEventListener("click", () => {
-                    this.updateAnnotation();
+                    this.saveAnnotation();
                 });
 
                 let emptydiv = this.win.document.createElement("div");
@@ -166,6 +171,9 @@ if (!Zotero.Lidia.Panel) {
             );
         },
         activatePanel: function(data, item) {
+            /**
+             * Activate the LIDIA panel and fill the form with existing data.
+             */
             for (field of this.fields) {
                 let value = data[field.id] !== undefined ? data[field.id] : "";
                 this.win.document.getElementById("lidia-" + field.id).value =
@@ -192,6 +200,10 @@ if (!Zotero.Lidia.Panel) {
             }
         },
         receiveAnnotation: function(item) {
+            /**
+             * Act upon the selection of an annotation by activating or
+             * disactivating the panel.
+             */
             Zotero.Lidia.currentAnnotation = item;
             if (item.annotationComment) {
                 data = Zotero.Lidia.Serialize.deserialize(item.annotationComment);
@@ -207,7 +219,10 @@ if (!Zotero.Lidia.Panel) {
                 this.disablePanel();
             }
         },
-        updateAnnotation: async function() {
+        saveAnnotation: async function() {
+            /**
+             * Serialize contents of the form and save to database
+             */
             const item = Zotero.Lidia.currentAnnotation;
             if (item == null) return;
             let data = {};

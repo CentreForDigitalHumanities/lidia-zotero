@@ -62,21 +62,24 @@ if (!Zotero.Lidia.SelectButton) {
                 </g>
             </svg>`,
         addButton: async function() {
-            let updateCount = 0;
+            /** Add the LIDIA button to each annotation.
+             * After zotero-pdf-translate.
+             */
             let win = Zotero.getMainWindow();
             let reader = Zotero.Reader.getByTabID(win.Zotero_Tabs._selectedID);
             await reader._initPromise;
             const _document = reader._iframeWindow.document;
             for (const moreButton of _document.getElementsByClassName("more")) {
+                /* Find all annotations through the more buttons and add the
+                 * LIDIA button to all that do not yet have a LIDIA button */
                 if (moreButton.getAttribute("lidiainit") === "true") {
-                    updateCount += 1;
                     continue;
                 }
                 log("Creating new LIDIA button");
                 moreButton.setAttribute("lidiainit", "true");
-                const translateAnnotationButton = _document.createElement("div");
-                translateAnnotationButton.setAttribute("style", "margin: 5px;");
-                translateAnnotationButton.innerHTML = this.lidiaIcon;
+                const lidiaButton = _document.createElement("div");
+                lidiaButton.setAttribute("style", "margin: 5px;");
+                lidiaButton.innerHTML = this.lidiaIcon;
 
                 let annotationWrapper = moreButton;
                 while (!annotationWrapper.getAttribute("data-sidebar-annotation-id")) {
@@ -92,34 +95,24 @@ if (!Zotero.Lidia.SelectButton) {
                     itemKey
                 );
 
-                translateAnnotationButton.addEventListener("click", (e) => {
+                lidiaButton.addEventListener("click", (e) => {
                     this.onAnnotationActivated(annotationItem, true);
                     e.preventDefault();
                 });
+                /* Also allow clicking the annotation as a whole, as an
+                 * experiment...
+                 * If we find a way to get the annotationItem after selecting
+                 * it (which is not necessarily after clicking the annotation
+                 * from the sidebar), that would be better.
+                 */
                 annotationWrapper.addEventListener("click", (e) => {
                     this.onAnnotationActivated(annotationItem, true);
                     e.preventDefault();
                 });
-                translateAnnotationButton.addEventListener(
-                    "mouseover",
-                    (e) => {
-                    translateAnnotationButton.setAttribute(
-                        "style",
-                        "background: #F0F0F0; margin: 5px;"
-                    );
-                    }
-                );
-                translateAnnotationButton.addEventListener(
-                    "mouseout",
-                    (e) => {
-                    translateAnnotationButton.setAttribute("style", "margin: 5px;");
-                    }
-                );
-                moreButton.before(translateAnnotationButton);
-                updateCount += 1;
+                moreButton.before(lidiaButton);
             }
         },
-        onAnnotationActivated: async function(itemPromise, forceTranslate) {
+        onAnnotationActivated: async function(itemPromise) {
             log("Annotation activated");
             itemPromise.then((item) => {
                 Zotero.Lidia.Panel.receiveAnnotation(item);
