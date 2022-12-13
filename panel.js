@@ -84,39 +84,6 @@ if (!Zotero.Lidia.Panel) {
             /* (or maybe we won't need this, because PDFs without
                parent items may lead to problems) */
 
-            if (tabContainer) {
-                log("Found reader tab container");
-            }
-            let n = 0;
-            while (!tabContainer || !tabContainer.querySelector("tabbox")) {
-                if (n >= 500) {
-                    log("Waiting for reader failed");
-                    return;
-                }
-                // For attachments without parent item
-                if (tabContainer.querySelector("description")) {
-                    tabContainer.innerHTML = "";
-                    const tabbox = this.win.document.createElement("tabbox");
-                    tabbox.className = "zotero-view-tabbox";
-                    tabbox.setAttribute("flex", "1");
-
-                    const tabs = this.win.document.createElement("tabs");
-                    tabs.className = "zotero-editpane-tabs";
-                    tabs.setAttribute("orient", "horizontal");
-                    tabbox.append(tabs);
-
-                    const tabpanels = this.win.document.createElement("tabpanels");
-                    tabpanels.className = "zotero-view-item";
-                    tabpanels.setAttribute("flex", "1");
-
-                    tabbox.append(tabpanels);
-                    tabContainer.append(tabbox);
-                    break;
-                }
-                await Zotero.Promise.delay(10);
-                n++;
-            }
-
             const tabbox = tabContainer.querySelector("tabbox");
             tabbox.querySelector("tabs").appendChild(tab);
 
@@ -127,45 +94,20 @@ if (!Zotero.Lidia.Panel) {
                 panelInfo.setAttribute("flex", "1");
 
                 let vbox = this.win.document.createElement("vbox");
-                vbox.setAttribute("id", "lidia-vbox");
-                vbox.setAttribute("flex", "1");
-                vbox.setAttribute("align", "stretch");
-                vbox.style.padding = "0px 10px 10px 10px";
-
-                let hboxOpenWindow = this.win.document.createElement("vbox");
-                hboxOpenWindow.setAttribute(
+                vbox.setAttribute(
                     "id",
-                    "lidia-tabpanel-openwindow-hbox"
+                    "lidia-vbox"
                 );
-                hboxOpenWindow.setAttribute("flex", "1");
-                hboxOpenWindow.setAttribute("align", "center");
-                hboxOpenWindow.maxHeight = 50;
-                hboxOpenWindow.minHeight = 50;
-                hboxOpenWindow.style.height = "80px";
-
-                /*let buttonAbout = this.win.document.createElement("button");
-                buttonAbout.setAttribute(
-                    "label",
-                    getString("lidiaAbout.label")
-                );
-                buttonAbout.setAttribute("flex", "1");
-
-                let buttonAbout2 = this.win.document.createElement("button");
-                buttonAbout2.setAttribute(
-                    "label",
-                    getString('lidiaUpdateAnnotation.label')
-                );
-                buttonAbout2.setAttribute("flex", "1");
-
-                hboxOpenWindow.append(buttonAbout);
-                hboxOpenWindow.append(buttonAbout2);
-                */
+                vbox.setAttribute("flex", "1");
+                vbox.setAttribute("align", "center");
 
                 let grid = this.win.document.createElement("grid");
                 grid.setAttribute("id", "lidia-edit-grid");
+                grid.setAttribute("flex", "1"); // Nodig?
                 let columns = this.win.document.createElement("columns");
                 let column1 = this.win.document.createElement("column");
                 let column2 = this.win.document.createElement("column");
+                column2.setAttribute("flex", "1");
                 let rows = this.win.document.createElement("rows");
                 let row2 = this.win.document.createElement("row");
                 let button = this.win.document.createElement("button");
@@ -173,6 +115,7 @@ if (!Zotero.Lidia.Panel) {
                     "label",
                     getString('lidiaUpdateAnnotation.label')
                 );
+                button.setAttribute("flex", "1");
                 button.addEventListener("click", () => {
                     this.updateAnnotation();
                 });
@@ -180,6 +123,14 @@ if (!Zotero.Lidia.Panel) {
                 let emptydiv = this.win.document.createElement("div");
                 row2.append(emptydiv, button);
                 columns.append(column1, column2);
+                let textRow = this.win.document.createElement("row");
+                let textRowLabel = this.win.document.createElement("label");
+                let textRowText = this.win.document.createElement("label");
+                textRowText.setAttribute("id", "lidia-argument-text");
+                textRowLabel.textContent =
+                    getString("lidiaArgumentText.label") + ":";
+                textRow.append(textRowLabel, textRowText);
+                rows.append(textRow);
                 for (field of this.fields) {
                     let row = this.win.document.createElement("row");
                     let label = this.win.document.createElement("label");
@@ -190,6 +141,7 @@ if (!Zotero.Lidia.Panel) {
                         input.setAttribute("multiline", true);
                         input.setAttribute("rows", 7);
                     }
+                    input.setAttribute("flex", 2);
                     input.setAttribute("id", "lidia-" + field.id);
                     row.append(label, input);
                     rows.append(row);
@@ -201,10 +153,8 @@ if (!Zotero.Lidia.Panel) {
                 let statusLabel = this.win.document.createElement("label");
                 statusLabel.setAttribute("id", "lidia-status");
 
-                hboxOpenWindow.append(statusLabel);
-                hboxOpenWindow.append(grid);
-
-                vbox.append(hboxOpenWindow);
+                vbox.append(statusLabel);
+                vbox.append(grid);
 
                 panelInfo.append(vbox);
                 this.tabPanel = panelInfo;
@@ -225,6 +175,9 @@ if (!Zotero.Lidia.Panel) {
             grid.setAttribute("hidden", false);
             const statusLabel = this.win.document.getElementById("lidia-status");
             statusLabel.textContent = "Editing an annotation:";
+            const argumentText =
+                this.win.document.getElementById("lidia-argument-text");
+            argumentText.textContent = item.annotationText;
         },
         disablePanel: function(noselection) {
             log("Disabling panel");
@@ -247,8 +200,7 @@ if (!Zotero.Lidia.Panel) {
                 data = {}
             }
             if (data !== undefined) {
-                log(JSON.stringify(data));
-                this.activatePanel(data);
+                this.activatePanel(data, item);
             } else {
                 /* Data is undefined if it could not be parsed. Disable the
                  * panel to prevent a non-LIDIA comment from being changed */
