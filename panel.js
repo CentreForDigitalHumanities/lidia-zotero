@@ -31,9 +31,9 @@ if (!Zotero.Lidia.Panel) {
                     extraData
                 ) => {
                     if (
-                    event == "select" &&
-                    type == "tab" &&
-                    extraData[ids[0]].type == "reader"
+                    event === "select" &&
+                    type === "tab" &&
+                    extraData[ids[0]].type === "reader"
                     ) {
                         log("open PDF reader event detected.");
                         let reader = Zotero.Reader.getByTabID(ids[0]);
@@ -45,8 +45,8 @@ if (!Zotero.Lidia.Panel) {
                         }
                         await reader._initPromise;
                         this.onReaderSelect(reader);
-                    } else if (event == "add" && type == "item") {
-                        Zotero.Lidia.SelectButton.addButton();
+                    } else if (event === "add" && type === "item") {
+                        await Zotero.Lidia.SelectButton.addButton();
                     }
                 }
             }
@@ -136,7 +136,7 @@ if (!Zotero.Lidia.Panel) {
                     getString("lidiaArgumentText.label") + ":";
                 textRow.append(textRowLabel, textRowText);
                 rows.append(textRow);
-                for (field of this.fields) {
+                for (const field of this.fields) {
                     let row = this.win.document.createElement("row");
                     let label = this.win.document.createElement("label");
                     label.textContent = getString(field.label) + ":";
@@ -174,7 +174,7 @@ if (!Zotero.Lidia.Panel) {
             /**
              * Activate the LIDIA panel and fill the form with existing data.
              */
-            for (field of this.fields) {
+            for (const field of this.fields) {
                 let value = data[field.id] !== undefined ? data[field.id] : "";
                 this.win.document.getElementById("lidia-" + field.id).value =
                     value;
@@ -205,6 +205,7 @@ if (!Zotero.Lidia.Panel) {
              * disactivating the panel.
              */
             Zotero.Lidia.currentAnnotation = item;
+            let data;
             if (item.annotationComment) {
                 data = Zotero.Lidia.Serialize.deserialize(item.annotationComment);
             } else {
@@ -226,7 +227,7 @@ if (!Zotero.Lidia.Panel) {
             const item = Zotero.Lidia.currentAnnotation;
             if (item == null) return;
             let data = {};
-            for (field of this.fields) {
+            for (const field of this.fields) {
                 data[field.id] =
                     this.win.document.getElementById("lidia-" + field.id).value;
             }
