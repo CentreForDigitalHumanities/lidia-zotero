@@ -31,6 +31,7 @@ async function waitForZotero() {
 	while (windows.hasMoreElements()) {
 		let win = windows.getNext();
 		if (win.Zotero) {
+			Zotero = win.Zotero;
 			found = true;
 			break;
 		}
@@ -56,6 +57,7 @@ async function waitForZotero() {
 		});
 	}
 	await Zotero.initializationPromise;
+	return;
 }
 
 async function install() {
@@ -127,5 +129,11 @@ function shutdown() {
 }
 
 function uninstall() {
+	// `Zotero` object isn't available in `uninstall()` in Zotero 6, so log manually
+	if (typeof Zotero == 'undefined') {
+		dump("LIDIA: Uninstalled\n\n");
+		return;
+	}
+
 	log("Uninstalled");
 }
