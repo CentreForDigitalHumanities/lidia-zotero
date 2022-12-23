@@ -9,8 +9,12 @@ if (!Zotero.Lidia.Selecting) {
             await reader._initPromise;
             const _document = reader._iframeWindow.document;
             for (const annotation of _document.getElementsByClassName("annotation")) {
-                /* Find all annotations through the more buttons and add the
-                 * LIDIA button to all that do not yet have a LIDIA button */
+                /* Find all annotations using the 'annotation' class and add
+                   annotation activation event listeners
+                   If we find a way to get the annotationItem after selecting
+                   it (which is not necessarily after clicking the annotation
+                   from the sidebar), that would be better.
+                */
                 if (annotation.getAttribute("lidiainit") === "true") {
                     continue;
                 }
@@ -30,11 +34,6 @@ if (!Zotero.Lidia.Selecting) {
                     this.onAnnotationActivated(annotationItem, true);
                     e.preventDefault();
                 });
-                /*
-                 * If we find a way to get the annotationItem after selecting
-                 * it (which is not necessarily after clicking the annotation
-                 * from the sidebar), that would be better.
-                 */
             }
         },
         onAnnotationActivated: async function(itemPromise) {

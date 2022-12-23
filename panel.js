@@ -21,22 +21,13 @@ if (!Zotero.Lidia.Panel) {
         }],
         initialize: function() {
             this.win = Zotero.getMainWindow();
-            this.stringBundle = Services.strings.createBundle('chrome://lidia-annotations/locale/lidia.properties');
             this.notifierCallback = {
                 // After zotero-pdf-translate
-                notify: async (
-                    event,
-                    type,
-                    ids,
-                    extraData
-                ) => {
-                    log("Event");
-                    if (
-                    event === "select" &&
-                    type === "tab" &&
-                    extraData[ids[0]].type === "reader"
+                notify: async (event, type, ids, extraData) => {
+                    if (event === "select" &&
+                            type === "tab" &&
+                            extraData[ids[0]].type === "reader"
                     ) {
-                        log("open PDF reader event detected.");
                         let reader = Zotero.Reader.getByTabID(ids[0]);
                         let delayCount = 0;
                         while (!reader && delayCount < 10) {
