@@ -1,5 +1,6 @@
 if (!Zotero.Lidia.Panel) {
     Zotero.Lidia.Panel = {
+        win: Zotero.Lidia.win,
         /* fields: definition of LIDIA annotation fields that we want to
          * edit with this Zotero extension. */
         fields: [{
@@ -19,47 +20,6 @@ if (!Zotero.Lidia.Panel) {
             "label": "lidiaArgumentDescription.label",
             "type": "textarea"
         }],
-        initialize: function() {
-            this.win = Zotero.getMainWindow();
-            this.notifierCallback = {
-                // After zotero-pdf-translate
-                notify: async (event, type, ids, extraData) => {
-                    if (event === "select" &&
-                            type === "tab" &&
-                            extraData[ids[0]].type === "reader"
-                    ) {
-                        let reader = Zotero.Reader.getByTabID(ids[0]);
-                        let delayCount = 0;
-                        while (!reader && delayCount < 10) {
-                            await Zotero.Promise.delay(100);
-                            reader = Zotero.Reader.getByTabID(ids[0]);
-                            delayCount++;
-                        }
-                        await reader._initPromise;
-                        this.onReaderSelect(reader);
-                    } else if (event === "add" && type === "item") {
-                        await Zotero.Lidia.Selecting.addSelectEvents();
-                    }
-                }
-            }
-
-            let notifierID = Zotero.Notifier.registerObserver(this.notifierCallback, [
-                "tab",
-                "item",
-                "file",
-            ]);
-        },
-
-        onReaderSelect: function(reader) {
-            log("Reader selected");
-            const item = Zotero.Items.get(reader.itemID);
-            log(
-                "We are in file: " + `${item.getField("title")}`
-            );
-            this.buildSideBarPanel();
-            Zotero.Lidia.Selecting.addSelectEvents();
-            this.disablePanel(true);
-        },
 
         buildSideBarPanel: async function() {
             /**
