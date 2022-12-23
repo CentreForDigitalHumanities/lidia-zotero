@@ -30,6 +30,7 @@ if (!Zotero.Lidia.Panel) {
                     ids,
                     extraData
                 ) => {
+                    log("Event");
                     if (
                     event === "select" &&
                     type === "tab" &&
@@ -46,7 +47,7 @@ if (!Zotero.Lidia.Panel) {
                         await reader._initPromise;
                         this.onReaderSelect(reader);
                     } else if (event === "add" && type === "item") {
-                        await Zotero.Lidia.SelectButton.addButton();
+                        await Zotero.Lidia.Selecting.addSelectEvents();
                     }
                 }
             }
@@ -65,7 +66,7 @@ if (!Zotero.Lidia.Panel) {
                 "We are in file: " + `${item.getField("title")}`
             );
             this.buildSideBarPanel();
-            Zotero.Lidia.SelectButton.addButton();
+            Zotero.Lidia.Selecting.addSelectEvents();
             this.disablePanel(true);
         },
 
