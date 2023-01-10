@@ -1,13 +1,58 @@
 if (!Zotero.Lidia) {
-	// Global properties are imported in Zotero 6 and included automatically in Zotero 7
-	if (Zotero.platformMajorVersion < 102) {
-		// Cu.importGlobalProperties(['URL']);
-	}
+    Zotero.Lidia = {
+        async init(rootURI) {
+            log('Initializing LIDIA extension');
+            this.rootURI = rootURI;
+            this.win = Zotero.getMainWindow();
+            this.stringBundle = Services.strings.createBundle(
+                'chrome://lidia-annotations/locale/lidia.properties'
+            );
+            Services.scriptloader.loadSubScript(this.rootURI + 'panel.js');
+            Services.scriptloader.loadSubScript(this.rootURI + 'selecting.js');
+            Services.scriptloader.loadSubScript(this.rootURI + 'serialize.js');
 
-	Zotero.Lidia = {
-		log(msg) {
-			Zotero.debug("LIDIA: " + msg);
-		},
+            this.notifierCallback = {
+                // After zotero-pdf-translate
+                notify: async (event, type, ids, extraData) => {
+                    if (event === "select" &&
+                            type === "tab" &&
+                            extraData[ids[0]].type === "reader"
+                    ) {
+                        let reader = Zotero.Reader.getByTabID(ids[0]);
+                        let delayCount = 0;
+                        while (!reader && delayCount < 10) {
+                            await Zotero.Promise.delay(100);
+                            reader = Zotero.Reader.getByTabID(ids[0]);
+                            delayCount++;
+                        }
+                        await reader._initPromise;
+                        this.onReaderSelect(reader);
+                    } else if (event === "add" && type === "item") {
+                        await Zotero.Lidia.Selecting.addSelectEvents();
+                    }
+                }
+            }
 
-	};
+            this.notifierID = Zotero.Notifier.registerObserver(this.notifierCallback, [
+                "tab",
+                "item",
+                "file",
+            ]);
+        },
+
+        onReaderSelect: function(reader) {
+            log("Reader selected");
+            const item = Zotero.Items.get(reader.itemID);
+            log(
+                "We are in file: " + `${item.getField("title")}`
+            );
+            Zotero.Lidia.Panel.buildSideBarPanel();
+            Zotero.Lidia.Selecting.addSelectEvents();
+
+            /* Disable the panel after a tab is selected, because the user
+             * first has to select an annotation. It would be better if
+             * the selected annotation was automatically activated. */
+            Zotero.Lidia.Panel.disablePanel(true);
+        },
+    };
 }
