@@ -5,9 +5,14 @@ if (!Zotero.Lidia.Serialize) {
                 let lines = text.split("\n");
                 let data = {}
                 for (const line of lines) {
-                    const splitted = line.split(' = ', 2);
-                    if (splitted.length == 2) {
-                        data[splitted[0]] = splitted[1];
+                    const separatorIndex = line.indexOf(" = ");
+                    if (separatorIndex !== -1) {
+                        const key = line.substring(0, separatorIndex);
+                        // String.replaceAll is too new
+                        const value = line.substring(
+                            separatorIndex + " = ".length
+                        ).replace(/\\n/g, '\n');
+                        data[key] = value;
                     }
                 }
                 return data;
@@ -20,7 +25,8 @@ if (!Zotero.Lidia.Serialize) {
             let output = "~~~LIDIA~~~\n";
             const keys = Object.keys(data);
             for (const key of keys) {
-                output += key + " = " + data[key] + "\n";
+                const value = data[key].replace(/\n/g, '\\n');
+                output += key + " = " + value + "\n";
             }
             return output;
         }
