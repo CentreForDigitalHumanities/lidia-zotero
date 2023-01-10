@@ -110,7 +110,18 @@ if (!Zotero.Lidia.Panel) {
                 let statusLabel = this.win.document.createElement("label");
                 statusLabel.setAttribute("id", "lidia-status");
 
+                this.convertButton =
+                    this.win.document.createElement("button");
+                this.convertButton.setAttribute("id", "lidia-convert");
+                this.convertButton.setAttribute(
+                    "label", getString("lidiaConvert.label")
+                );
+                this.convertButton.addEventListener("click", () => {
+                    this.convertToLidiaAnnotation();
+                });
+
                 vbox.append(statusLabel);
+                vbox.append(this.convertButton);
                 vbox.append(grid);
 
                 panelInfo.append(vbox);
@@ -133,6 +144,7 @@ if (!Zotero.Lidia.Panel) {
             }
             const grid = this.win.document.getElementById("lidia-edit-grid");
             grid.setAttribute("hidden", false);
+            this.convertButton.setAttribute("hidden", true);
             const statusLabel = this.win.document.getElementById("lidia-status");
             statusLabel.textContent = "Editing an annotation:";
             const argumentText =
@@ -141,14 +153,15 @@ if (!Zotero.Lidia.Panel) {
         },
         disablePanel: function(noselection) {
             log("Disabling panel");
-            Zotero.Lidia.currentAnnotation = null;
             const grid = this.win.document.getElementById("lidia-edit-grid");
             grid.setAttribute("hidden", true);
             const statusLabel = this.win.document.getElementById("lidia-status");
             if (noselection) {
                 statusLabel.textContent = "Please select an annotation";
+                this.convertButton.setAttribute("hidden", true);
             } else {
                 statusLabel.textContent = "The annotation you selected is not a LIDIA annotation. Please select a LIDIA annotation or a new annotation without a comment.";
+                this.convertButton.setAttribute("hidden", false);
             }
         },
         receiveAnnotation: function(item) {
@@ -186,6 +199,29 @@ if (!Zotero.Lidia.Panel) {
             const serialized = Zotero.Lidia.Serialize.serialize(data);
             item.annotationComment = serialized;
             await item.saveTx();
+        },
+        convertToLidiaAnnotation: async function() {
+            /**
+             * Convert the current (usually imported) annotation to
+             * a LIDIA annotation
+             */
+            const item = Zotero.Lidia.currentAnnotation;
+            // PDF comments on multiple lines are (currently) imported as
+            // comments on a single line divided by a space
+            const separatorIndex = item.annotationComment.indexOf(" ");
+            if (separatorIndex !== -1) {
+                data = {
+                    argname:
+                        item.annotationComment.substring(0, separatorIndex),
+                    description:
+                        item.annotationComment.substring(separatorIndex + 1)
+                };
+            } else {
+                data = {
+                    description: item.annotationComment
+                };
+            }
+            this.activatePanel(data, item);
         }
     }
 }
