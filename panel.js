@@ -36,10 +36,38 @@ if (!Zotero.Lidia.Panel) {
                 );
                 this.tab = tab;
             }
+
+            let n = 0;
             let tabContainer = this.win.document.getElementById(`${this.win.Zotero_Tabs._selectedID}-context`);
-            // TODO: make PDFs without parent item work
-            /* (or maybe we won't need this, because PDFs without
-               parent items may lead to problems) */
+            while (!tabContainer || !tabContainer.querySelector("tabbox")) {
+                if (n >= 500) {
+                    log("ZoteroPDFTranslate: Waiting for reader failed");
+                    return;
+                }
+                // For attachments without parent item
+                if (tabContainer.querySelector("description")) {
+                    tabContainer.innerHTML = "";
+                    const tabbox = this.win.document.createElement("tabbox");
+                    tabbox.className = "zotero-view-tabbox";
+                    tabbox.setAttribute("flex", "1");
+
+                    const tabs = this.win.document.createElement("tabs");
+                    tabs.className = "zotero-editpane-tabs";
+                    tabs.setAttribute("orient", "horizontal");
+                    tabbox.append(tabs);
+
+                    const tabpanels = this.win.document.createElement("tabpanels");
+                    tabpanels.className = "zotero-view-item";
+                    tabpanels.setAttribute("flex", "1");
+
+                    tabbox.append(tabpanels);
+                    tabContainer.append(tabbox);
+                    break;
+                }
+                await Zotero.Promise.delay(10);
+                n++;
+            }
+            tabContainer = this.win.document.getElementById(`${this.win.Zotero_Tabs._selectedID}-context`);
 
             const tabbox = tabContainer.querySelector("tabbox");
             tabbox.querySelector("tabs").appendChild(tab);
@@ -102,6 +130,7 @@ if (!Zotero.Lidia.Panel) {
                     input.setAttribute("id", "lidia-" + field.id);
                     row.append(label, input);
                     rows.append(row);
+                    field.element = input;
                 }
                 rows.append(row2);
                 grid.append(columns);
@@ -139,8 +168,8 @@ if (!Zotero.Lidia.Panel) {
              */
             for (const field of this.fields) {
                 let value = data[field.id] !== undefined ? data[field.id] : "";
-                this.win.document.getElementById("lidia-" + field.id).value =
-                    value;
+                field.element.setAttribute("value", value);
+                field.element.value = value;
             }
             const grid = this.win.document.getElementById("lidia-edit-grid");
             grid.setAttribute("hidden", false);

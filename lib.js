@@ -40,13 +40,13 @@ if (!Zotero.Lidia) {
             ]);
         },
 
-        onReaderSelect: function(reader) {
+        onReaderSelect: async function(reader) {
             log("Reader selected");
             const item = Zotero.Items.get(reader.itemID);
             log(
                 "We are in file: " + `${item.getField("title")}`
             );
-            Zotero.Lidia.Panel.buildSideBarPanel();
+            await Zotero.Lidia.Panel.buildSideBarPanel();
             Zotero.Lidia.Selecting.addSelectEvents();
 
             /* Disable the panel after a tab is selected, because the user
