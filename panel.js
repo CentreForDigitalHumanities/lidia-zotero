@@ -3,23 +3,6 @@ if (!Zotero.Lidia.Panel) {
         win: Zotero.Lidia.win,
         /* fields: definition of LIDIA annotation fields that we want to
          * edit with this Zotero extension. */
-        fields: [{
-            "id": "argname",
-            "label": "lidiaArgumentName.label",
-            "type": "input"
-        },{
-            "id": "linglevel",
-            "label": "lidiaLinguisticLevel.label",
-            "type": "input"
-        },{
-            "id": "arglang",
-            "label": "lidiaArgumentLanguage.label",
-            "type": "input"
-        },{
-            "id": "description",
-            "label": "lidiaArgumentDescription.label",
-            "type": "textarea"
-        }],
 
         buildSideBarPanel: async function() {
             /**
@@ -41,7 +24,7 @@ if (!Zotero.Lidia.Panel) {
             let tabContainer = this.win.document.getElementById(`${this.win.Zotero_Tabs._selectedID}-context`);
             while (!tabContainer || !tabContainer.querySelector("tabbox")) {
                 if (n >= 500) {
-                    log("ZoteroPDFTranslate: Waiting for reader failed");
+                    log("Waiting for reader failed");
                     return;
                 }
                 // For attachments without parent item
@@ -67,7 +50,7 @@ if (!Zotero.Lidia.Panel) {
                 await Zotero.Promise.delay(10);
                 n++;
             }
-            tabContainer = this.win.document.getElementById(`${this.win.Zotero_Tabs._selectedID}-context`);
+            //tabContainer = this.win.document.getElementById(`${this.win.Zotero_Tabs._selectedID}-context`);
 
             const tabbox = tabContainer.querySelector("tabbox");
             tabbox.querySelector("tabs").appendChild(tab);
@@ -116,7 +99,7 @@ if (!Zotero.Lidia.Panel) {
                     getString("lidiaArgumentText.label") + ":";
                 textRow.append(textRowLabel, textRowText);
                 rows.append(textRow);
-                for (const field of this.fields) {
+                for (const field of Zotero.Lidia.fields) {
                     let row = this.win.document.createElement("row");
                     let label = this.win.document.createElement("label");
                     label.textContent = getString(field.label) + ":";
@@ -166,7 +149,7 @@ if (!Zotero.Lidia.Panel) {
             /**
              * Activate the LIDIA panel and fill the form with existing data.
              */
-            for (const field of this.fields) {
+            for (const field of Zotero.Lidia.fields) {
                 let value = data[field.id] !== undefined ? data[field.id] : "";
                 field.element.setAttribute("value", value);
                 field.element.value = value;
@@ -221,7 +204,7 @@ if (!Zotero.Lidia.Panel) {
             const item = Zotero.Lidia.currentAnnotation;
             if (item == null) return;
             let data = {};
-            for (const field of this.fields) {
+            for (const field of Zotero.Lidia.fields) {
                 data[field.id] =
                     this.win.document.getElementById("lidia-" + field.id).value;
             }
@@ -238,6 +221,7 @@ if (!Zotero.Lidia.Panel) {
             // PDF comments on multiple lines are (currently) imported as
             // comments on a single line divided by a space
             const separatorIndex = item.annotationComment.indexOf(" ");
+            let data;
             if (separatorIndex !== -1) {
                 data = {
                     argname:

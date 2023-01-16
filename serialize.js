@@ -4,15 +4,21 @@ if (!Zotero.Lidia.Serialize) {
             if (text.startsWith("~~~LIDIA~~~")) {
                 let lines = text.split("\n");
                 let data = {}
+                const fieldIds = Zotero.Lidia.fields.map(obj => obj.id);
+                log(fieldIds.length);
                 for (const line of lines) {
                     const separatorIndex = line.indexOf(" = ");
                     if (separatorIndex !== -1) {
                         const key = line.substring(0, separatorIndex);
-                        // String.replaceAll is too new
-                        const value = line.substring(
-                            separatorIndex + " = ".length
-                        ).replace(/\\n/g, '\n');
-                        data[key] = value;
+                        /* We cannot use String.replaceAll because of the
+                         * Firefox version */
+                        if (fieldIds.includes(key)) {
+                            log(key);
+                            const value = line.substring(
+                                separatorIndex + " = ".length
+                            ).replace(/\\n/g, '\n');
+                            data[key] = value;
+                        }
                     }
                 }
                 return data;
