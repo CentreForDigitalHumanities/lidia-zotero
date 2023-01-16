@@ -104,10 +104,23 @@ if (!Zotero.Lidia.Panel) {
                     let label = this.win.document.createElement("label");
                     label.textContent = getString(field.label) + ":";
                     // So far we only support textbox
-                    let input = this.win.document.createElement("textbox");
+                    let input;
+                    if (field.type === "input") {
+                        input = createHElement("input");
+                        input.setAttribute(
+                            "style",
+                            "margin: 0 5px 5px 0"
+                        );
+                    }
                     if (field.type === "textarea") {
-                        input.setAttribute("multiline", true);
+                        input = createHElement("textarea");
+                        //input.setAttribute("multiline", true);
                         input.setAttribute("rows", 7);
+                        input.setAttribute(
+                            "style",
+                            "font-family: inherit; font-size: inherit; " +
+                                "margin: 0 5px 5px 0"
+                        );
                     }
                     input.setAttribute("flex", 2);
                     input.setAttribute("id", "lidia-" + field.id);
@@ -218,17 +231,24 @@ if (!Zotero.Lidia.Panel) {
              * a LIDIA annotation
              */
             const item = Zotero.Lidia.currentAnnotation;
-            // PDF comments on multiple lines are (currently) imported as
-            // comments on a single line divided by a space
+            /* The items we want to convert have the argument ID on the first
+             * line and the description on the second, but after they are
+             * imported into Zotero the newline is (apparently) replaced
+             * by a space...
+             */
             const separatorIndex = item.annotationComment.indexOf(" ");
             let data;
             if (separatorIndex !== -1) {
-                data = {
-                    argname:
-                        item.annotationComment.substring(0, separatorIndex),
-                    description:
-                        item.annotationComment.substring(separatorIndex + 1)
-                };
+                let argname = item.annotationComment.substring(
+                    0, separatorIndex
+                );
+                if (argname.endsWith(":")) {
+                    argname = argname.slice(0, -1);
+                }
+                const description = item.annotationComment.substring(
+                    separatorIndex + 1
+                );
+                data = {argname, description};
             } else {
                 data = {
                     description: item.annotationComment
