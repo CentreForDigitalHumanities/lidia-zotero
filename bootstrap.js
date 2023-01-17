@@ -26,6 +26,35 @@ function getString(name) {
     return str;
 }
 
+/**
+ * Create an HTML element according to the Mozilla platform version
+ */
+function createHElement(type) {
+    const win = Zotero.getMainWindow();
+    let element;
+    if (Zotero.platformMajorVersion < 102) {
+        element = win.document.createElementNS("http://www.w3.org/1999/xhtml", type);
+    } else {
+        element = win.document.createElement(type);
+    }
+    return element;
+}
+
+/**
+ * Create an XUL element according to the Mozilla platform version
+ */
+function createXElement(type) {
+    const win = Zotero.getMainWindow();
+    let element;
+    if (Zotero.platformMajorVersion < 102) {
+        element = win.document.createElement(type);
+    } else {
+        element = win.document.createXULElement(type);
+    }
+    return element;
+}
+
+
 // In Zotero 6, bootstrap methods are called before Zotero is initialized, and using include.js
 // to get the Zotero XPCOM service would risk breaking Zotero startup. Instead, wait for the main
 // Zotero window to open and get the Zotero object from there.

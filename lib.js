@@ -1,5 +1,23 @@
 if (!Zotero.Lidia) {
     Zotero.Lidia = {
+        fields: [{
+            "id": "argname",
+            "label": "lidiaArgumentName.label",
+            "type": "input"
+        },{
+            "id": "linglevel",
+            "label": "lidiaLinguisticLevel.label",
+            "type": "input"
+        },{
+            "id": "arglang",
+            "label": "lidiaArgumentLanguage.label",
+            "type": "input"
+        },{
+            "id": "description",
+            "label": "lidiaArgumentDescription.label",
+            "type": "textarea"
+        }],
+
         async init(rootURI) {
             log('Initializing LIDIA extension');
             this.rootURI = rootURI;
@@ -40,14 +58,14 @@ if (!Zotero.Lidia) {
             ]);
         },
 
-        onReaderSelect: function(reader) {
+        onReaderSelect: async function(reader) {
             log("Reader selected");
             const item = Zotero.Items.get(reader.itemID);
             log(
                 "We are in file: " + `${item.getField("title")}`
             );
-            Zotero.Lidia.Panel.buildSideBarPanel();
-            Zotero.Lidia.Selecting.addSelectEvents();
+            await Zotero.Lidia.Panel.buildSideBarPanel();
+            await Zotero.Lidia.Selecting.addSelectEvents();
 
             /* Disable the panel after a tab is selected, because the user
              * first has to select an annotation. It would be better if
