@@ -70,7 +70,7 @@ if (!Zotero.Lidia) {
             /* Disable the panel after a tab is selected, because the user
              * first has to select an annotation. It would be better if
              * the selected annotation was automatically activated. */
-            Zotero.Lidia.Panel.disablePanel(true);
+            Zotero.Lidia.Panel.disablePanel(undefined);
         },
     };
 }

@@ -78,18 +78,18 @@ if (!Zotero.Lidia.Panel) {
                 column2.setAttribute("flex", "1");
                 let rows = this.win.document.createElement("rows");
                 let row2 = this.win.document.createElement("row");
-                let button = this.win.document.createElement("button");
-                button.setAttribute(
+                this.saveButton = this.win.document.createElement("button");
+                this.saveButton.setAttribute(
                     "label",
                     getString('lidiaUpdateAnnotation.label')
                 );
-                button.setAttribute("flex", "1");
-                button.addEventListener("click", () => {
+                this.saveButton.setAttribute("flex", "1");
+                this.saveButton.addEventListener("click", () => {
                     this.saveAnnotation();
                 });
 
                 let emptydiv = this.win.document.createElement("div");
-                row2.append(emptydiv, button);
+                row2.append(emptydiv, this.saveButton);
                 columns.append(column1, column2);
                 let textRow = this.win.document.createElement("row");
                 let textRowLabel = this.win.document.createElement("label");
@@ -171,22 +171,36 @@ if (!Zotero.Lidia.Panel) {
             grid.setAttribute("hidden", false);
             this.convertButton.setAttribute("hidden", true);
             const statusLabel = this.win.document.getElementById("lidia-status");
-            statusLabel.textContent = "Editing an annotation:";
             const argumentText =
                 this.win.document.getElementById("lidia-argument-text");
             argumentText.textContent = item.annotationText;
+            if (item.isEditable()) {
+                statusLabel.textContent = "Editing an annotation:";
+                this.saveButton.setAttribute("disabled", false);
+            } else {
+                statusLabel.textContent = "Inspecting an annotation (readonly):";
+                this.saveButton.setAttribute("disabled", true);
+            }
         },
-        disablePanel: function(noselection) {
+        disablePanel: function(item) {
             log("Disabling panel");
             const grid = this.win.document.getElementById("lidia-edit-grid");
             grid.setAttribute("hidden", true);
             const statusLabel = this.win.document.getElementById("lidia-status");
-            if (noselection) {
+            if (!item) {
                 statusLabel.textContent = "Please select an annotation";
                 this.convertButton.setAttribute("hidden", true);
             } else {
                 statusLabel.textContent = "The annotation you selected is not a LIDIA annotation. Please select a LIDIA annotation or a new annotation without a comment.";
                 this.convertButton.setAttribute("hidden", false);
+                if (item.isEditable() && !item.annotationIsExternal) {
+                    /* Only allow converting if annotation is editable (i.e.
+                     * not owned by another user) and if it is not external
+                     * (if it is external it is part of the PDF) */
+                    this.convertButton.setAttribute("disabled", false);
+                } else {
+                    this.convertButton.setAttribute("disabled", true);
+                }
             }
         },
         receiveAnnotation: function(item) {
@@ -207,7 +221,7 @@ if (!Zotero.Lidia.Panel) {
             } else {
                 /* Data is undefined if it could not be parsed. Disable the
                  * panel to prevent a non-LIDIA comment from being changed */
-                this.disablePanel();
+                this.disablePanel(item);
             }
         },
         saveAnnotation: async function() {
