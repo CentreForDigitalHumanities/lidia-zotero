@@ -6,6 +6,8 @@ The project is set up as a bootstrapped plugin for Zotero 6 and 7. Tested only u
 
 ## Development
 
+Make Zotero ready for the extension (you only need to do this once):
+
 - Create a new Zotero profile with `zotero --ProfileManager` (here named `Develop`).
 - Configure a custom data directory for the new profile.
 - Start the new profile: `zotero -P Develop` and exit.
@@ -14,9 +16,16 @@ The project is set up as a bootstrapped plugin for Zotero 6 and 7. Tested only u
 - `echo "/absolute/path/to/Projects/LIDIA/lidia-zotero" > $HOME/.zotero/zotero/Develop/extensions/lidia-annotations@dig.hum.uu.nl`
 - `sed -i '/.*extensions\.lastAppBuildId.*/d' $HOME/.zotero/zotero/Develop/prefs.js`
 - `sed -i '/.*extensions\.lastAppVersion.*/d' $HOME/.zotero/zotero/Develop/prefs.js`
-- `zotero -P Develop` # The plugin is now enabled from the source directory
+
+This will enable the plugin from the source directory.
+
+Install npm packages:
+- `npm install`
+
+Build and run:
 - Make changes in your source
-- Restart Zotero `zotero -P Develop -purgecaches -ZoteroDebugText`
+- `npm run build`
+- `zotero -P Develop -purgecaches -ZoteroDebugText`
 
 ### Reading
 
