@@ -42,7 +42,7 @@ Zotero.Lidia = {
                         delayCount++;
                     }
                     await reader._initPromise;
-                    this.onReaderSelect(reader);
+                    await this.onReaderSelect(reader);
                 } else if (event === "add" && type === "item") {
                     await Zotero.Lidia.Selecting.addSelectEvents();
                 }
