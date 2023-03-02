@@ -152,7 +152,7 @@ async function startup({ id, version, resourceURI, rootURI = resourceURI.spec })
 		}
 	}
 
-	Services.scriptloader.loadSubScript(rootURI + 'lib.js');
+	Services.scriptloader.loadSubScript(rootURI + 'out.js');
 
 	await Zotero.Lidia.init(rootURI);
 }
