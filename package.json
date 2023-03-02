@@ -2,7 +2,7 @@
     "scripts": {
         "build": "node build.mjs"
     },
-    "dependencies": {
+    "devDependencies": {
         "esbuild": "^0.17"
     }
 }
