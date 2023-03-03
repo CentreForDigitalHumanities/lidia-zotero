@@ -1,4 +1,8 @@
+import React from "react";
+import { createRoot } from 'react-dom/client';
+
 import { deserialize, serialize } from "./serialize.js";
+import TestPanel from "./TestPanel";
 
 /**
  * Represents the panel. There should be only one panel for the application
@@ -160,8 +164,14 @@ export class LidiaPanel {
             vbox.append(statusLabel);
             vbox.append(this.convertButton);
             vbox.append(grid);
-
             panelInfo.append(vbox);
+
+            // ReferenceError: window is not defined
+            let container = createHElement("div");
+            let root = createRoot(container);
+            root.render(<TestPanel />);
+            panelInfo.append(container);
+
             this.tabPanel = panelInfo;
         }
         tabbox.querySelector("tabpanels").appendChild(panelInfo);
