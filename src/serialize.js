@@ -1,3 +1,5 @@
+/* global window, Zotero, Lidia */
+
 /**
  * Convert a LIDIA item from the way it is saved as a Zotero annotation comment
  * into a LIDIA JavaScript object.
@@ -9,7 +11,7 @@ export function deserialize(text) {
     if (text.startsWith("~~~LIDIA~~~")) {
         let lines = text.split("\n");
         let data = {}
-        const fieldIds = Zotero.Lidia.fields.map(obj => obj.id);
+        const fieldIds = Lidia.fields.map(obj => obj.id);
         log(fieldIds.length);
         for (const line of lines) {
             const separatorIndex = line.indexOf(" = ");

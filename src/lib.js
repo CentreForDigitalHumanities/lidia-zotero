@@ -2,8 +2,10 @@ import React from "react";
 import {createRoot} from "react-dom/client";
 
 import { LidiaPanel } from "./panel.js";
+/* global window, Zotero */
 
-Zotero.Lidia = {
+
+window.Lidia = {
     fields: [{
         "id": "argname",
         "label": "lidiaArgumentName.label",
@@ -23,7 +25,8 @@ Zotero.Lidia = {
     }],
 
     async init(rootURI) {
-        log('Initializing LIDIA extension');
+        log('Initializing LIDIA extension (lib.js)');
+        log('Window object:' + window.toString());
         this.rootURI = rootURI;
         this.win = Zotero.getMainWindow();
         this.stringBundle = Services.strings.createBundle(
@@ -47,7 +50,7 @@ Zotero.Lidia = {
                     await reader._initPromise;
                     await this.onReaderSelect(reader);
                 } else if (event === "add" && type === "item") {
-                    await Zotero.Lidia.Selecting.addSelectEvents();
+                    await this.panel.addSelectEvents();
                 }
             }
         }

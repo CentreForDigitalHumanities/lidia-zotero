@@ -4,6 +4,8 @@ import { createRoot } from 'react-dom/client';
 import { deserialize, serialize } from "./serialize.js";
 import TestPanel from "./TestPanel";
 
+/* global window, Zotero, Lidia */
+
 /**
  * Represents the panel. There should be only one panel for the application
  * as a whole - this panel is shared between Zotero tabs.
@@ -115,7 +117,7 @@ export class LidiaPanel {
                 getString("lidiaArgumentText.label") + ":";
             textRow.append(textRowLabel, textRowText);
             rows.append(textRow);
-            for (const field of Zotero.Lidia.fields) {
+            for (const field of Lidia.fields) {
                 let row = this.win.document.createElement("row");
                 let label = this.win.document.createElement("label");
                 label.textContent = getString(field.label) + ":";
@@ -166,7 +168,6 @@ export class LidiaPanel {
             vbox.append(grid);
             panelInfo.append(vbox);
 
-            // ReferenceError: window is not defined
             let container = createHElement("div");
             let root = createRoot(container);
             root.render(<TestPanel />);
@@ -187,7 +188,7 @@ export class LidiaPanel {
      * @param {DataObject} item - the selected Zotero item
      */
     activatePanel(data, item) {
-        for (const field of Zotero.Lidia.fields) {
+        for (const field of Lidia.fields) {
             let value = data[field.id] !== undefined ? data[field.id] : "";
             field.element.setAttribute("value", value);
             field.element.value = value;
@@ -265,7 +266,7 @@ export class LidiaPanel {
         const item = this.currentAnnotation;
         if (item == null) return;
         let data = {};
-        for (const field of Zotero.Lidia.fields) {
+        for (const field of Lidia.fields) {
             data[field.id] =
                 this.win.document.getElementById("lidia-" + field.id).value;
         }

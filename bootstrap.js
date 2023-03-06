@@ -152,9 +152,19 @@ async function startup({ id, version, resourceURI, rootURI = resourceURI.spec })
 		}
 	}
 
-	Services.scriptloader.loadSubScript(rootURI + 'out.js');
+	// Load out.js with the Zotero main window as its scope to make the
+	// window object globally available
+	const scope = Zotero.getMainWindow();
+	Services.scriptloader.loadSubScript(rootURI + 'out.js', scope);
 
-	await Zotero.Lidia.init(rootURI);
+	// Add functions from bootstrap.js to scope to make them available
+	// TODO: move these functions to lib.js
+	scope.log = log;
+	scope.getString = getString;
+	scope.createHElement = createHElement;
+	scope.createXElement = createXElement;
+
+	await scope.Lidia.init(rootURI);
 }
 
 function shutdown() {
