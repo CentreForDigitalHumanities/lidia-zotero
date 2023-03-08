@@ -1,9 +1,11 @@
 {
     "scripts": {
+        "postinstall": "patch-package",
         "build": "node build.mjs"
     },
     "devDependencies": {
-        "esbuild": "^0.17"
+        "esbuild": "^0.17",
+        "patch-package": "^6.2.2"
     },
     "dependencies": {
         "react": "^18.2.0",

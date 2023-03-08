@@ -3,7 +3,7 @@ import React from 'react';
 function TestPanel() {
     return (
         <div>
-            <p>Lidia Panel TEST</p>
+            <h1>Dit is React.</h1><br /><input defaultValue="Dit is ook React!" />
         </div>
     );
 }

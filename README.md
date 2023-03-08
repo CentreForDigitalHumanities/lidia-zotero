@@ -27,6 +27,19 @@ Build and run:
 - `npm run build`
 - `zotero -P Develop -purgecaches -ZoteroDebugText`
 
+### Use of React
+
+This extension uses React for rendering part of the UI, as was done earlier in
+Diego de la Hera's plugin `zotero-cita`. To make that possible we include a
+patch to `react-dom` that is included in `zotero-cita` as well. This patch
+forces the use of the XHTML namespace when creating elements, because Zotero 6
+by default creates XUL elements.
+
+React also needs to have access to global objects like `window` and `document`.
+This is achieved by passing the window object of the Zotero main window to
+the bundled JavaScript file when it is loaded in `bootstrap.js` using
+the `Services.scriptloader.loadSubScript` method.
+
 ### Reading
 
 - [Setting Up a Plugin Development Environment](https://www.zotero.org/support/dev/client_coding/plugin_development#setting_up_a_plugin_development_environment).

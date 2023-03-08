@@ -106,7 +106,7 @@ export class LidiaPanel {
                 this.saveAnnotation();
             });
 
-            let emptydiv = this.win.document.createElement("div");
+            let emptydiv = createHElement("div");
             row2.append(emptydiv, this.saveButton);
             columns.append(column1, column2);
             let textRow = this.win.document.createElement("row");
