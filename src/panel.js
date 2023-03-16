@@ -80,8 +80,7 @@ export class LidiaPanel {
             panelInfo.setAttribute("flex", "1");
             let formContainer = createHElement("div");
             formContainer.setAttribute("id", "lidia-annotation-form");
-            formContainer.setAttribute("style", "display: flex;"); // FIXME ?
-            formContainer.innerHTML = '<p>Test: lidia-annotation-form</p>'
+            formContainer.innerHTML = '<div style="margin: 2em;"><p>Please select an annotation</p></div>'
             let formRoot = createRoot(formContainer); // createRoot should be used only once per element
             this.formRoot = formRoot;
             panelInfo.append(formContainer);
@@ -100,7 +99,6 @@ export class LidiaPanel {
                             external={external}
                             annotationText={annotationText}
                             data={lidiaData}
-                            onSave={onSave}
                         />);
     }
 

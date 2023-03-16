@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState } from "react";
 
 function AnnotationForm(props) {
     // argname: lidiaArgumentName.label
@@ -6,15 +7,33 @@ function AnnotationForm(props) {
     // arglang: lidiaArgumentLanguage.label
     // description: lidiaArgumentDescription.label
 
+    const [lidiaFields, setLidiaFields] = useState({
+        argname: props.data.argname,
+        linglevel: props.data.linglevel,
+        arglang: props.data.arglang,
+        argdescr: props.data.description,
+    });
+
+    const handleChange = (event) => {
+        setLidiaFields({ ...lidiaFields, [event.target.name]: event.target.value });
+    };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        console.log('LIDIA ANNOTATION: ', lidiaFields.argdescr);
+        alert(lidiaFields.argdescr);
+    }
+
     const divStyle = {
-        width: '100%',
-        backgroundColor: 'red',
-        display: 'flex',
+        width: '400px',
+        color: 'blue',
     };
 
     return (
         <div style={divStyle}>
-            <form>
+
+            <form onSubmit={handleSubmit}>
+
                 <div>{props.annotationText}</div>
 
                 {!props.data &&
@@ -28,26 +47,28 @@ function AnnotationForm(props) {
                         <div className='lidia-annotation'>
                             <div>
                                 <label htmlFor="argname">Argument name</label>
-                                <input type="text" name="argname" value={props.data.argname}/>
+                                <input type="text" name="argname" value={lidiaFields.argname} onChange={handleChange} />
                             </div>
 
                             <div>
                                 <label htmlFor="linglevel">Linguistic level</label>
-                                <input type="text" name="linglevel" value={props.data.linglevel}/>
+                                <input type="text" name="linglevel" value={lidiaFields.linglevel} onChange={handleChange} />
                             </div>
 
                             <div>
-                                <label htmlFor="argLanguage">TEST: Language</label>
-                                <select name="argLanguage" value={props.data.arglang}>
+                                <label htmlFor="arglang">Language</label>
+                                <select name="arglang" value={lidiaFields.arglang} onChange={handleChange} >
                                     <option value="en">English</option>
                                     <option value="nl">Dutch</option>
                                 </select>
                             </div>
 
                             <div>
-                                <label htmlFor="argdescription">Short description</label>
-                                <input type="text" name="argdescription" value={props.data.description}/>
+                                <label htmlFor="argdescr">Short description</label>
+                                <textarea name="argdescr" rows="5" value={lidiaFields.argdescr} onChange={handleChange} />
                             </div>
+
+                            <button type='submit'>Save</button>
 
                         </div>
                     </fieldset>
