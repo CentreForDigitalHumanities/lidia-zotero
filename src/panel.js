@@ -2,7 +2,7 @@ import React from "react";
 import { createRoot } from 'react-dom/client';
 
 import { deserialize, serialize } from "./serialize.js";
-import TestPanel from "./TestPanel";
+import AnnotationForm from "./components/AnnotationForm";
 
 /* global window, Zotero, Lidia */
 
@@ -68,111 +68,23 @@ export class LidiaPanel {
             await Zotero.Promise.delay(10);
             n++;
         }
-        //tabContainer = this.win.document.getElementById(`${this.win.Zotero_Tabs._selectedID}-context`);
 
         const tabbox = tabContainer.querySelector("tabbox");
         tabbox.querySelector("tabs").appendChild(tab);
 
-        var panelInfo = this.tabPanel;
+        let panelInfo = this.tabPanel;
         if (!panelInfo) {
-            panelInfo = this.win.document.createElement("tabpanel");
+            // The direct child of a XUL "tab" must also be XUL
+            panelInfo = createXElement("tabpanel");
             panelInfo.setAttribute("id", "lidia-tabpanel");
             panelInfo.setAttribute("flex", "1");
-
-            let vbox = this.win.document.createElement("vbox");
-            vbox.setAttribute(
-                "id",
-                "lidia-vbox"
-            );
-            vbox.setAttribute("flex", "1");
-            vbox.setAttribute("align", "center");
-
-            let grid = this.win.document.createElement("grid");
-            grid.setAttribute("id", "lidia-edit-grid");
-            grid.setAttribute("flex", "1"); // Nodig?
-            let columns = this.win.document.createElement("columns");
-            let column1 = this.win.document.createElement("column");
-            let column2 = this.win.document.createElement("column");
-            column2.setAttribute("flex", "1");
-            let rows = this.win.document.createElement("rows");
-            let row2 = this.win.document.createElement("row");
-            this.saveButton = this.win.document.createElement("button");
-            this.saveButton.setAttribute(
-                "label",
-                getString('lidiaUpdateAnnotation.label')
-            );
-            this.saveButton.setAttribute("flex", "1");
-            this.saveButton.addEventListener("click", () => {
-                this.saveAnnotation();
-            });
-
-            let emptydiv = createHElement("div");
-            row2.append(emptydiv, this.saveButton);
-            columns.append(column1, column2);
-            let textRow = this.win.document.createElement("row");
-            let textRowLabel = this.win.document.createElement("label");
-            let textRowText = this.win.document.createElement("label");
-            textRowText.setAttribute("id", "lidia-argument-text");
-            textRowLabel.textContent =
-                getString("lidiaArgumentText.label") + ":";
-            textRow.append(textRowLabel, textRowText);
-            rows.append(textRow);
-            for (const field of Lidia.fields) {
-                let row = this.win.document.createElement("row");
-                let label = this.win.document.createElement("label");
-                label.textContent = getString(field.label) + ":";
-                // So far we only support textbox
-                let input;
-                if (field.type === "input") {
-                    input = createHElement("input");
-                    input.setAttribute(
-                        "style",
-                        "margin: 0 5px 5px 0"
-                    );
-                }
-                if (field.type === "textarea") {
-                    input = createHElement("textarea");
-                    //input.setAttribute("multiline", true);
-                    input.setAttribute("rows", 7);
-                    input.setAttribute(
-                        "style",
-                        "font-family: inherit; font-size: inherit; " +
-                            "margin: 0 5px 5px 0"
-                    );
-                }
-                input.setAttribute("flex", 2);
-                input.setAttribute("id", "lidia-" + field.id);
-                row.append(label, input);
-                rows.append(row);
-                field.element = input;
-            }
-            rows.append(row2);
-            grid.append(columns);
-            grid.append(rows);
-
-            let statusLabel = this.win.document.createElement("label");
-            statusLabel.setAttribute("id", "lidia-status");
-
-            this.convertButton =
-                this.win.document.createElement("button");
-            this.convertButton.setAttribute("id", "lidia-convert");
-            this.convertButton.setAttribute(
-                "label", getString("lidiaConvert.label")
-            );
-            this.convertButton.addEventListener("click", () => {
-                this.convertToLidiaAnnotation();
-            });
-
-            vbox.append(statusLabel);
-            vbox.append(this.convertButton);
-            vbox.append(grid);
-            panelInfo.append(vbox);
-
-            let container = createHElement("div");
-            let root = createRoot(container);
-            root.render(<TestPanel />);
-            panelInfo.append(container);
-
+            let formContainer = createHElement("div");
+            formContainer.setAttribute("id", "lidia-annotation-form");
+            formContainer.setAttribute("style", "display: flex;"); // FIXME ?
+            formContainer.innerHTML = '<p>Test: lidia-annotation-form</p>'
+            let formRoot = createRoot(formContainer); // createRoot should be used only once per element
+            this.formRoot = formRoot;
+            panelInfo.append(formContainer);
             this.tabPanel = panelInfo;
         }
         tabbox.querySelector("tabpanels").appendChild(panelInfo);
@@ -182,31 +94,14 @@ export class LidiaPanel {
         );
     }
 
-    /**
-     * Activate the LIDIA panel and fill the form with existing data.
-     * @param {object} data - the data with properties for each field
-     * @param {DataObject} item - the selected Zotero item
-     */
-    activatePanel(data, item) {
-        for (const field of Lidia.fields) {
-            let value = data[field.id] !== undefined ? data[field.id] : "";
-            field.element.setAttribute("value", value);
-            field.element.value = value;
-        }
-        const grid = this.win.document.getElementById("lidia-edit-grid");
-        grid.setAttribute("hidden", false);
-        this.convertButton.setAttribute("hidden", true);
-        const statusLabel = this.win.document.getElementById("lidia-status");
-        const argumentText =
-            this.win.document.getElementById("lidia-argument-text");
-        argumentText.textContent = item.annotationText;
-        if (item.isEditable()) {
-            statusLabel.textContent = "Editing an annotation:";
-            this.saveButton.setAttribute("disabled", false);
-        } else {
-            statusLabel.textContent = "Inspecting an annotation (readonly):";
-            this.saveButton.setAttribute("disabled", true);
-        }
+    loadAnnotationForm(disabled, external, annotationText, lidiaData) {
+        this.formRoot.render(<AnnotationForm
+                            disabled={disabled}
+                            external={external}
+                            annotationText={annotationText}
+                            data={lidiaData}
+                            onSave={onSave}
+                        />);
     }
 
     /**
@@ -238,27 +133,41 @@ export class LidiaPanel {
 
     /**
      * Act upon the selection of an annotation by activating or
-     * disactivating the panel.
+     * deactivating the panel.
      * @param {DataObject} item - the selected Zotero item
      */
     receiveAnnotation(item) {
         this.currentAnnotation = item;
-        let data;
+        const external = item.annotationIsExternal;
+        const editable = item.isEditable();
+        let data = undefined;
         if (item.annotationComment) {
             data = deserialize(item.annotationComment);
         } else {
             // If there is no comment, start with empty fields
-            data = {}
+            data = {};
         }
         if (data !== undefined) {
-            this.activatePanel(data, item);
+            this.currentAnnotationData = data;
+            // this.activatePanel(data, item);
+            log('receiveAnnotation: data: loadAnnotationForm');
+            this.loadAnnotationForm(!editable, external, item.annotationText, data);
         } else {
-            /* Data is undefined if it could not be parsed. Disable the
-                * panel to prevent a non-LIDIA comment from being changed */
-            this.disablePanel(item);
+            // Data is undefined if it could not be parsed. Disable the
+            // panel to prevent a non-LIDIA comment from being changed
+            this.currentAnnotationData = undefined;
+            // this.disablePanel(item);
+            log('receiveAnnotation: undefined: loadAnnotationForm');
+            this.loadAnnotationForm(true, external, item.annotationText, undefined);
         }
     }
 
+    /**
+     * Serialize contents of the form and save to database
+     */
+    async onSaveAnnotation() {
+
+    }
     /**
      * Serialize contents of the form and save to database
      */
@@ -304,7 +213,9 @@ export class LidiaPanel {
                 description: item.annotationComment
             };
         }
-        this.activatePanel(data, item);
+        // this.activatePanel(data, item);
+        log('convertToLidiaAnnotation: loadAnnotationForm');
+        this.loadAnnotationForm(true, true, item.annotationText, data);
     }
 
     /**
