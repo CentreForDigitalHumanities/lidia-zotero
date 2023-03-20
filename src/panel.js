@@ -93,12 +93,18 @@ export class LidiaPanel {
         );
     }
 
+
+    /**
+     * Load the annotation form with the current annotation properties.
+     * TODO: lidiaData is no longer properly populated.
+     */
     loadAnnotationForm(disabled, external, annotationText, lidiaData) {
         this.formRoot.render(<AnnotationForm
                             disabled={disabled}
                             external={external}
                             annotationText={annotationText}
                             data={lidiaData}
+                            onSave={this.onSaveAnnotation.bind(this)}
                         />);
     }
 
@@ -136,9 +142,10 @@ export class LidiaPanel {
      */
     receiveAnnotation(item) {
         this.currentAnnotation = item;
+        log('receiveAnnotation: 0')
         const external = item.annotationIsExternal;
         const editable = item.isEditable();
-        let data = undefined;
+        let data;
         if (item.annotationComment) {
             data = deserialize(item.annotationComment);
         } else {
@@ -148,14 +155,14 @@ export class LidiaPanel {
         if (data !== undefined) {
             this.currentAnnotationData = data;
             // this.activatePanel(data, item);
-            log('receiveAnnotation: data: loadAnnotationForm');
+            log('receiveAnnotation: 1: loadAnnotationForm with data');
             this.loadAnnotationForm(!editable, external, item.annotationText, data);
         } else {
             // Data is undefined if it could not be parsed. Disable the
             // panel to prevent a non-LIDIA comment from being changed
             this.currentAnnotationData = undefined;
             // this.disablePanel(item);
-            log('receiveAnnotation: undefined: loadAnnotationForm');
+            log('receiveAnnotation: 2: loadAnnotationForm undefined');
             this.loadAnnotationForm(true, external, item.annotationText, undefined);
         }
     }
@@ -163,9 +170,20 @@ export class LidiaPanel {
     /**
      * Serialize contents of the form and save to database
      */
-    async onSaveAnnotation() {
-
+    onSaveAnnotation(lidiaData) {
+        if (this.currentAnnotation == undefined) {
+            // Since this method is bound via React component, this should never happen?
+            log('onSaveAnnotation: no currentAnnotation');
+            return;
+        } else {
+            log('onSaveAnnotation: ' + lidiaData.toString());
+            const serialized = serialize(lidiaData);
+            this.currentAnnotation.annotationComment = serialized;
+            this.currentAnnotation.saveTx();
+        }
     }
+
+
     /**
      * Serialize contents of the form and save to database
      */

@@ -20,7 +20,7 @@ function AnnotationForm(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log('LIDIA ANNOTATION: ', lidiaFields.argdescr);
+        props.onSave(lidiaFields);
         alert(lidiaFields.argdescr);
     }
 
