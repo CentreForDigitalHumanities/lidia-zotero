@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { deserialize, serialize } from "./serialize.js";
 import AnnotationForm from "./components/AnnotationForm";
 
-/* global window, Zotero, Lidia */
+/* global window, document, Zotero, Lidia */
 
 /**
  * Represents the panel. There should be only one panel for the application
@@ -16,9 +16,7 @@ export class LidiaPanel {
      * window is ready. Does not yet build the panel UI.
      * @param {Window} win - The Zotero main window
      */
-    constructor(win) {
-        this.win = win;
-    }
+
 
     /**
      * Build the panel. This should be called after the selection of a
@@ -29,7 +27,7 @@ export class LidiaPanel {
         log("Building LIDIA panel");
         let tab = this.tab;
         if (!tab) {
-            tab = this.win.document.createElement("tab");
+            tab = document.createElement("tab");
             tab.setAttribute("id", "lidia-tab");
             tab.setAttribute(
                 "label",
@@ -39,7 +37,7 @@ export class LidiaPanel {
         }
 
         let n = 0;
-        let tabContainer = this.win.document.getElementById(`${this.win.Zotero_Tabs._selectedID}-context`);
+        let tabContainer = document.getElementById(`${window.Zotero_Tabs._selectedID}-context`);
         while (!tabContainer || !tabContainer.querySelector("tabbox")) {
             if (n >= 500) {
                 log("Waiting for reader failed");
@@ -48,16 +46,16 @@ export class LidiaPanel {
             // For attachments without parent item
             if (tabContainer.querySelector("description")) {
                 tabContainer.innerHTML = "";
-                const tabbox = this.win.document.createElement("tabbox");
+                const tabbox = window.document.createElement("tabbox");
                 tabbox.className = "zotero-view-tabbox";
                 tabbox.setAttribute("flex", "1");
 
-                const tabs = this.win.document.createElement("tabs");
+                const tabs = window.document.createElement("tabs");
                 tabs.className = "zotero-editpane-tabs";
                 tabs.setAttribute("orient", "horizontal");
                 tabbox.append(tabs);
 
-                const tabpanels = this.win.document.createElement("tabpanels");
+                const tabpanels = window.document.createElement("tabpanels");
                 tabpanels.className = "zotero-view-item";
                 tabpanels.setAttribute("flex", "1");
 
@@ -72,21 +70,21 @@ export class LidiaPanel {
         const tabbox = tabContainer.querySelector("tabbox");
         tabbox.querySelector("tabs").appendChild(tab);
 
-        let panelInfo = this.tabPanel;
-        if (!panelInfo) {
+        // panel = this.tabPanel
+        if (!this.tabPanel) {
             // The direct child of a XUL "tab" must also be XUL
-            panelInfo = createXElement("tabpanel");
-            panelInfo.setAttribute("id", "lidia-tabpanel");
-            panelInfo.setAttribute("flex", "1");
+            const panel = createXElement("tabpanel");
+            panel.setAttribute("id", "lidia-tabpanel");
+            panel.setAttribute("flex", "1");
             let formContainer = createHElement("div");
             formContainer.setAttribute("id", "lidia-annotation-form");
             formContainer.innerHTML = '<div style="margin: 2em;"><p>Please select an annotation</p></div>'
             let formRoot = createRoot(formContainer); // createRoot should be used only once per element
             this.formRoot = formRoot;
-            panelInfo.append(formContainer);
-            this.tabPanel = panelInfo;
+            panel.append(formContainer);
+            this.tabPanel = panel;
         }
-        tabbox.querySelector("tabpanels").appendChild(panelInfo);
+        tabbox.querySelector("tabpanels").appendChild(this.tabPanel);
         tabbox.selectedIndex = Array.prototype.indexOf.call(
                 tabbox.querySelector("tabs").childNodes,
                 tabbox.querySelector("#lidia-tab")
@@ -115,9 +113,9 @@ export class LidiaPanel {
      */
     disablePanel(item) {
         log("Disabling panel");
-        const grid = this.win.document.getElementById("lidia-edit-grid");
+        const grid = window.document.getElementById("lidia-edit-grid");
         grid.setAttribute("hidden", true);
-        const statusLabel = this.win.document.getElementById("lidia-status");
+        const statusLabel = window.document.getElementById("lidia-status");
         if (!item) {
             statusLabel.textContent = "Please select an annotation";
             this.convertButton.setAttribute("hidden", true);
@@ -193,7 +191,7 @@ export class LidiaPanel {
         let data = {};
         for (const field of Lidia.fields) {
             data[field.id] =
-                this.win.document.getElementById("lidia-" + field.id).value;
+                window.document.getElementById("lidia-" + field.id).value;
         }
         const serialized = serialize(data);
         item.annotationComment = serialized;
@@ -239,7 +237,7 @@ export class LidiaPanel {
      * After zotero-pdf-translate.
      */
     async addSelectEvents() {
-        let reader = Zotero.Reader.getByTabID(this.win.Zotero_Tabs._selectedID);
+        let reader = Zotero.Reader.getByTabID(window.Zotero_Tabs._selectedID);
         await reader._initPromise;
         const _document = reader._iframeWindow.document;
         for (const annotation of _document.getElementsByClassName("annotation")) {

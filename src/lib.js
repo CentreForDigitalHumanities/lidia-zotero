@@ -61,7 +61,7 @@ window.Lidia = {
             "file",
         ]);
 
-        this.panel = new LidiaPanel(this.win);
+        this.panel = new LidiaPanel();
     },
 
     onReaderSelect: async function(reader) {
