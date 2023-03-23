@@ -14,6 +14,12 @@ function AnnotationForm(props) {
         argdescr: props.data.description,
     });
 
+
+    React.useEffect(() => {
+        setLidiaFields(props.data)
+    }, [props.data]);
+
+
     const handleChange = (event) => {
         setLidiaFields({ ...lidiaFields, [event.target.name]: event.target.value });
     };
@@ -35,6 +41,8 @@ function AnnotationForm(props) {
             <form onSubmit={handleSubmit}>
 
                 <div>{props.annotationText}</div>
+
+                <div>{JSON.stringify(props.data)}</div>
 
                 {!props.data &&
                     <div className='external-annotation'>
@@ -65,7 +73,7 @@ function AnnotationForm(props) {
 
                             <div>
                                 <label htmlFor="argdescr">Short description</label>
-                                <textarea name="argdescr" rows="5" value={lidiaFields.argdescr} onChange={handleChange} />
+                                <input name="argdescr" rows="5" value={lidiaFields.argdescr} onChange={handleChange}></input>
                             </div>
 
                             <button type='submit'>Save</button>
