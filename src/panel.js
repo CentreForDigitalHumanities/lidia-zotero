@@ -76,12 +76,15 @@ export class LidiaPanel {
             const panel = createXElement("tabpanel");
             panel.setAttribute("id", "lidia-tabpanel");
             panel.setAttribute("flex", "1");
+            const hbox = createXElement("vbox");
+            hbox.setAttribute("flex", "1");
+            panel.append(hbox);
             let formContainer = createHElement("div");
             formContainer.setAttribute("id", "lidia-annotation-form");
             formContainer.innerHTML = '<div style="margin: 2em;"><p>Please select an annotation</p></div>'
             let formRoot = createRoot(formContainer); // createRoot should be used only once per element
             this.formRoot = formRoot;
-            panel.append(formContainer);
+            hbox.append(formContainer);
             this.tabPanel = panel;
         }
         tabbox.querySelector("tabpanels").appendChild(this.tabPanel);
