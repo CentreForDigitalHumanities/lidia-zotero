@@ -11,7 +11,7 @@ function AnnotationForm(props) {
         argname: props.data.argname,
         linglevel: props.data.linglevel,
         arglang: props.data.arglang,
-        argdescr: props.data.description,
+        description: props.data.description,
     });
 
 
@@ -27,7 +27,6 @@ function AnnotationForm(props) {
     const handleSubmit = (event) => {
         event.preventDefault();
         props.onSave(lidiaFields);
-        alert(lidiaFields.argdescr);
     }
 
     const divStyle = {
@@ -72,8 +71,8 @@ function AnnotationForm(props) {
                             </div>
 
                             <div>
-                                <label htmlFor="argdescr">Short description</label>
-                                <input name="argdescr" rows="5" value={lidiaFields.argdescr} onChange={handleChange}></input>
+                                <label htmlFor="description">Short description</label>
+                                <textarea name="description" rows="5" value={lidiaFields.description} onChange={handleChange}></textarea>
                             </div>
 
                             <button type='submit'>Save</button>
