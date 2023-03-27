@@ -277,7 +277,6 @@ export class LidiaPanel {
      * @param {Promise} itemPromise - Promise for a Zotero DataObject
      */
     async onAnnotationActivated(itemPromise) {
-        log("Annotation activated :D");
         itemPromise.then((item) => {
             this.receiveAnnotation(item);
         });

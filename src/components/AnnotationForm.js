@@ -30,7 +30,6 @@ function AnnotationForm(props) {
     }
 
     const divStyle = {
-        //width: '400px',
         margin: '5px',
     };
 
@@ -42,12 +41,14 @@ function AnnotationForm(props) {
         marginTop: '5px',
     }
 
+    const fullWidthStyle = {
+        width: '92%',
+    }
+
     return (
         <div style={divStyle}>
 
             <form onSubmit={handleSubmit}>
-
-
 
                 {!props.data &&
                     <div className='external-annotation'>
@@ -56,7 +57,7 @@ function AnnotationForm(props) {
                 }
 
                 {props.data &&
-                    <fieldset style={{width: '92%'}} disabled={props.disabled}>
+                    <fieldset style={fullWidthStyle} disabled={props.disabled}>
                         <div style={labelStyle}>Argument text:</div>
 
                         <div style={{fontSize: 'x-small'}}>{props.annotationText}</div>
@@ -64,23 +65,26 @@ function AnnotationForm(props) {
                         <div className='lidia-annotation' style={formStyle} >
                             <div style={labelStyle}>
                                 <label htmlFor="argname">Argument name:</label>
-                                </div>
+                            </div>
 
                             <div>
-                            <input type="text" style={{width: '92%'}} name="argname" value={lidiaFields.argname} onChange={handleChange} />
+                                <input type="text" style={fullWidthStyle} name="argname" value={lidiaFields.argname} onChange={handleChange} />
                             </div>
 
                             <div style={labelStyle}>
                                 <label htmlFor="linglevel">Linguistic level:</label>
                             </div>
-                            <div>    <input type="text" style={{width: '92%'}} name="linglevel" value={lidiaFields.linglevel} onChange={handleChange} />
+
+                            <div>
+                                <input type="text" style={fullWidthStyle} name="linglevel" value={lidiaFields.linglevel} onChange={handleChange} />
                             </div>
 
                             <div style={labelStyle}>
                                 <label htmlFor="arglang">Language:</label>
-                                </div>
+                            </div>
 
-                            <div><select name="arglang"  value={lidiaFields.arglang} onChange={handleChange} >
+                            <div>
+                                <select name="arglang" value={lidiaFields.arglang} onChange={handleChange} >
                                     <option value="en">English</option>
                                     <option value="nl">Dutch</option>
                                 </select>
@@ -88,15 +92,15 @@ function AnnotationForm(props) {
 
                             <div style={labelStyle}>
                                 <label htmlFor="description">Short description:</label>
-                                </div>
-
-                            <div><textarea name="description" style={{width: '92%'}} type="textarea" rows="5" value={lidiaFields.description} onChange={handleChange} />
                             </div>
 
                             <div>
-                            <button type='submit'>Save</button>
+                                <textarea name="description" style={fullWidthStyle} type="textarea" rows="5" value={lidiaFields.description} onChange={handleChange} />
                             </div>
 
+                            <div>
+                                <button type='submit'>Save</button>
+                            </div>
                         </div>
                     </fieldset>
                 }
