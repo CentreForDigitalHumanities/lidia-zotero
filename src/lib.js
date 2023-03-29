@@ -76,6 +76,6 @@ window.Lidia = {
         /* Disable the panel after a tab is selected, because the user
             * first has to select an annotation. It would be better if
             * the selected annotation was automatically activated. */
-        // this.panel.disablePanel(undefined);
+        this.panel.disablePanel(undefined);
     },
 };

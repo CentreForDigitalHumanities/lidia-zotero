@@ -85,6 +85,7 @@ function AnnotationForm(props) {
 
                             <div>
                                 <select name="arglang" value={lidiaFields.arglang} onChange={handleChange} >
+                                    <option value="">(undefined)</option>
                                     <option value="en">English</option>
                                     <option value="nl">Dutch</option>
                                 </select>
