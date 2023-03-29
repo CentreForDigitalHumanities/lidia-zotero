@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from 'react-dom/client';
 
-import { deserialize, serialize } from "./serialize.js";
+import { deserialize, serialize, getEmptyAnnotation } from "./serialize.js";
 import AnnotationForm from "./components/AnnotationForm";
 
 /* global window, document, Zotero, Lidia */
@@ -151,7 +151,7 @@ export class LidiaPanel {
             data = deserialize(item.annotationComment);
         } else {
             // If there is no comment, start with empty fields
-            data = {};
+            data = getEmptyAnnotation();
         }
         if (data !== undefined) {
             this.currentAnnotationData = data;
