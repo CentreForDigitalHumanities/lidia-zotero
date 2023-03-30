@@ -12,7 +12,6 @@ export function deserialize(text) {
         let lines = text.split("\n");
         let data = {}
         const fieldIds = Lidia.fields.map(obj => obj.id);
-        log(fieldIds.length);
         for (const line of lines) {
             const separatorIndex = line.indexOf(" = ");
             if (separatorIndex !== -1) {
@@ -20,7 +19,6 @@ export function deserialize(text) {
                 /* We cannot use String.replaceAll because of the
                     * Firefox version */
                 if (fieldIds.includes(key)) {
-                    log(key);
                     const value = line.substring(
                         separatorIndex + " = ".length
                     ).replace(/\\n/g, '\n');
@@ -28,11 +26,26 @@ export function deserialize(text) {
                 }
             }
         }
+        // If there are missing fields, assign an empty string to them
+        for (const fieldId of fieldIds) {
+            if (typeof data[fieldId] === "undefined") {
+                data[fieldId] = '';
+            }
+        }
         return data;
     } else {
         // Not a LIDIA annotation
         return undefined;
     }
+}
+
+export function getEmptyAnnotation() {
+    const fieldIds = Lidia.fields.map(obj => obj.id);
+    const data = {};
+    for (const fieldId of fieldIds) {
+        data[fieldId] = '';
+    }
+    return data;
 }
 
 /**

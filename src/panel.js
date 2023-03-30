@@ -1,8 +1,9 @@
 import React from "react";
 import { createRoot } from 'react-dom/client';
 
-import { deserialize, serialize } from "./serialize.js";
+import { deserialize, serialize, getEmptyAnnotation } from "./serialize.js";
 import AnnotationForm from "./components/AnnotationForm";
+import PleaseSelect from "./components/PleaseSelect";
 
 /* global window, document, Zotero, Lidia */
 
@@ -81,11 +82,11 @@ export class LidiaPanel {
             panel.append(hbox);
             let formContainer = createHElement("div");
             formContainer.setAttribute("id", "lidia-annotation-form");
-            formContainer.innerHTML = '<div style="margin: 2em;"><p>Please select an annotation</p></div>'
             let formRoot = createRoot(formContainer); // createRoot should be used only once per element
             this.formRoot = formRoot;
             hbox.append(formContainer);
             this.tabPanel = panel;
+            this.formRoot.render(<PleaseSelect status="noselection" />);
         }
         tabbox.querySelector("tabpanels").appendChild(this.tabPanel);
         tabbox.selectedIndex = Array.prototype.indexOf.call(
@@ -116,24 +117,19 @@ export class LidiaPanel {
      */
     disablePanel(item) {
         log("Disabling panel");
-        const grid = window.document.getElementById("lidia-edit-grid");
-        grid.setAttribute("hidden", true);
-        const statusLabel = window.document.getElementById("lidia-status");
+        let status;
+        let convertible = false;
         if (!item) {
-            statusLabel.textContent = "Please select an annotation";
-            this.convertButton.setAttribute("hidden", true);
+            status = 'noselection';
+        } else if (item.annotationIsExternal) {
+            status = 'external';
         } else {
-            statusLabel.textContent = "The annotation you selected is not a LIDIA annotation. Please select a LIDIA annotation or a new annotation without a comment.";
-            this.convertButton.setAttribute("hidden", false);
-            if (item.isEditable() && !item.annotationIsExternal) {
-                /* Only allow converting if annotation is editable (i.e.
-                    * not owned by another user) and if it is not external
-                    * (if it is external it is part of the PDF) */
-                this.convertButton.setAttribute("disabled", false);
-            } else {
-                this.convertButton.setAttribute("disabled", true);
+            status = 'invalid';
+            if (item.isEditable()) {
+                convertible = true;
             }
         }
+        this.formRoot.render(<PleaseSelect status={status} convertible={convertible} onConvert={this.convertToLidiaAnnotation.bind(this)} />);
     }
 
     /**
@@ -151,7 +147,7 @@ export class LidiaPanel {
             data = deserialize(item.annotationComment);
         } else {
             // If there is no comment, start with empty fields
-            data = {};
+            data = getEmptyAnnotation();
         }
         if (data !== undefined) {
             this.currentAnnotationData = data;
@@ -162,9 +158,8 @@ export class LidiaPanel {
             // Data is undefined if it could not be parsed. Disable the
             // panel to prevent a non-LIDIA comment from being changed
             this.currentAnnotationData = undefined;
-            // this.disablePanel(item);
+            this.disablePanel(item);
             log('receiveAnnotation: 2: loadAnnotationForm undefined');
-            this.loadAnnotationForm(true, external, item.annotationText, undefined);
         }
     }
 
@@ -232,7 +227,7 @@ export class LidiaPanel {
         }
         // this.activatePanel(data, item);
         log('convertToLidiaAnnotation: loadAnnotationForm');
-        this.loadAnnotationForm(true, true, item.annotationText, data);
+        this.loadAnnotationForm(false, false, item.annotationText, data);
     }
 
     /**
