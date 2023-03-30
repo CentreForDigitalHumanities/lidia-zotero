@@ -101,7 +101,7 @@ function AnnotationForm(props) {
                             </div>
 
                             <div>
-                                <SelectElement name='lexiconterm' label="Lexicon term" value={lidiaFields.lexiconterm} options={lexiconOfLinguistics} handleChange={handleChange}/>
+                                <SelectElement name='lexiconterm' label="Lexicon term" value={lidiaFields.lexiconterm || null } options={lexiconOfLinguistics} handleChange={handleChange}/>
                             </div>
 
                             <div style={labelStyle}>
