@@ -19,6 +19,11 @@ window.Lidia = {
         "label": "lidiaArgumentLanguage.label",
         "type": "input"
     },{
+        "id": "lexiconterm",
+        "label": "lidiaLexiconTerm.label",
+        "type": "select"
+    }
+    ,{
         "id": "description",
         "label": "lidiaArgumentDescription.label",
         "type": "textarea"

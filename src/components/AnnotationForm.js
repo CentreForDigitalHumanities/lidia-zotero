@@ -1,15 +1,24 @@
 import React from 'react';
 import { useState } from "react";
 
+import SelectElement from "./SelectElement";
+
+// This works because we're using esbuild?
+// Note: a SQLite file would be ~2.5 times smaller than this JSON
+import lexiconOfLinguistics from './lexiconTerms.json';
+
+
 function AnnotationForm(props) {
     // argname: lidiaArgumentName.label
     // linglevel: lidiaLinguisticLevel.label
     // arglang: lidiaArgumentLanguage.label
+    // lexiconterm: lidiaLexiconTerm.label
     // description: lidiaArgumentDescription.label
 
     const [lidiaFields, setLidiaFields] = useState({
         argname: props.data.argname,
         linglevel: props.data.linglevel,
+        lexiconterm: props.data.lexiconterm,
         arglang: props.data.arglang,
         description: props.data.description,
     });
@@ -89,6 +98,10 @@ function AnnotationForm(props) {
                                     <option value="en">English</option>
                                     <option value="nl">Dutch</option>
                                 </select>
+                            </div>
+
+                            <div>
+                                <SelectElement name='lexiconterm' label="Lexicon term" value={lidiaFields.lexiconterm} options={lexiconOfLinguistics} handleChange={handleChange}/>
                             </div>
 
                             <div style={labelStyle}>
