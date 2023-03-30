@@ -1,7 +1,21 @@
 import React from 'react';
 import { useState } from "react";
+import { iso6393 } from "iso-639-3";
+
+let languageList = [];
+function getLanguageList() {
+    if (languageList.length > 0) {
+        return languageList;
+    } else {
+        languageList = iso6393.filter(
+            (obj) => { return obj.type === 'living' && typeof obj.iso6391 !== 'undefined' }
+        ).map(({ name, iso6393 }) => [iso6393, name]);
+        return languageList;
+    }
+}
 
 function AnnotationForm(props) {
+    log(getLanguageList()[0]);
     // argname: lidiaArgumentName.label
     // linglevel: lidiaLinguisticLevel.label
     // arglang: lidiaArgumentLanguage.label
@@ -45,6 +59,11 @@ function AnnotationForm(props) {
         width: '92%',
     }
 
+    const languageRows = [(<option value="">(undefined)</option>)];
+    for (language of getLanguageList()) {
+        languageRows.push(<option value={language[0]}>{language[0]} – {language[1]}</option>);
+    }
+
     return (
         <div style={divStyle}>
 
@@ -80,14 +99,12 @@ function AnnotationForm(props) {
                             </div>
 
                             <div style={labelStyle}>
-                                <label htmlFor="arglang">Language:</label>
+                                <label htmlFor="arglang" style={fullWidthStyle}>Language:</label>
                             </div>
 
                             <div>
                                 <select name="arglang" value={lidiaFields.arglang} onChange={handleChange} >
-                                    <option value="">(undefined)</option>
-                                    <option value="en">English</option>
-                                    <option value="nl">Dutch</option>
+                                    {languageRows}
                                 </select>
                             </div>
 
