@@ -1,5 +1,18 @@
 import React from 'react';
 import { useState } from "react";
+import { iso6393 } from "iso-639-3";
+
+let languageList = [];
+function getLanguageList() {
+    if (languageList.length > 0) {
+        return languageList;
+    } else {
+        languageList = iso6393.filter(
+            (obj) => { return obj.type === 'living' && typeof obj.iso6391 !== 'undefined' }
+        ).map(({ name, iso6393 }) => [iso6393, name]);
+        return languageList;
+    }
+}
 
 // This works because we're using esbuild?
 // Note: a SQLite file would be ~2.5 times smaller than this JSON
@@ -18,7 +31,6 @@ const AnnotationForm = (props) => {
      * customterm
      * description
      */
-
     const [lidiaFields, setLidiaFields] = useState({
         argcont: props.data.argcont,
         pagestart: props.data.pagestart,
@@ -79,6 +91,11 @@ const AnnotationForm = (props) => {
         width: '92%',
     }
 
+    const languageRows = [(<option value="">(undefined)</option>)];
+    for (language of getLanguageList()) {
+        languageRows.push(<option value={language[0]}>{language[0]} – {language[1]}</option>);
+    }
+
     return (
         <div style={divStyle}>
 
@@ -127,14 +144,12 @@ const AnnotationForm = (props) => {
                             </div>
 
                             <div style={labelStyle}>
-                                <label htmlFor="arglang">Language:</label>
+                                <label htmlFor="arglang" style={fullWidthStyle}>Language:</label>
                             </div>
 
                             <div>
                                 <select name="arglang" value={lidiaFields.arglang} onChange={handleChange} >
-                                    <option value="">(undefined)</option>
-                                    <option value="en">English</option>
-                                    <option value="nl">Dutch</option>
+                                    {languageRows}
                                 </select>
                             </div>
 
