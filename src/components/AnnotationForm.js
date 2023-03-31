@@ -21,6 +21,23 @@ const AnnotationForm = (props) => {
         description: props.data.description,
     });
 
+    // TODO: ungroup the subfields and duplicate terms across individual subfields
+    const subfields = ["All", "Syntax","Phonetics","Morphology","Phonology","Semantics","General","Phonology; Phonetics","Morphology; Syntax","Phonology; Morphology","Syntax; Semantics","Morphology; Semantics"];
+    const [lexiconTermSubfield, setLexiconTermSubfield] = useState("All");
+    const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(lexiconOfLinguistics);
+
+
+    const onLexiconTermSubfieldChange  = (event) => {
+        setLexiconTermSubfield(event.target.value);
+        if (event.target.value === "All") {
+            setFilteredLexiconTerms(lexiconOfLinguistics);
+        } else {
+            const _filteredLexiconTerms = lexiconOfLinguistics.filter((lexiconterm) => {
+                return lexiconterm.subfield === event.target.value;
+            });
+            setFilteredLexiconTerms(_filteredLexiconTerms);
+        }
+    }
 
     React.useEffect(() => {
         setLidiaFields(props.data)
@@ -103,8 +120,16 @@ const AnnotationForm = (props) => {
                             </div>
                             <div style={{margin: "5px"}}>
                                 <label style={{display: "block"}} htmlFor="lexiconterm">Lexicon term</label>
-                                <select name="lexiconterm" style={{display: "block"}} value={lidiaFields.lexiconterm || null} onChange={handleChange}>
-                                    {lexiconOfLinguistics.map((option) => (
+                                <select style={{margin: "0 5px 0 0"}} value={lexiconTermSubfield} onChange={onLexiconTermSubfieldChange}>
+                                    {subfields.map((subfield) => (
+                                        <option key={subfield} value={subfield}>
+                                            {subfield}
+                                        </option>
+                                        ))
+                                    }
+                                </select>
+                                <select name="lexiconterm" value={lidiaFields.lexiconterm || null} onChange={handleChange}>
+                                    {filteredLexiconTerms.map((option) => (
                                         <option key={option.key} value={option.lemma}>
                                             {option.term}
                                         </option>
