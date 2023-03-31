@@ -7,16 +7,26 @@ import lexiconOfLinguistics from './lexiconTerms.json';
 
 
 const AnnotationForm = (props) => {
-    // argname: lidiaArgumentName.label
-    // linglevel: lidiaLinguisticLevel.label
-    // arglang: lidiaArgumentLanguage.label
-    // lexiconterm: lidiaLexiconTerm.label
-    // description: lidiaArgumentDescription.label
+    /**
+     * argcont: disable the rest of the form
+     * pagestart
+     * pageend: for entire passage in case of multiple pages
+     * argname
+     * linglevel
+     * arglang
+     * lexiconterm
+     * customterm
+     * description
+     */
 
     const [lidiaFields, setLidiaFields] = useState({
+        argcont: props.data.argcont,
+        pagestart: props.data.pagestart,
+        pageend: props.data.pageend,
         argname: props.data.argname,
         linglevel: props.data.linglevel,
         lexiconterm: props.data.lexiconterm,
+        customterm: props.data.customterm,
         arglang: props.data.arglang,
         description: props.data.description,
     });
@@ -87,6 +97,19 @@ const AnnotationForm = (props) => {
                         <div style={{fontSize: 'x-small'}}>{props.annotationText}</div>
 
                         <div className='lidia-annotation' style={formStyle} >
+
+                            <div style={{marginTop: "1em", width: "92%"}}>
+                                <div style={{display: "inline-block", margin: "5px;"}}>
+                                    <label htmlFor="pagestart">Page start:</label>
+                                    <input type="text" name="pagestart" value={lidiaFields.pagestart} onChange={handleChange} />
+                                </div>
+
+                                <div style={{margin: "5px", width: "92%"}}>
+                                    <label htmlFor="pageend">Page end:</label>
+                                    <input type="text" name="pageend" value={lidiaFields.pageend} onChange={handleChange} />
+                                </div>
+                            </div>
+
                             <div style={labelStyle}>
                                 <label htmlFor="argname">Argument name:</label>
                             </div>
@@ -137,18 +160,23 @@ const AnnotationForm = (props) => {
                                 </select>
                             </div>
 
+                            <div>
+                                <label htmlFor="customterm" style={{marginTop: '5px'}}>Custom term:</label>
+                                <input type="text" style={fullWidthStyle} name="customterm" value={lidiaFields.customterm} onChange={handleChange} />
+                            </div>
+
                             <div style={labelStyle}>
                                 <label htmlFor="description">Short description:</label>
                             </div>
-
                             <div>
                                 <textarea name="description" style={fullWidthStyle} rows="5" value={lidiaFields.description} onChange={handleChange} />
                             </div>
-
-                            <div>
-                                <button type='submit'>Save</button>
-                            </div>
                         </div>
+
+                        <div>
+                            <button type='submit'>Save</button>
+                        </div>
+
                     </fieldset>
                 }
             </form>
