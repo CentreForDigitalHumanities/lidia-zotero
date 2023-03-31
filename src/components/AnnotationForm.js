@@ -1,14 +1,12 @@
 import React from 'react';
 import { useState } from "react";
 
-import SelectElement from "./SelectElement";
-
 // This works because we're using esbuild?
 // Note: a SQLite file would be ~2.5 times smaller than this JSON
 import lexiconOfLinguistics from './lexiconTerms.json';
 
 
-function AnnotationForm(props) {
+const AnnotationForm = (props) => {
     // argname: lidiaArgumentName.label
     // linglevel: lidiaLinguisticLevel.label
     // arglang: lidiaArgumentLanguage.label
@@ -101,7 +99,17 @@ function AnnotationForm(props) {
                             </div>
 
                             <div>
-                                <SelectElement name='lexiconterm' label="Lexicon term" value={lidiaFields.lexiconterm || null } options={lexiconOfLinguistics} handleChange={handleChange}/>
+
+                            </div>
+                            <div style={{margin: "5px"}}>
+                                <label style={{display: "block"}} htmlFor="lexiconterm">Lexicon term</label>
+                                <select name="lexiconterm" style={{display: "block"}} value={lidiaFields.lexiconterm || null} onChange={handleChange}>
+                                    {lexiconOfLinguistics.map((option) => (
+                                        <option key={option.key} value={option.lemma}>
+                                            {option.term}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
 
                             <div style={labelStyle}>
@@ -109,7 +117,7 @@ function AnnotationForm(props) {
                             </div>
 
                             <div>
-                                <textarea name="description" style={fullWidthStyle} type="textarea" rows="5" value={lidiaFields.description} onChange={handleChange} />
+                                <textarea name="description" style={fullWidthStyle} rows="5" value={lidiaFields.description} onChange={handleChange} />
                             </div>
 
                             <div>
