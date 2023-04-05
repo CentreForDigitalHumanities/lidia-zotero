@@ -6,23 +6,17 @@ import { LidiaPanel } from "./panel.js";
 
 
 window.Lidia = {
-    fields: [{
-        "id": "argname",
-        "label": "lidiaArgumentName.label",
-        "type": "input"
-    },{
-        "id": "linglevel",
-        "label": "lidiaLinguisticLevel.label",
-        "type": "input"
-    },{
-        "id": "arglang",
-        "label": "lidiaArgumentLanguage.label",
-        "type": "input"
-    },{
-        "id": "description",
-        "label": "lidiaArgumentDescription.label",
-        "type": "textarea"
-    }],
+    fields: [
+        {"id": "argcont", "label": "lidiaArgumentContinuation.label"}
+        , {"id": "argname", "label": "lidiaArgumentName.label"}
+        , {"id": "pagestart", "label": "lidiaPageStart.label"}
+        , {"id": "pageend", "label": "lidiaPageEnd.label"}
+        , {"id": "linglevel", "label": "lidiaLinguisticLevel.label"}
+        , {"id": "arglang", "label": "lidiaArgumentLanguage.label"}
+        , {"id": "articleterm", "label": "lidiaArticleTerm.label"}
+        , {"id": "lexiconterm", "label": "lidiaLexiconTerm.label"}
+        , {"id": "description","label": "lidiaArgumentDescription.label"}
+    ],
 
     async init(rootURI) {
         log('Initializing LIDIA extension (lib.js)');
