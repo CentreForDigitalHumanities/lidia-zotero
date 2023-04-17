@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { deserialize, serialize, getEmptyAnnotation } from "./serialize.js";
 import AnnotationForm from "./components/AnnotationForm";
 import PleaseSelect from "./components/PleaseSelect";
+import { getAllLidiaAnnotations } from "./relations.js";
 
 /* global window, document, Zotero, Lidia */
 
@@ -26,6 +27,7 @@ export class LidiaPanel {
      */
     async buildSideBarPanel() {
         log("Building LIDIA panel");
+        await getAllLidiaAnnotations();
         let tab = this.tab;
         if (!tab) {
             tab = document.createElement("tab");
@@ -100,13 +102,15 @@ export class LidiaPanel {
      * Load the annotation form with the current annotation properties.
      * TODO: lidiaData is no longer properly populated.
      */
-    loadAnnotationForm(disabled, external, annotationText, lidiaData) {
+    async loadAnnotationForm(disabled, external, annotationText, lidiaData) {
+        const annotations = await getAllLidiaAnnotations();
         this.formRoot.render(<AnnotationForm
                             disabled={disabled}
                             external={external}
                             annotationText={annotationText}
                             data={lidiaData}
                             onSave={this.onSaveAnnotation.bind(this)}
+                            annotations={annotations}
                         />);
     }
 
@@ -137,7 +141,7 @@ export class LidiaPanel {
      * deactivating the panel.
      * @param {DataObject} item - the selected Zotero item
      */
-    receiveAnnotation(item) {
+    async receiveAnnotation(item) {
         this.currentAnnotation = item;
         log('receiveAnnotation: 0')
         const external = item.annotationIsExternal;
