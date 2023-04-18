@@ -18,8 +18,6 @@ function getLanguageList() {
 // Note: a SQLite file would be ~2.5 times smaller than this JSON
 import lexiconOfLinguistics from './lexiconTerms.json';
 
-import { getAllLidiaAnnotations } from "../relations";
-
 const AnnotationForm = (props) => {
     /**
      * argcont: disable the rest of the form
