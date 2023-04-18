@@ -35,6 +35,7 @@ export async function getAllLidiaAnnotations(libraryID) {
                             );
                             if (annotationObj !== undefined) {
                                 annotationObj.documentTitle = item.getField('title')
+                                annotationObj.zoteroKey = item.key;
                                 lidiaAnnotations.push(annotationObj);
                             }
                         }

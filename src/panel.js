@@ -102,8 +102,8 @@ export class LidiaPanel {
      * Load the annotation form with the current annotation properties.
      * TODO: lidiaData is no longer properly populated.
      */
-    async loadAnnotationForm(disabled, external, annotationText, lidiaData) {
-        const annotations = await getAllLidiaAnnotations();
+    async loadAnnotationForm(disabled, external, annotationText, lidiaData,
+                             annotations) {
         this.formRoot.render(<AnnotationForm
                             disabled={disabled}
                             external={external}
@@ -157,7 +157,14 @@ export class LidiaPanel {
             this.currentAnnotationData = data;
             // this.activatePanel(data, item);
             log('receiveAnnotation: 1: loadAnnotationForm with data');
-            this.loadAnnotationForm(!editable, external, item.annotationText, data);
+            const annotations = await getAllLidiaAnnotations(item.libraryID);
+            this.loadAnnotationForm(
+                !editable,
+                external,
+                item.annotationText,
+                data,
+                annotations
+            );
         } else {
             // Data is undefined if it could not be parsed. Disable the
             // panel to prevent a non-LIDIA comment from being changed
