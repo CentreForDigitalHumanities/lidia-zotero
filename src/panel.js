@@ -37,17 +37,7 @@ export class LidiaPanel {
             this.tab = tab;
         }
 
-        let n = 0;
-        let tabContainer = document.getElementById(`${window.Zotero_Tabs._selectedID}-context`);
-        while (!tabContainer || !tabContainer.querySelector("tabbox")) {
-            if (n >= 500) {
-                log("Waiting for reader failed");
-                return;
-            }
-            await Zotero.Promise.delay(10);
-            n++;
-        }
-
+        const tabContainer = document.getElementById(`${window.Zotero_Tabs._selectedID}-context`);
         const tabbox = tabContainer.querySelector("tabbox");
         tabbox.querySelector("tabs").appendChild(tab);
 
