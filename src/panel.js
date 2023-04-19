@@ -44,26 +44,6 @@ export class LidiaPanel {
                 log("Waiting for reader failed");
                 return;
             }
-            // For attachments without parent item
-            if (tabContainer.querySelector("description")) {
-                tabContainer.innerHTML = "";
-                const tabbox = window.document.createElement("tabbox");
-                tabbox.className = "zotero-view-tabbox";
-                tabbox.setAttribute("flex", "1");
-
-                const tabs = window.document.createElement("tabs");
-                tabs.className = "zotero-editpane-tabs";
-                tabs.setAttribute("orient", "horizontal");
-                tabbox.append(tabs);
-
-                const tabpanels = window.document.createElement("tabpanels");
-                tabpanels.className = "zotero-view-item";
-                tabpanels.setAttribute("flex", "1");
-
-                tabbox.append(tabpanels);
-                tabContainer.append(tabbox);
-                break;
-            }
             await Zotero.Promise.delay(10);
             n++;
         }
