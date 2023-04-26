@@ -58,7 +58,7 @@ export function serialize(data) {
     let output = "~~~LIDIA~~~\n";
     const keys = Object.keys(data);
     for (const key of keys) {
-        const value = data[key].replace(/\n/g, '\\n');
+        const value = String(data[key]).replace(/\n/g, '\\n');
         output += key + " = " + value + "\n";
     }
     return output;
