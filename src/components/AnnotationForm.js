@@ -67,7 +67,9 @@ const AnnotationForm = (props) => {
 
 
     const handleChange = (event) => {
-        setLidiaFields({ ...lidiaFields, [event.target.name]: event.target.value });
+        setLidiaFields((prevState) => {
+            return { ...prevState, [event.target.name]: event.target.value }
+        });
     };
 
     const handleSubmit = (event) => {
@@ -76,7 +78,9 @@ const AnnotationForm = (props) => {
     }
 
     const handleToggleContinuation = (event) => {
-        setLidiaFields({ ...lidiaFields, "argcont": event.target.checked});
+        setLidiaFields((prevState) => {
+            return { ...prevState, "argcont": event.target.checked}
+        });
     }
 
     const divStyle = {

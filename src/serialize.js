@@ -22,7 +22,13 @@ export function deserialize(text) {
                     const value = line.substring(
                         separatorIndex + " = ".length
                     ).replace(/\\n/g, '\n');
-                    data[key] = value;
+                    if (key === "argcont") {
+                        // Make sure we pass a boolean and not a string. This
+                        // is not needed anymore when we move to JSON/YAML
+                        data[key] = (value === "true");
+                    } else {
+                        data[key] = value;
+                    }
                 }
             }
         }
