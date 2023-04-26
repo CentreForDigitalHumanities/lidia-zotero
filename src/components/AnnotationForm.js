@@ -100,12 +100,10 @@ const AnnotationForm = (props) => {
         <div style={divStyle}>
 
             <form onSubmit={handleSubmit}>
-
-                {!props.data &&
-                    <div className='external-annotation'>
-                        <p>External annotation</p>
-                    </div>
-                }
+                <div style={fullWidthStyle}>
+                    <input type="checkbox" id="continuation" name="continuation" />
+                    <label for="continuation">Annotation is continuation of previous argument</label>
+                </div>
 
                 {props.data &&
                     <fieldset style={fullWidthStyle} disabled={props.disabled}>
@@ -188,12 +186,13 @@ const AnnotationForm = (props) => {
                             </div>
                         </div>
 
-                        <div>
-                            <button type='submit'>Save</button>
-                        </div>
+
 
                     </fieldset>
                 }
+                <div>
+                    <button type='submit'>Save</button>
+                </div>
             </form>
         </div>
     );
