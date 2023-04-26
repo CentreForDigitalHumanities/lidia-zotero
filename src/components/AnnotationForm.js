@@ -75,6 +75,10 @@ const AnnotationForm = (props) => {
         props.onSave(lidiaFields);
     }
 
+    const handleToggleContinuation = (event) => {
+        setLidiaFields({ ...lidiaFields, "argcont": event.target.checked});
+    }
+
     const divStyle = {
         margin: '5px',
     };
@@ -101,12 +105,12 @@ const AnnotationForm = (props) => {
 
             <form onSubmit={handleSubmit}>
                 <div style={fullWidthStyle}>
-                    <input type="checkbox" id="continuation" name="continuation" />
+                    <input type="checkbox" id="continuation" name="continuation" checked={lidiaFields.argcont ? 1 : 0} onChange={handleToggleContinuation} disabled={(!props.previousAnnotationData) ? 1 : 0} />
                     <label for="continuation">Annotation is continuation of previous argument</label>
                 </div>
 
                 {props.data &&
-                    <fieldset style={fullWidthStyle} disabled={props.disabled}>
+                    <fieldset style={fullWidthStyle} disabled={lidiaFields.argcont}>
                         <div style={labelStyle}>Argument text:</div>
 
                         <div style={{fontSize: 'x-small'}}>{props.annotationText}</div>

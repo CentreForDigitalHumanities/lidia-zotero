@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { deserialize, serialize, getEmptyAnnotation } from "./serialize.js";
 import AnnotationForm from "./components/AnnotationForm";
 import PleaseSelect from "./components/PleaseSelect";
+import { getPreviousAnnotation } from "./continuation.js";
 
 /* global window, document, Zotero, Lidia */
 
@@ -70,12 +71,13 @@ export class LidiaPanel {
      * Load the annotation form with the current annotation properties.
      * TODO: lidiaData is no longer properly populated.
      */
-    loadAnnotationForm(disabled, external, annotationText, lidiaData) {
+    loadAnnotationForm(disabled, external, annotationText, lidiaData, previousAnnotationData) {
         this.formRoot.render(<AnnotationForm
                             disabled={disabled}
                             external={external}
                             annotationText={annotationText}
                             data={lidiaData}
+                            previousAnnotationData={previousAnnotationData}
                             onSave={this.onSaveAnnotation.bind(this)}
                         />);
     }
@@ -123,7 +125,13 @@ export class LidiaPanel {
             this.currentAnnotationData = data;
             // this.activatePanel(data, item);
             log('receiveAnnotation: 1: loadAnnotationForm with data');
-            this.loadAnnotationForm(!editable, external, item.annotationText, data);
+            const previousAnnotation = getPreviousAnnotation(item);
+            let previousAnnotationData = undefined;
+            if (previousAnnotation) {
+                previousAnnotationData = deserialize(previousAnnotation.annotationComment);
+            }
+            log('Previous annotation data: ' + previousAnnotationData);
+            this.loadAnnotationForm(!editable, external, item.annotationText, data, previousAnnotationData);
         } else {
             // Data is undefined if it could not be parsed. Disable the
             // panel to prevent a non-LIDIA comment from being changed
