@@ -1,3 +1,5 @@
+import { parse, stringify } from 'yaml';
+
 /* global window, Zotero, Lidia */
 
 /**
@@ -55,11 +57,7 @@ export function getEmptyAnnotation() {
  * @return {string} - a Zotero annotation comment
  */
 export function serialize(data) {
-    let output = "~~~LIDIA~~~\n";
-    const keys = Object.keys(data);
-    for (const key of keys) {
-        const value = data[key].replace(/\n/g, '\\n');
-        output += key + " = " + value + "\n";
-    }
+    let output = "~~~~LIDIA~~~~\n";
+    output += stringify(data);
     return output;
 }
