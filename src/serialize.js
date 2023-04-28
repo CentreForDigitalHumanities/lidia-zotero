@@ -1,3 +1,5 @@
+import { parse, stringify } from 'yaml';
+
 /* global window, Zotero, Lidia */
 
 /**
@@ -9,6 +11,7 @@
  */
 export function deserialize(text) {
     if (text.startsWith("~~~LIDIA~~~")) {
+        // Keep the old format for now for compatiblity reasons
         let lines = text.split("\n");
         let data = {}
         const fieldIds = Lidia.fields.map(obj => obj.id);
@@ -33,6 +36,8 @@ export function deserialize(text) {
             }
         }
         return data;
+    } else if (text.startsWith("~~~~LIDIA~~~~")) {
+        return parse(text.slice("~~~~LIDIA~~~~\n".length));
     } else {
         // Not a LIDIA annotation
         return undefined;
@@ -55,11 +60,7 @@ export function getEmptyAnnotation() {
  * @return {string} - a Zotero annotation comment
  */
 export function serialize(data) {
-    let output = "~~~LIDIA~~~\n";
-    const keys = Object.keys(data);
-    for (const key of keys) {
-        const value = data[key].replace(/\n/g, '\\n');
-        output += key + " = " + value + "\n";
-    }
+    let output = "~~~~LIDIA~~~~\n";
+    output += stringify(data);
     return output;
 }
