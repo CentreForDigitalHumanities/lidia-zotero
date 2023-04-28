@@ -11,6 +11,7 @@ import { parse, stringify } from 'yaml';
  */
 export function deserialize(text) {
     if (text.startsWith("~~~LIDIA~~~")) {
+        // Keep the old format for now for compatiblity reasons
         let lines = text.split("\n");
         let data = {}
         const fieldIds = Lidia.fields.map(obj => obj.id);
@@ -35,6 +36,8 @@ export function deserialize(text) {
             }
         }
         return data;
+    } else if (text.startsWith("~~~~LIDIA~~~~")) {
+        return parse(text.slice("~~~~LIDIA~~~~\n".length));
     } else {
         // Not a LIDIA annotation
         return undefined;
