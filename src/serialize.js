@@ -10,11 +10,12 @@ import { parse, stringify } from 'yaml';
  *                  does not represent a LIDIA annotation
  */
 export function deserialize(text) {
+    let lidiaObject = undefined;
+    const fieldIds = Lidia.fields.map(obj => obj.id);
     if (text.startsWith("~~~LIDIA~~~")) {
         // Keep the old format for now for compatiblity reasons
         let lines = text.split("\n");
         let data = {}
-        const fieldIds = Lidia.fields.map(obj => obj.id);
         for (const line of lines) {
             const separatorIndex = line.indexOf(" = ");
             if (separatorIndex !== -1) {
@@ -29,21 +30,29 @@ export function deserialize(text) {
                 }
             }
         }
+        lidiaObject = data;
+    } else if (text.startsWith("~~~~LIDIA~~~~")) {
+        // Simply use the YAML parser
+        lidiaObject = parse(text.slice("~~~~LIDIA~~~~\n".length));
+    }
+    if (typeof lidiaObject !== "undefined") {
         // If there are missing fields, assign an empty string to them
         for (const fieldId of fieldIds) {
-            if (typeof data[fieldId] === "undefined") {
-                data[fieldId] = '';
+            if (typeof lidiaObject[fieldId] === "undefined") {
+                lidiaObject[fieldId] = '';
             }
         }
-        return data;
-    } else if (text.startsWith("~~~~LIDIA~~~~")) {
-        return parse(text.slice("~~~~LIDIA~~~~\n".length));
+        return lidiaObject;
     } else {
         // Not a LIDIA annotation
         return undefined;
     }
 }
 
+/**
+ * Create a new LIDIA JavaScript object where all fields are empty
+ * @return {Object} - the empty LIDIA JavaScript object
+ */
 export function getEmptyAnnotation() {
     const fieldIds = Lidia.fields.map(obj => obj.id);
     const data = {};
