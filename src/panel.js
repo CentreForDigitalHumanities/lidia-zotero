@@ -72,9 +72,7 @@ export class LidiaPanel {
      * Load the annotation form with the current annotation properties.
      * TODO: lidiaData is no longer properly populated.
      */
-    async loadAnnotationForm(
-            disabled, external, item, lidiaData
-    ) {
+    async loadAnnotationForm(item, lidiaData) {
         const annotationText = item.annotationText;
         const annotations = await getAllLidiaAnnotations(item.libraryID);
         const previousAnnotation = getPreviousAnnotation(item);
@@ -83,8 +81,6 @@ export class LidiaPanel {
             previousAnnotationData = deserialize(previousAnnotation.annotationComment);
         }
         this.formRoot.render(<AnnotationForm
-                            disabled={disabled}
-                            external={external}
                             annotationText={annotationText}
                             data={lidiaData}
                             previousAnnotationData={previousAnnotationData}
@@ -136,12 +132,7 @@ export class LidiaPanel {
             this.currentAnnotationData = data;
             // this.activatePanel(data, item);
             log('receiveAnnotation: 1: loadAnnotationForm with data');
-            this.loadAnnotationForm(
-                !editable,
-                external,
-                item,
-                data
-            );
+            this.loadAnnotationForm(item, data);
         } else {
             // Data is undefined if it could not be parsed. Disable the
             // panel to prevent a non-LIDIA comment from being changed
@@ -215,7 +206,7 @@ export class LidiaPanel {
         }
         // this.activatePanel(data, item);
         log('convertToLidiaAnnotation: loadAnnotationForm');
-        this.loadAnnotationForm(false, false, item, data);
+        this.loadAnnotationForm(item, data);
     }
 
     /**
