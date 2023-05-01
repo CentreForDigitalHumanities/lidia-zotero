@@ -44,8 +44,6 @@ const AnnotationForm = (props) => {
         relationTo: props.data.relationTo,
     });
 
-    const [retainedLidiaFields, setRetainedLidiaFields] = useState(lidiaFields);
-
     // TODO: ungroup the subfields and duplicate terms across individual subfields
     const subfields = ["All", "Syntax","Phonetics","Morphology","Phonology","Semantics","General","Phonology; Phonetics","Morphology; Syntax","Phonology; Morphology","Syntax; Semantics","Morphology; Semantics"];
     const [lexiconTermSubfield, setLexiconTermSubfield] = useState("All");
