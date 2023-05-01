@@ -3,8 +3,11 @@ import { deserialize } from "./serialize.js";
 /* global window, document, Zotero, Lidia */
 
 /**
- * @param {ZoteroItem} item
- * @return {ZoteroItem}
+ * Return the annotation that comes before the specified annotation.
+ * If this is an annotation that itself is a continuation annotation,
+ * return the annotation before that.
+ * @param {ZoteroItem} item - the specified annotation
+ * @return {ZoteroItem} - the previous annotation
  */
 export function getPreviousAnnotation(item) {
     // Get all annotations in current document

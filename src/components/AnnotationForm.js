@@ -67,6 +67,11 @@ const AnnotationForm = (props) => {
     }, [props.data]);
 
     const getValue = (field) => {
+        // Get the value of a field that has to be displayed. In the case
+        // of a continued annotation, this is not the value in lidiaFields
+        // (which will be discarded when saving), but the value of the
+        // previous annotation, so that the user sees which annotation is
+        // being continued
         if (!lidiaFields.argcont) {
             return lidiaFields[field];
         } else {
@@ -79,7 +84,6 @@ const AnnotationForm = (props) => {
             }
         }
     }
-
 
     const handleChange = (event) => {
         setLidiaFields((prevState) => {
@@ -100,7 +104,9 @@ const AnnotationForm = (props) => {
 
     const dataWillBeOverwritten = () => {
         // If the annotation is set as an annotation while lidiaFields contains
-        // any other data, this data will not be saved and will be lost
+        // any other data, this data will not be saved and will be lost.
+        // This function is used to determine whether this warning should be
+        // shown.
         if (lidiaFields.argcont) {
             for (const [key, value] of Object.entries(lidiaFields)) {
                 if (key !== 'argcont' && value)
