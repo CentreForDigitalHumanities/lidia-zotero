@@ -18,7 +18,6 @@ function getLanguageList() {
 // Note: a SQLite file would be ~2.5 times smaller than this JSON
 import lexiconOfLinguistics from './lexiconTerms.json';
 
-
 const AnnotationForm = (props) => {
     /**
      * argcont: disable the rest of the form
@@ -41,6 +40,8 @@ const AnnotationForm = (props) => {
         customterm: props.data.customterm,
         arglang: props.data.arglang,
         description: props.data.description,
+        relationType: props.data.relationType,
+        relationTo: props.data.relationTo,
     });
 
     // TODO: ungroup the subfields and duplicate terms across individual subfields
@@ -94,6 +95,12 @@ const AnnotationForm = (props) => {
     const languageRows = [(<option value="">(undefined)</option>)];
     for (language of getLanguageList()) {
         languageRows.push(<option value={language[0]}>{language[0]} – {language[1]}</option>);
+    }
+
+    const annotationRefRows = [(<option value="">(none)</option>)];
+    for (let annotation of props.annotations) {
+        const display = annotation.documentTitle + ': ' + annotation.argname;
+        annotationRefRows.push(<option value={annotation.zoteroKey}>{display}</option>);
     }
 
     return (
@@ -185,6 +192,23 @@ const AnnotationForm = (props) => {
                             </div>
                             <div>
                                 <textarea name="description" style={fullWidthStyle} rows="5" value={lidiaFields.description} onChange={handleChange} />
+                            </div>
+
+                            <div style={labelStyle}>
+                                <label>Relation:</label>
+                            </div>
+                            <div>
+                                <select name="relationType" style={{margin: "0 5px 0 0"}} value={lidiaFields.relationType} onChange={handleChange}>
+                                    <option value="">(none)</option>
+                                    <option value="contradicts">Contradicts</option>
+                                    <option value="generalizes">Generalizes</option>
+                                    <option value="invalidates">Invalidates</option>
+                                    <option value="specialcase">Is a special case of</option>
+                                    <option value="supports">Supports</option>
+                                </select>
+                                <select name="relationTo" style={{margin: "0 5px 0 0"}} value={lidiaFields.relationTo} onChange={handleChange}>
+                                    {annotationRefRows}
+                                </select>
                             </div>
                         </div>
 
