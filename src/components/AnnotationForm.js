@@ -18,7 +18,6 @@ function getLanguageList() {
 // Note: a SQLite file would be ~2.5 times smaller than this JSON
 import lexiconOfLinguistics from './lexiconTerms.json';
 
-
 const AnnotationForm = (props) => {
     /**
      * argcont: disable the rest of the form
@@ -41,7 +40,11 @@ const AnnotationForm = (props) => {
         customterm: props.data.customterm,
         arglang: props.data.arglang,
         description: props.data.description,
+        relationType: props.data.relationType,
+        relationTo: props.data.relationTo,
     });
+
+    const [retainedLidiaFields, setRetainedLidiaFields] = useState(lidiaFields);
 
     // TODO: ungroup the subfields and duplicate terms across individual subfields
     const subfields = ["All", "Syntax","Phonetics","Morphology","Phonology","Semantics","General","Phonology; Phonetics","Morphology; Syntax","Phonology; Morphology","Syntax; Semantics","Morphology; Semantics"];
@@ -65,6 +68,20 @@ const AnnotationForm = (props) => {
         setLidiaFields(props.data)
     }, [props.data]);
 
+    const getValue = (field) => {
+        if (!lidiaFields.argcont) {
+            return lidiaFields[field];
+        } else {
+            if (typeof props.previousAnnotationData !== "undefined") {
+                return props.previousAnnotationData[field];
+            } else {
+                // Return empty value so that the form does not crash
+                // Note: this will not work well for booleans
+                return "";
+            }
+        }
+    }
+
 
     const handleChange = (event) => {
         setLidiaFields((prevState) => {
@@ -81,6 +98,20 @@ const AnnotationForm = (props) => {
         setLidiaFields((prevState) => {
             return { ...prevState, "argcont": event.target.checked}
         });
+    }
+
+    const dataWillBeOverwritten = () => {
+        // If the annotation is set as an annotation while lidiaFields contains
+        // any other data, this data will not be saved and will be lost
+        if (lidiaFields.argcont) {
+            for (const [key, value] of Object.entries(lidiaFields)) {
+                if (key !== 'argcont' && value)
+                    return true;
+            }
+            return false;
+        } else {
+            return false;
+        }
     }
 
     const divStyle = {
@@ -101,7 +132,14 @@ const AnnotationForm = (props) => {
 
     const languageRows = [(<option value="">(undefined)</option>)];
     for (language of getLanguageList()) {
+        // TODO: move out of function, because this happens with every render!
         languageRows.push(<option value={language[0]}>{language[0]} – {language[1]}</option>);
+    }
+
+    const annotationRefRows = [(<option value="">(none)</option>)];
+    for (let annotation of props.annotations) {
+        const display = annotation.documentTitle + ': ' + annotation.argname;
+        annotationRefRows.push(<option value={annotation.zoteroKey}>{display}</option>);
     }
 
     return (
@@ -124,12 +162,12 @@ const AnnotationForm = (props) => {
                             <div style={{marginTop: "1em", width: "92%"}}>
                                 <div style={{display: "inline-block", margin: "5px;"}}>
                                     <label htmlFor="pagestart">Page start:</label>
-                                    <input type="text" name="pagestart" value={lidiaFields.pagestart} onChange={handleChange} />
+                                    <input type="text" name="pagestart" value={getValue("pagestart")} onChange={handleChange} />
                                 </div>
 
                                 <div style={{margin: "5px", width: "92%"}}>
                                     <label htmlFor="pageend">Page end:</label>
-                                    <input type="text" name="pageend" value={lidiaFields.pageend} onChange={handleChange} />
+                                    <input type="text" name="pageend" value={getValue("pageend")} onChange={handleChange} />
                                 </div>
                             </div>
 
@@ -138,7 +176,7 @@ const AnnotationForm = (props) => {
                             </div>
 
                             <div>
-                                <input type="text" style={fullWidthStyle} name="argname" value={lidiaFields.argname} onChange={handleChange} />
+                                <input type="text" style={fullWidthStyle} name="argname" value={getValue("argname")} onChange={handleChange} />
                             </div>
 
                             <div style={labelStyle}>
@@ -146,7 +184,7 @@ const AnnotationForm = (props) => {
                             </div>
 
                             <div>
-                                <input type="text" style={fullWidthStyle} name="linglevel" value={lidiaFields.linglevel} onChange={handleChange} />
+                                <input type="text" style={fullWidthStyle} name="linglevel" value={getValue("linglevel")} onChange={handleChange} />
                             </div>
 
                             <div style={labelStyle}>
@@ -154,7 +192,7 @@ const AnnotationForm = (props) => {
                             </div>
 
                             <div>
-                                <select name="arglang" value={lidiaFields.arglang} onChange={handleChange} >
+                                <select name="arglang" value={getValue("arglang")} onChange={handleChange} >
                                     {languageRows}
                                 </select>
                             </div>
@@ -172,7 +210,7 @@ const AnnotationForm = (props) => {
                                         ))
                                     }
                                 </select>
-                                <select name="lexiconterm" value={lidiaFields.lexiconterm || null} onChange={handleChange}>
+                                <select name="lexiconterm" value={getValue("lexiconterm") || null} onChange={handleChange}>
                                     {filteredLexiconTerms.map((option) => (
                                         <option key={option.key} value={option.lemma}>
                                             {option.term}
@@ -183,14 +221,31 @@ const AnnotationForm = (props) => {
 
                             <div>
                                 <label htmlFor="customterm" style={{marginTop: '5px'}}>Custom term:</label>
-                                <input type="text" style={fullWidthStyle} name="customterm" value={lidiaFields.customterm} onChange={handleChange} />
+                                <input type="text" style={fullWidthStyle} name="customterm" value={getValue("customterm")} onChange={handleChange} />
                             </div>
 
                             <div style={labelStyle}>
                                 <label htmlFor="description">Short description:</label>
                             </div>
                             <div>
-                                <textarea name="description" style={fullWidthStyle} rows="5" value={lidiaFields.description} onChange={handleChange} />
+                                <textarea name="description" style={fullWidthStyle} rows="5" value={getValue("description")} onChange={handleChange} />
+                            </div>
+
+                            <div style={labelStyle}>
+                                <label>Relation:</label>
+                            </div>
+                            <div>
+                                <select name="relationType" style={{margin: "0 5px 0 0"}} value={getValue("relationType")} onChange={handleChange}>
+                                    <option value="">(none)</option>
+                                    <option value="contradicts">Contradicts</option>
+                                    <option value="generalizes">Generalizes</option>
+                                    <option value="invalidates">Invalidates</option>
+                                    <option value="specialcase">Is a special case of</option>
+                                    <option value="supports">Supports</option>
+                                </select>
+                                <select name="relationTo" style={{margin: "0 5px 0 0"}} value={getValue("relationTo")} onChange={handleChange}>
+                                    {annotationRefRows}
+                                </select>
                             </div>
                         </div>
 
@@ -200,6 +255,7 @@ const AnnotationForm = (props) => {
                 }
                 <div>
                     <button type='submit'>Save</button>
+                    { dataWillBeOverwritten() && <p><strong>Warning: saving will overwrite previously entered data!</strong></p> }
                 </div>
             </form>
         </div>

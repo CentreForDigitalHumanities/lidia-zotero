@@ -1,3 +1,5 @@
+import { deserialize } from "./serialize.js";
+
 /* global window, document, Zotero, Lidia */
 
 /**
@@ -40,9 +42,11 @@ export function getPreviousAnnotation(item) {
     found = false;
     for (; previousIndex >= 0; previousIndex--) {
         const previousItem = annotations[previousIndex];
-        // TODO: check if this item is a continuation; if so go back more
-        found = true;
-        break;
+        const data = deserialize(previousItem.annotationComment);
+        if (!data.argcont) {
+            found = true;
+            break;
+        }
     }
     if (found) {
         return annotations[previousIndex];
