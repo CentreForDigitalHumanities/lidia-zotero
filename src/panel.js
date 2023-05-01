@@ -27,7 +27,6 @@ export class LidiaPanel {
      */
     async buildSideBarPanel() {
         log("Building LIDIA panel");
-        await getAllLidiaAnnotations();
         let tab = this.tab;
         if (!tab) {
             tab = document.createElement("tab");
