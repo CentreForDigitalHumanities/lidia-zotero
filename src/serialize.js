@@ -76,7 +76,9 @@ export function getEmptyAnnotation() {
  */
 export function serialize(data) {
     let output = "~~~~LIDIA~~~~\n";
-    if (data.argcont) {
+    // If annotations have been imported but none have yet been converted to
+    // a LidiaAnnotation, data will be undefined  here
+    if (data && data.argcont) {
         data = {argcont: true}
     }
     output += stringify(data);
