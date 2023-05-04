@@ -4,7 +4,6 @@ function PleaseSelect(props) {
     const handleConvert = (event) => {
         props.onConvert();
     };
-    log('Pleeeease');
 
     const divStyle = {
         margin: '5px',

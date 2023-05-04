@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from 'react-dom/client';
 
-import { deserialize, serialize, getEmptyAnnotation } from "./serialize.js";
+import { deserialize, getEmptyAnnotation, serialize } from "./serialize.js";
 import AnnotationForm from "./components/AnnotationForm";
 import PleaseSelect from "./components/PleaseSelect";
 import { getPreviousAnnotation } from "./continuation.js";
@@ -54,8 +54,8 @@ export class LidiaPanel {
             panel.append(hbox);
             let formContainer = createHElement("div");
             formContainer.setAttribute("id", "lidia-annotation-form");
-            let formRoot = createRoot(formContainer); // createRoot should be used only once per element
-            this.formRoot = formRoot;
+            // createRoot should be used only once per element
+            this.formRoot = createRoot(formContainer);
             hbox.append(formContainer);
             this.tabPanel = panel;
             this.formRoot.render(<PleaseSelect status="noselection" />);
@@ -70,7 +70,6 @@ export class LidiaPanel {
 
     /**
      * Load the annotation form with the current annotation properties.
-     * TODO: lidiaData is no longer properly populated.
      */
     async loadAnnotationForm(item, lidiaData) {
         const annotationText = item.annotationText;
@@ -119,8 +118,6 @@ export class LidiaPanel {
     async receiveAnnotation(item) {
         this.currentAnnotation = item;
         log('receiveAnnotation: 0')
-        const external = item.annotationIsExternal;
-        const editable = item.isEditable();
         let data;
         if (item.annotationComment) {
             data = deserialize(item.annotationComment);
@@ -129,14 +126,11 @@ export class LidiaPanel {
             data = getEmptyAnnotation();
         }
         if (data !== undefined) {
-            this.currentAnnotationData = data;
-            // this.activatePanel(data, item);
             log('receiveAnnotation: 1: loadAnnotationForm with data');
-            this.loadAnnotationForm(item, data);
+            await this.loadAnnotationForm(item, data);
         } else {
             // Data is undefined if it could not be parsed. Disable the
             // panel to prevent a non-LIDIA comment from being changed
-            this.currentAnnotationData = undefined;
             this.disablePanel(item);
             log('receiveAnnotation: 2: loadAnnotationForm undefined');
         }
@@ -146,14 +140,12 @@ export class LidiaPanel {
      * Serialize contents of the form and save to database
      */
     onSaveAnnotation(lidiaData) {
-        if (this.currentAnnotation == undefined) {
+        if (this.currentAnnotation === undefined) {
             // Since this method is bound via React component, this should never happen?
             log('onSaveAnnotation: no currentAnnotation');
-            return;
         } else {
             log('onSaveAnnotation: ' + lidiaData.toString());
-            const serialized = serialize(lidiaData);
-            this.currentAnnotation.annotationComment = serialized;
+            this.currentAnnotation.annotationComment = serialize(lidiaData);
             this.currentAnnotation.saveTx();
         }
     }
@@ -170,8 +162,7 @@ export class LidiaPanel {
             data[field.id] =
                 window.document.getElementById("lidia-" + field.id).value;
         }
-        const serialized = serialize(data);
-        item.annotationComment = serialized;
+        item.annotationComment = serialize(data);
         await item.saveTx();
     }
 
@@ -182,10 +173,10 @@ export class LidiaPanel {
     async convertToLidiaAnnotation() {
         const item = this.currentAnnotation;
         /* The items we want to convert have the argument ID on the first
-            * line and the description on the second, but after they are
-            * imported into Zotero the newline is (apparently) replaced
-            * by a space...
-            */
+         * line and the description on the second, but after they are
+         * imported into Zotero the newline is (apparently) replaced
+         * by a space...
+         */
         const separatorIndex = item.annotationComment.indexOf(" ");
         let data;
         if (separatorIndex !== -1) {
@@ -204,9 +195,8 @@ export class LidiaPanel {
                 description: item.annotationComment
             };
         }
-        // this.activatePanel(data, item);
         log('convertToLidiaAnnotation: loadAnnotationForm');
-        this.loadAnnotationForm(item, data);
+        await this.loadAnnotationForm(item, data);
     }
 
     /**

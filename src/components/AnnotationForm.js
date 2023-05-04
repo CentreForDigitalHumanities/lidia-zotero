@@ -152,7 +152,7 @@ const AnnotationForm = (props) => {
             <form onSubmit={handleSubmit}>
                 <div style={fullWidthStyle}>
                     <input type="checkbox" id="continuation" name="continuation" checked={lidiaFields.argcont ? 1 : 0} onChange={handleToggleContinuation} disabled={(!props.previousAnnotationData) ? 1 : 0} />
-                    <label for="continuation">Annotation is continuation of previous argument</label>
+                    <label htmlFor="continuation">Annotation is continuation of previous argument</label>
                 </div>
 
                 {props.data &&
