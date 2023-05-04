@@ -26,7 +26,13 @@ export function deserialize(text) {
                     const value = line.substring(
                         separatorIndex + " = ".length
                     ).replace(/\\n/g, '\n');
-                    data[key] = value;
+                    if (key === "argcont") {
+                        // Make sure we pass a boolean and not a string. This
+                        // is not needed anymore when we move to JSON/YAML
+                        data[key] = (value === "true");
+                    } else {
+                        data[key] = value;
+                    }
                 }
             }
         }
@@ -70,6 +76,11 @@ export function getEmptyAnnotation() {
  */
 export function serialize(data) {
     let output = "~~~~LIDIA~~~~\n";
+    // If annotations have been imported but none have yet been converted to
+    // a LidiaAnnotation, data will be undefined  here
+    if (data && data.argcont) {
+        data = {argcont: true}
+    }
     output += stringify(data);
     return output;
 }

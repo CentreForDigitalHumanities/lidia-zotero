@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { deserialize, serialize, getEmptyAnnotation } from "./serialize.js";
 import AnnotationForm from "./components/AnnotationForm";
 import PleaseSelect from "./components/PleaseSelect";
+import { getPreviousAnnotation } from "./continuation.js";
 import { getAllLidiaAnnotations } from "./relations.js";
 
 /* global window, document, Zotero, Lidia */
@@ -71,13 +72,18 @@ export class LidiaPanel {
      * Load the annotation form with the current annotation properties.
      * TODO: lidiaData is no longer properly populated.
      */
-    async loadAnnotationForm(disabled, external, annotationText, lidiaData,
-                             annotations) {
+    async loadAnnotationForm(item, lidiaData) {
+        const annotationText = item.annotationText;
+        const annotations = await getAllLidiaAnnotations(item.libraryID);
+        const previousAnnotation = getPreviousAnnotation(item);
+        let previousAnnotationData = undefined;
+        if (previousAnnotation) {
+            previousAnnotationData = deserialize(previousAnnotation.annotationComment);
+        }
         this.formRoot.render(<AnnotationForm
-                            disabled={disabled}
-                            external={external}
                             annotationText={annotationText}
                             data={lidiaData}
+                            previousAnnotationData={previousAnnotationData}
                             onSave={this.onSaveAnnotation.bind(this)}
                             annotations={annotations}
                         />);
@@ -126,14 +132,7 @@ export class LidiaPanel {
             this.currentAnnotationData = data;
             // this.activatePanel(data, item);
             log('receiveAnnotation: 1: loadAnnotationForm with data');
-            const annotations = await getAllLidiaAnnotations(item.libraryID);
-            this.loadAnnotationForm(
-                !editable,
-                external,
-                item.annotationText,
-                data,
-                annotations
-            );
+            this.loadAnnotationForm(item, data);
         } else {
             // Data is undefined if it could not be parsed. Disable the
             // panel to prevent a non-LIDIA comment from being changed
@@ -207,7 +206,7 @@ export class LidiaPanel {
         }
         // this.activatePanel(data, item);
         log('convertToLidiaAnnotation: loadAnnotationForm');
-        this.loadAnnotationForm(false, false, item.annotationText, data);
+        this.loadAnnotationForm(item, data);
     }
 
     /**
