@@ -103,7 +103,7 @@ const AnnotationForm = (props) => {
     }
 
     const dataWillBeOverwritten = () => {
-        // If the annotation is set as an annotation while lidiaFields contains
+        // If the annotation is set as a continuation while lidiaFields contains
         // any other data, this data will not be saved and will be lost.
         // This function is used to determine whether this warning should be
         // shown.
