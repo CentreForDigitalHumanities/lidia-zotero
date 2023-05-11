@@ -76,7 +76,9 @@ export class LidiaPanel {
         const publication = item.parentItem.parentItem;
         const extra = publication.getField("extra");
         const defaultValues = getLidiaDefaults(extra);
-        // log(JSON.stringify(defaultValues));;
+        if (lidiaData.hasOwnProperty('arglang') && lidiaData.arglang === '' && defaultValues.arglang) {
+            lidiaData = {...lidiaData, arglang: defaultValues.arglang};
+        }
         const annotationText = item.annotationText;
         const annotations = await getAllLidiaAnnotations(item.libraryID);
         const previousAnnotation = getPreviousAnnotation(item);
@@ -84,6 +86,7 @@ export class LidiaPanel {
         if (previousAnnotation) {
             previousAnnotationData = deserialize(previousAnnotation.annotationComment);
         }
+        // TODO: defaults can be removed when default subfield/linglevel is added to lidiaData
         this.formRoot.render(<AnnotationForm
                             annotationText={annotationText}
                             data={lidiaData}

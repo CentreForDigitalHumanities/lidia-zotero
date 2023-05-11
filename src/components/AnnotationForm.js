@@ -14,9 +14,12 @@ function getLanguageList() {
     }
 }
 
-const languageRows = [(<option value="">(undefined)</option>)];
+// Add "unspecified" to allow not making a choice, otherwise a
+// provided default value is always saved.
+const languageRows = [(<option key="none" value=""></option>)];
+languageRows.push(<option key="unspecified" value={"unspecified"}>[Not specified]</option>);
 for (language of getLanguageList()) {
-    languageRows.push(<option value={language[0]}>{language[0]} – {language[1]}</option>);
+    languageRows.push(<option key={language[0]} value={language[0]}>{language[0]} – {language[1]}</option>);
 }
 
 // This works because we're using esbuild?
