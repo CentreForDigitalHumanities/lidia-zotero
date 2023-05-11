@@ -14,6 +14,11 @@ function getLanguageList() {
     }
 }
 
+const languageRows = [(<option value="">(undefined)</option>)];
+for (language of getLanguageList()) {
+    languageRows.push(<option value={language[0]}>{language[0]} – {language[1]}</option>);
+}
+
 // This works because we're using esbuild?
 // Note: a SQLite file would be ~2.5 times smaller than this JSON
 import lexiconOfLinguistics from './lexiconTerms.json';
@@ -136,12 +141,6 @@ const AnnotationForm = (props) => {
 
     const fullWidthStyle = {
         width: '92%',
-    }
-
-    const languageRows = [(<option value="">(undefined)</option>)];
-    for (language of getLanguageList()) {
-        // TODO: move out of function, because this happens with every render!
-        languageRows.push(<option value={language[0]}>{language[0]} – {language[1]}</option>);
     }
 
     const annotationRefRows = [(<option value="">(none)</option>)];
