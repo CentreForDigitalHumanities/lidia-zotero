@@ -46,7 +46,7 @@ export function getPreviousAnnotation(item) {
     for (; previousIndex >= 0; previousIndex--) {
         const previousItem = annotations[previousIndex];
         const data = deserialize(previousItem.annotationComment);
-        if (!data.argcont) {
+        if (data && !data.argcont) {
             found = true;
             break;
         }
