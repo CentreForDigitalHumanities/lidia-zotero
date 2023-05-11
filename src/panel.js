@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from 'react-dom/client';
 
-import { deserialize, getEmptyAnnotation, serialize } from "./serialize.js";
+import { deserialize, getEmptyAnnotation, getLidiaDefaults, serialize } from "./serialize.js";
 import AnnotationForm from "./components/AnnotationForm";
 import PleaseSelect from "./components/PleaseSelect";
 import { getPreviousAnnotation } from "./continuation.js";
@@ -72,6 +72,11 @@ export class LidiaPanel {
      * Load the annotation form with the current annotation properties.
      */
     async loadAnnotationForm(item, lidiaData) {
+        // We already assume a pdfItem must have a bibliographic parent item
+        const publication = item.parentItem.parentItem;
+        const extra = publication.getField("extra");
+        const defaultValues = getLidiaDefaults(extra);
+        // log(JSON.stringify(defaultValues));;
         const annotationText = item.annotationText;
         const annotations = await getAllLidiaAnnotations(item.libraryID);
         const previousAnnotation = getPreviousAnnotation(item);
@@ -82,6 +87,7 @@ export class LidiaPanel {
         this.formRoot.render(<AnnotationForm
                             annotationText={annotationText}
                             data={lidiaData}
+                            defaults={defaultValues}
                             previousAnnotationData={previousAnnotationData}
                             onSave={this.onSaveAnnotation.bind(this)}
                             annotations={annotations}

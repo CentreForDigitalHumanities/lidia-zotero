@@ -44,9 +44,13 @@ const AnnotationForm = (props) => {
         relationTo: props.data.relationTo,
     });
 
+    // TODO: default values aren´t checked to be valid
+    const defaultArgLang = props.defaults.arglang || null;
+    const defaultArgLevel = props.defaults.arglevel || null;
+
     // TODO: ungroup the subfields and duplicate terms across individual subfields
     const subfields = ["All", "Syntax","Phonetics","Morphology","Phonology","Semantics","General","Phonology; Phonetics","Morphology; Syntax","Phonology; Morphology","Syntax; Semantics","Morphology; Semantics"];
-    const [lexiconTermSubfield, setLexiconTermSubfield] = useState("All");
+    const [lexiconTermSubfield, setLexiconTermSubfield] = useState(defaultArgLevel || "All");
     const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(lexiconOfLinguistics);
 
 
