@@ -2,6 +2,9 @@ import React from 'react';
 import { useState } from "react";
 import { iso6393 } from "iso-639-3";
 
+import LexiconTermField from './LexiconTermField';
+import LexiconTermList from './LexiconTermList';
+
 let languageList = [];
 function getLanguageList() {
     if (languageList.length > 0) {
@@ -84,6 +87,11 @@ const AnnotationForm = (props) => {
         // (which will be discarded when saving), but the value of the
         // previous annotation, so that the user sees which annotation is
         // being continued
+
+        if (field === 'lexiconterm') {
+            log('Lexicon term in annotation form: ' + lidiaFields[field])
+            log(JSON.stringify(props.data));
+        }
         if (!lidiaFields.argcont) {
             return lidiaFields[field];
         } else {
@@ -111,6 +119,13 @@ const AnnotationForm = (props) => {
     const handleToggleContinuation = (event) => {
         setLidiaFields((prevState) => {
             return { ...prevState, "argcont": event.target.checked}
+        });
+    }
+
+    const handleLexiconTermChange = (data) => {
+        log('Change!\n' + JSON.stringify(data));
+        setLidiaFields((prevState) => {
+            return { ...prevState, "lexiconterm": data}
         });
     }
 
@@ -207,32 +222,10 @@ const AnnotationForm = (props) => {
                                 </select>
                             </div>
 
-                            <div>
-
-                            </div>
-                            <div style={{margin: "5px"}}>
-                                <label style={{display: "block"}} htmlFor="lexiconterm">Lexicon term</label>
-                                <select style={{margin: "0 5px 0 0"}} value={lexiconTermSubfield} onChange={onLexiconTermSubfieldChange}>
-                                    {subfields.map((subfield) => (
-                                        <option key={subfield} value={subfield}>
-                                            {subfield}
-                                        </option>
-                                        ))
-                                    }
-                                </select>
-                                <select name="lexiconterm" value={getValue("lexiconterm") || null} onChange={handleChange}>
-                                    {filteredLexiconTerms.map((option) => (
-                                        <option key={option.key} value={option.lemma}>
-                                            {option.term}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label htmlFor="customterm" style={{marginTop: '5px'}}>Custom term:</label>
-                                <input type="text" style={fullWidthStyle} name="customterm" value={getValue("customterm")} onChange={handleChange} />
-                            </div>
+                            <LexiconTermField
+                              value={getValue('lexiconterm')}
+                              onChange={handleLexiconTermChange}
+                            />
 
                             <div style={labelStyle}>
                                 <label htmlFor="description">Short description:</label>
@@ -257,6 +250,7 @@ const AnnotationForm = (props) => {
                                     {annotationRefRows}
                                 </select>
                             </div>
+
                         </div>
 
 
