@@ -1,5 +1,4 @@
 import React from "react";
-import {createRoot} from "react-dom/client";
 
 import { LidiaPanel } from "./panel.js";
 /* global window, Zotero */

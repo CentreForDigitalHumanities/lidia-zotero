@@ -14,6 +14,14 @@ function getLanguageList() {
     }
 }
 
+// Add "unspecified" to allow not making a choice, otherwise a
+// provided default value is always saved.
+const languageRows = [(<option key="none" value=""></option>)];
+languageRows.push(<option key="unspecified" value={"unspecified"}>[Not specified]</option>);
+for (language of getLanguageList()) {
+    languageRows.push(<option key={language[0]} value={language[0]}>{language[0]} – {language[1]}</option>);
+}
+
 // This works because we're using esbuild?
 // Note: a SQLite file would be ~2.5 times smaller than this JSON
 import lexiconOfLinguistics from './lexiconTerms.json';
@@ -44,9 +52,13 @@ const AnnotationForm = (props) => {
         relationTo: props.data.relationTo,
     });
 
+    // TODO: default values aren´t checked to be valid
+    const defaultArgLang = props.defaults.arglang || null;
+    const defaultArgLevel = props.defaults.arglevel || null;
+
     // TODO: ungroup the subfields and duplicate terms across individual subfields
     const subfields = ["All", "Syntax","Phonetics","Morphology","Phonology","Semantics","General","Phonology; Phonetics","Morphology; Syntax","Phonology; Morphology","Syntax; Semantics","Morphology; Semantics"];
-    const [lexiconTermSubfield, setLexiconTermSubfield] = useState("All");
+    const [lexiconTermSubfield, setLexiconTermSubfield] = useState(defaultArgLevel || "All");
     const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(lexiconOfLinguistics);
 
 
@@ -134,12 +146,6 @@ const AnnotationForm = (props) => {
         width: '92%',
     }
 
-    const languageRows = [(<option value="">(undefined)</option>)];
-    for (language of getLanguageList()) {
-        // TODO: move out of function, because this happens with every render!
-        languageRows.push(<option value={language[0]}>{language[0]} – {language[1]}</option>);
-    }
-
     const annotationRefRows = [(<option value="">(none)</option>)];
     for (let annotation of props.annotations) {
         const display = annotation.documentTitle + ': ' + annotation.argname;
@@ -152,7 +158,7 @@ const AnnotationForm = (props) => {
             <form onSubmit={handleSubmit}>
                 <div style={fullWidthStyle}>
                     <input type="checkbox" id="continuation" name="continuation" checked={lidiaFields.argcont ? 1 : 0} onChange={handleToggleContinuation} disabled={(!props.previousAnnotationData) ? 1 : 0} />
-                    <label for="continuation">Annotation is continuation of previous argument</label>
+                    <label htmlFor="continuation">Annotation is continuation of previous argument</label>
                 </div>
 
                 {props.data &&

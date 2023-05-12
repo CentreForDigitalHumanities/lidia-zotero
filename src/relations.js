@@ -20,13 +20,13 @@ export async function getAllLidiaAnnotations(libraryID) {
     s.addCondition('recursive', 'true');
     const itemIDs = await s.search();
     const items = await Zotero.Items.getAsync(itemIDs);
-    const lidiaAnnotations = new Array();
+    const lidiaAnnotations = [];
     for (const item of items) {
         if (item.isRegularItem()) {
             let attachmentIDs = item.getAttachments();
             for (let id of attachmentIDs) {
                 let attachment = Zotero.Items.get(id);
-                if (attachment.attachmentContentType == 'application/pdf') {
+                if (attachment.attachmentContentType === 'application/pdf') {
                     let annotations = attachment.getAnnotations();
                     for (let annotation of annotations) {
                         if (annotation.annotationComment) {

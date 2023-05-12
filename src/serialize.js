@@ -84,3 +84,22 @@ export function serialize(data) {
     output += stringify(data);
     return output;
 }
+
+
+/**
+ * Extract default values from the publication's "Extra" field.
+ * This field is normally used for storing extra citation style fields
+ * https://www.zotero.org/support/kb/item_types_and_fields#citing_fields_from_extra
+ * @param {string} - the "extra" field text of a Zotero item
+ * @return {Object} - default values object.
+ */
+export function getLidiaDefaults(extraText) {
+    const lidiaLines = extraText.split("\n").filter(line => line.startsWith("lidia."));
+    const defaultValues = {}
+    for (const line of lidiaLines) {
+        const [k, v] = line.replace(/^lidia\./, '').split(": ");
+        if (k && v) { defaultValues[k] = v}
+    }
+
+    return defaultValues;
+}
