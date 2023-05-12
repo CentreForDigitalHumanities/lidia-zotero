@@ -251,6 +251,12 @@ const AnnotationForm = (props) => {
                                 </select>
                             </div>
 
+                            <div style={labelStyle}>
+                                <label>Other terms:</label>
+                            </div>
+
+                            <LexiconTermList />
+
                         </div>
 
 
