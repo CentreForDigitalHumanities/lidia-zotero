@@ -10,6 +10,9 @@ import { parse, stringify } from 'yaml';
  *                  does not represent a LIDIA annotation
  */
 export function deserialize(text) {
+    if (typeof text === "undefined" || text === null) {
+        return undefined;
+    }
     let lidiaObject = undefined;
     const fieldIds = Lidia.fields.map(obj => obj.id);
     if (text.startsWith("~~~LIDIA~~~")) {

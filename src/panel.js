@@ -187,7 +187,7 @@ export class LidiaPanel {
          * by a space...
          */
         const separatorIndex = item.annotationComment.indexOf(" ");
-        let data;
+        let data = getEmptyAnnotation();
         if (separatorIndex !== -1) {
             let argname = item.annotationComment.substring(
                 0, separatorIndex
@@ -198,11 +198,10 @@ export class LidiaPanel {
             const description = item.annotationComment.substring(
                 separatorIndex + 1
             );
-            data = {argname, description};
+            data.argname = argname;
+            data.description = description;
         } else {
-            data = {
-                description: item.annotationComment
-            };
+            data.description = item.annotationComment;
         }
         log('convertToLidiaAnnotation: loadAnnotationForm');
         await this.loadAnnotationForm(item, data);

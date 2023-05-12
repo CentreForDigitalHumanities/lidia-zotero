@@ -16,8 +16,7 @@ function getLanguageList() {
 
 // Add "unspecified" to allow not making a choice, otherwise a
 // provided default value is always saved.
-const languageRows = [(<option key="none" value=""></option>)];
-languageRows.push(<option key="unspecified" value={"unspecified"}>[Not specified]</option>);
+const languageRows = [<option key="unspecified" value={"unspecified"}>[Not specified]</option>];
 for (language of getLanguageList()) {
     languageRows.push(<option key={language[0]} value={language[0]}>{language[0]} – {language[1]}</option>);
 }
