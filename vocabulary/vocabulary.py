@@ -1,24 +1,34 @@
 import csv
+import os
+import pathlib
 from urllib.parse import urlparse, parse_qs
 import sqlite3
 import json
 
 
+PROJROOT = pathlib.Path(__file__).parents[1].resolve()
+
 def dict_factory(cursor, row):
     fields = [column[0] for column in cursor.description]
     return {key: value for key, value in zip(fields, row)}
 
-conn = sqlite3.connect('vocabulary.db')
+conn = sqlite3.connect(os.path.join(PROJROOT, 'vocabulary', 'vocabulary.db'))
 conn.row_factory = dict_factory
 cur = conn.cursor()
 
 
-def process_lexicon(input_file):
+def process_lexicon():
     cur.execute('DROP TABLE IF EXISTS lexicon;')
     cur.execute('CREATE TABLE lexicon (lemma TEXT, lemmacode TEXT, term TEXT, subfields JSON);')
     text_columns = ['reference', 'term', 'url', 'subfields']
-    with open(input_file, 'r') as f:
+    with open(os.path.join(PROJROOT, 'vocabulary', 'lexicon.tsv'), 'r') as f:
         reader = csv.DictReader(f, fieldnames=text_columns, delimiter='\t')
+        cur.execute("""
+            INSERT INTO lexicon (lemma, lemmacode, term, subfields)
+            VALUES (?, ?, ?, ?)
+            ;""",
+            (None, None, '[Custom]', '["General", "Morphology", "Phonetics", "Phonology", "Semantics", "Syntax"]')
+            )
         for row in reader:
             parsed = urlparse(row['url'])
             query_params = parse_qs(parsed.query)
@@ -35,21 +45,14 @@ def vocabulary_tojson():
     # A unique id is needed to use JSX directly inside .map().
     res = cur.execute("""
         SELECT ROW_NUMBER() OVER (ORDER BY lower(term) ASC) AS "key",
-         linglevel.value AS linglevel, lemma, lemmacode, term
+         linglevel.value AS subfield, lemma, lemmacode, term
         FROM lexicon, json_each(subfields) AS linglevel
         ORDER BY lower(term) ASC;
         """)
-
-    # Prepend a default value for the annotation form
-    terms = [
-    {'key': 0,
-    'linglevel': None,
-    'lemma': None,
-    'lemmacode': None},
-    'term': '[None]'
-    ]
-
-    terms += res.fetchall()
-
-    with open('vocabulary.json', 'w') as outfile:
+    terms = res.fetchall()
+    with open(os.path.join(PROJROOT, 'vocabulary', 'vocabulary.json'), 'w') as outfile:
         json.dump(terms, outfile, indent=2)
+
+
+process_lexicon()
+vocabulary_tojson()

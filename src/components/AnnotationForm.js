@@ -24,7 +24,7 @@ for (language of getLanguageList()) {
 
 // This works because we're using esbuild?
 // Note: a SQLite file would be ~2.5 times smaller than this JSON
-import lexiconOfLinguistics from './lexiconTerms.json';
+import vocabularyTerms from '../../vocabulary/vocabulary.json';
 
 const AnnotationForm = (props) => {
     /**
@@ -57,17 +57,17 @@ const AnnotationForm = (props) => {
     const defaultArgLevel = props.defaults.arglevel || null;
 
     // TODO: ungroup the subfields and duplicate terms across individual subfields
-    const subfields = ["All", "Syntax","Phonetics","Morphology","Phonology","Semantics","General","Phonology; Phonetics","Morphology; Syntax","Phonology; Morphology","Syntax; Semantics","Morphology; Semantics"];
+    const subfields = ["All", "General", "Morphology", "Phonetics", "Phonology", "Semantics", "Syntax"];
     const [lexiconTermSubfield, setLexiconTermSubfield] = useState(defaultArgLevel || "All");
-    const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(lexiconOfLinguistics);
+    const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(vocabularyTerms);
 
 
     const onLexiconTermSubfieldChange  = (event) => {
         setLexiconTermSubfield(event.target.value);
         if (event.target.value === "All") {
-            setFilteredLexiconTerms(lexiconOfLinguistics);
+            setFilteredLexiconTerms(vocabularyTerms);
         } else {
-            const _filteredLexiconTerms = lexiconOfLinguistics.filter((lexiconterm) => {
+            const _filteredLexiconTerms = vocabularyTerms.filter((lexiconterm) => {
                 return lexiconterm.subfield === event.target.value;
             });
             setFilteredLexiconTerms(_filteredLexiconTerms);
