@@ -42,9 +42,22 @@ export function deserialize(text) {
         lidiaObject = parse(text.slice("~~~~LIDIA~~~~\n".length));
     }
     if (typeof lidiaObject !== "undefined") {
-        // If there are missing fields, assign an empty string to them
+        // If there are missing fields, give them initial empty values
+        // This is necessary because fields have been added
         for (const fieldId of fieldIds) {
-            if (typeof lidiaObject[fieldId] === "undefined") {
+            log(fieldId + ': ' + lidiaObject[fieldId]);
+            if (
+                (fieldId === "lexiconterm" || fieldId === "otherterm") &&
+                (lidiaObject[fieldId] === "" ||
+                typeof lidiaObject[fieldId] === "undefined")
+            ) {
+                lidiaObject[fieldId] = {
+                    linglevel: "",
+                    lexiconterm: "",
+                    customterm: ""
+                };
+                log('Leeggemaakt.');
+            } else if (typeof lidiaObject[fieldId] === "undefined") {
                 lidiaObject[fieldId] = '';
             }
         }
@@ -60,11 +73,8 @@ export function deserialize(text) {
  * @return {Object} - the empty LIDIA JavaScript object
  */
 export function getEmptyAnnotation() {
-    const fieldIds = Lidia.fields.map(obj => obj.id);
-    const data = {};
-    for (const fieldId of fieldIds) {
-        data[fieldId] = '';
-    }
+    const data = deserialize(serialize({}));
+    log("Created empty annotation data:\n" + JSON.stringify(data));
     return data;
 }
 

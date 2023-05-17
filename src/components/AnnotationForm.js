@@ -46,8 +46,8 @@ const AnnotationForm = (props) => {
         pagestart: props.data.pagestart,
         pageend: props.data.pageend,
         argname: props.data.argname,
-        linglevel: props.data.linglevel,
         lexiconterm: props.data.lexiconterm,
+        otherterm: props.data.otherterm,
         customterm: props.data.customterm,
         arglang: props.data.arglang,
         description: props.data.description,
@@ -123,9 +123,14 @@ const AnnotationForm = (props) => {
     }
 
     const handleLexiconTermChange = (data) => {
-        log('Change!\n' + JSON.stringify(data));
         setLidiaFields((prevState) => {
             return { ...prevState, "lexiconterm": data}
+        });
+    }
+
+    const handleOtherTermChange = (data) => {
+        setLidiaFields((prevState) => {
+            return { ...prevState, "otherterm": data}
         });
     }
 
@@ -255,7 +260,10 @@ const AnnotationForm = (props) => {
                                 <label>Other terms:</label>
                             </div>
 
-                            <LexiconTermList />
+                            <LexiconTermField
+                              value={getValue('otherterm')}
+                              onChange={handleOtherTermChange}
+                            />
 
                         </div>
 

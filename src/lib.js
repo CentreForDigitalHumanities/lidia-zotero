@@ -10,10 +10,9 @@ window.Lidia = {
         , {"id": "argname", "label": "lidiaArgumentName.label"}
         , {"id": "pagestart", "label": "lidiaPageStart.label"}
         , {"id": "pageend", "label": "lidiaPageEnd.label"}
-        , {"id": "linglevel", "label": "lidiaLinguisticLevel.label"}
         , {"id": "arglang", "label": "lidiaArgumentLanguage.label"}
-        , {"id": "articleterm", "label": "lidiaArticleTerm.label"}
         , {"id": "lexiconterm", "label": "lidiaLexiconTerm.label"}
+        , {"id": "otherterm", "label": "lidiaLexiconTerm.label"}
         , {"id": "description","label": "lidiaArgumentDescription.label"}
         , {"id": "relationType","label": "lidiaArgumentDescription.label"}
         , {"id": "relationTo","label": "lidiaArgumentDescription.label"}
