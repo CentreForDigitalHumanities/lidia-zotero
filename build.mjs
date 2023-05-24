@@ -5,4 +5,5 @@ await esbuild.build({
     bundle: true,
     loader: { '.js': 'jsx' },
     outfile: 'out.js',
+    target: 'es2015'
 });

@@ -1,15 +1,16 @@
 import { serialize, deserialize, getLidiaDefaults } from "./serialize";
+import { getPreviousAnnotation } from "./continuation";
 
 /* global window, Zotero, Lidia */
 
-class LidiaItemError extends Error {
+export class LidiaItemError extends Error {
     constructor(message: string) {
         super(message);
         this.name = "LidiaItemError";
     }
 }
 
-class LidiaItemData {
+export class LidiaItemData {
     argcont: boolean = false;
     argname: string = "";
     pagestart: string = "";
@@ -51,10 +52,10 @@ class LidiaItemData {
 }
 
 
-class LidiaItem {
+export class LidiaItem {
     zoteroItem: Zotero.Item;
     data: LidiaItemData;
-    isLidiaItem: boolean;
+    isNonLidiaItem: boolean;
     isNewItem: boolean;
 
     constructor(zoteroItem: Zotero.Item) {
@@ -68,7 +69,13 @@ class LidiaItem {
         this.#read();
     }
 
-    async save() {
+    async save(force: boolean = false) {
+        if (!force && this.isNonLidiaItem) {
+            throw new LidiaItemError(
+                "Cannot save because annotation contains non-LIDIA data. " +
+                "Use force=true to override."
+            );
+        }
         const comment = this.data.convertToComment();
         this.zoteroItem.annotationComment = comment;
         await this.zoteroItem.saveTx();
@@ -77,21 +84,44 @@ class LidiaItem {
     #read(): void {
         // If annotationComment is empty, start with empty data
         this.data = new LidiaItemData();
-        const annotationText = this.zoteroItem.annotationText;
-        if (annotationText.trim() !== "") {
+        const annotationComment = this.zoteroItem.annotationComment;
+        if (annotationComment !== null || annotationComment.trim() !== "") {
             this.isNewItem = false;
             // Try reading the annotation as if it were a LIDIA item
             try {
-                this.data.loadFromComment(this.zoteroItem.annotationText);
+                this.data.loadFromComment(annotationComment);
+                this.isNonLidiaItem = false;
             } catch (e) {
-                this.isLidiaItem = false;
+                if (e instanceof LidiaItemError) {
+                    // Comment could not be parsed, so it is not a LIDIA
+                    // item and should be left untouched
+                    this.isNonLidiaItem = true;
+                } else {
+                    // Other error; propagate it
+                    throw e;
+                }
             }
         } else {
+            // If the annotation contains no or empty comment, mark as new
+            // item but not as a NonLidiaItem
             this.isNewItem = true;
+            this.isNonLidiaItem = false;
         }
     }
 
-    async getPreviousLidiaItem(): Promise<LidiaItem | null> {
-        return null; // TODO
+    getPreviousLidiaItem(): LidiaItem | null {
+        return getPreviousAnnotation(this.zoteroItem);
+    }
+
+    toString(): string {
+        let lidiaInfo: string;
+        if (this.isNewItem) {
+            lidiaInfo = 'New item';
+        } else if (this.isNonLidiaItem) {
+            lidiaInfo = 'Not a LIDIA annotation';
+        } else {
+            lidiaInfo = JSON.stringify(this.data);
+        }
+        return `LIDIA item:\nZotero key: ${this.zoteroItem.key}\n${lidiaInfo}`;
     }
 }

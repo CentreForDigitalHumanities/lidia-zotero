@@ -7,6 +7,8 @@ import PleaseSelect from "./components/PleaseSelect";
 import { getPreviousAnnotation } from "./continuation.js";
 import { getAllLidiaAnnotations } from "./relations.js";
 
+import { LidiaItem } from "./data.ts";
+
 /* global window, document, Zotero, Lidia */
 
 /**
@@ -125,6 +127,9 @@ export class LidiaPanel {
      * @param {DataObject} item - the selected Zotero item
      */
     async receiveAnnotation(item) {
+        const lidiaItem = new LidiaItem(item);
+        this.currentLidiaItem = lidiaItem;
+        log(lidiaItem);
         this.currentAnnotation = item;
         log('receiveAnnotation: 0')
         let data;
