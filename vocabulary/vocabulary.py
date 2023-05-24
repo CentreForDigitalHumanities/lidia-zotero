@@ -21,7 +21,7 @@ def process_lexicon():
     text_columns = ['reference', 'term', 'url', 'linglevels']
     parsed_rows = []
     parsed_rows.append({'lemma': None,
-                        'lemmacode': None,
+                        'lemmacode': '',
                         'term': '[Custom]',
                         'linglevels': ["All", "General", "Morphology", "Phonetics", "Phonology", "Semantics", "Syntax"]
                         })
@@ -54,6 +54,8 @@ def to_sqlite(rows):
 
 
 def to_json(rows):
+    for r in rows:
+        r['term'] = f"{r['term']} → {r['lemma']}" if r['lemmacode'] is None else r['term']
     with open(os.path.join(PROJROOT, 'vocabulary', 'vocabulary.json'), 'w') as outfile:
         json.dump(rows, outfile, indent=2)
     print("Wrote vocabulary.json")
