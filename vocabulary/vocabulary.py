@@ -20,21 +20,22 @@ cur = conn.cursor()
 def process_lexicon():   
     text_columns = ['reference', 'term', 'url', 'linglevels']
     parsed_rows = []
-    parsed_rows.append({'lemma': None,
+    parsed_rows.append({'key': 1,
+                        'lemma': None,
                         'lemmacode': '',
                         'term': '[Custom]',
                         'linglevels': ["All", "General", "Morphology", "Phonetics", "Phonology", "Semantics", "Syntax"]
                         })
     with open(os.path.join(PROJROOT, 'vocabulary', 'lexicon.tsv'), 'r') as f:
         reader = csv.DictReader(f, fieldnames=text_columns, delimiter='\t')
-        for row in reader:
+        for idx, row in enumerate(reader):
             parsed = urlparse(row['url'])
             query_params = parse_qs(parsed.query)
             lemma = query_params.get('lemma')[0]
             lemmacode = query_params.get('lemmacode', [None])[0]
             term = row['term'] if not row['reference'] else row['reference'].removesuffix(': see')
             linglevels = [f.capitalize() for f in row['linglevels'].split('/')]
-            parsed_row = {'lemma': lemma, 'lemmacode': lemmacode, 'term': term, 'linglevels': linglevels}
+            parsed_row = {'key': idx + 2, 'lemma': lemma, 'lemmacode': lemmacode, 'term': term, 'linglevels': linglevels}
             parsed_rows.append(parsed_row)
 
     # Sort "[" first by using a tuple
