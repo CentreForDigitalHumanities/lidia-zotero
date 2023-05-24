@@ -68,7 +68,7 @@ const AnnotationForm = (props) => {
             setFilteredLexiconTerms(vocabularyTerms);
         } else {
             const _filteredLexiconTerms = vocabularyTerms.filter((lexiconterm) => {
-                return lexiconterm.subfield === event.target.value;
+                return lexiconterm.linglevels.includes(event.target.value);
             });
             setFilteredLexiconTerms(_filteredLexiconTerms);
         }

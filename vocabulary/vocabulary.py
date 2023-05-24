@@ -17,42 +17,45 @@ conn.row_factory = dict_factory
 cur = conn.cursor()
 
 
-def process_lexicon():
-    cur.execute('DROP TABLE IF EXISTS lexicon;')
-    cur.execute('CREATE TABLE lexicon (lemma TEXT, lemmacode TEXT, term TEXT, subfields JSON);')
-    text_columns = ['reference', 'term', 'url', 'subfields']
+def process_lexicon():   
+    text_columns = ['reference', 'term', 'url', 'linglevels']
+    parsed_rows = []
+    parsed_rows.append({'lemma': None,
+                        'lemmacode': None,
+                        'term': '[Custom]',
+                        'linglevels': ["All", "General", "Morphology", "Phonetics", "Phonology", "Semantics", "Syntax"]
+                        })
     with open(os.path.join(PROJROOT, 'vocabulary', 'lexicon.tsv'), 'r') as f:
         reader = csv.DictReader(f, fieldnames=text_columns, delimiter='\t')
-        cur.execute("""
-            INSERT INTO lexicon (lemma, lemmacode, term, subfields)
-            VALUES (?, ?, ?, ?)
-            ;""",
-            (None, None, '[Custom]', '["General", "Morphology", "Phonetics", "Phonology", "Semantics", "Syntax"]')
-            )
         for row in reader:
             parsed = urlparse(row['url'])
             query_params = parse_qs(parsed.query)
             lemma = query_params.get('lemma')[0]
             lemmacode = query_params.get('lemmacode', [None])[0]
             term = row['term'] if not row['reference'] else row['reference'].removesuffix(': see')
-            subfields = [f.capitalize() for f in row['subfields'].split('/')]
-            cur.execute('INSERT INTO lexicon (lemma, lemmacode, term, subfields) VALUES (?, ?, ?, ?);',
-                         (lemma, lemmacode, term, json.dumps(subfields)))
-        conn.commit()
+            linglevels = [f.capitalize() for f in row['linglevels'].split('/')]
+            parsed_row = {'lemma': lemma, 'lemmacode': lemmacode, 'term': term, 'linglevels': linglevels}
+            parsed_rows.append(parsed_row)
+    
+    return parsed_rows
 
 
-def vocabulary_tojson():
-    # A unique id is needed to use JSX directly inside .map().
-    res = cur.execute("""
-        SELECT ROW_NUMBER() OVER (ORDER BY lower(term) ASC) AS "key",
-         linglevel.value AS subfield, lemma, lemmacode, term
-        FROM lexicon, json_each(subfields) AS linglevel
-        ORDER BY lower(term) ASC;
-        """)
-    terms = res.fetchall()
+def to_sqlite(rows):
+    cur.execute('DROP TABLE IF EXISTS lexicon;')
+    cur.execute('CREATE TABLE lexicon (lemma TEXT, lemmacode TEXT, term TEXT, linglevels JSON);')
+    for row in rows:
+        row['linglevels'] = json.dumps(row['linglevels'])
+    cur.executemany('INSERT INTO lexicon (lemma, lemmacode, term, linglevels) VALUES (:lemma, :lemmacode, :term, :linglevels);', rows)
+    conn.commit()
+    conn.close()
+    print("Wrote vocabulary.db")
+
+
+def to_json(rows):
     with open(os.path.join(PROJROOT, 'vocabulary', 'vocabulary.json'), 'w') as outfile:
-        json.dump(terms, outfile, indent=2)
+        json.dump(rows, outfile, indent=2)
+    print("Wrote vocabulary.json")
 
-
-process_lexicon()
-vocabulary_tojson()
+rows = process_lexicon()
+to_json(rows)
+# to_sqlite(rows)
