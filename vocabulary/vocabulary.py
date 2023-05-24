@@ -36,7 +36,9 @@ def process_lexicon():
             linglevels = [f.capitalize() for f in row['linglevels'].split('/')]
             parsed_row = {'lemma': lemma, 'lemmacode': lemmacode, 'term': term, 'linglevels': linglevels}
             parsed_rows.append(parsed_row)
-    
+
+    # Sort "[" first by using a tuple
+    parsed_rows.sort(key=lambda x: (not x['term'].startswith('['), x['term'].lower()))
     return parsed_rows
 
 
