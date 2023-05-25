@@ -3,11 +3,11 @@
         xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
     <Description about="urn:mozilla:install-manifest">
-        <em:id>lidia-annotations@dig.hum.uu.nl</em:id>
+        <em:id>lidia-annotations@cdh.uu.nl</em:id>
         <em:name>LIDIA Annotations</em:name>
-        <em:version>0.1.0</em:version>
+        <em:version>0.2.0</em:version>
         <em:multiprocessCompatible>true</em:multiprocessCompatible>
-        <em:updateURL>https://dhstatic.hum.uu.nl/LIDIA/releases/updates.json</em:updateURL>
+        <em:updateURL>https://raw.githubusercontent.com/CentreForDigitalHumanities/lidia-zotero/main/updates.json</em:updateURL>
         <em:localized>
             <Description>
                 <em:locale>en-US</em:locale>
@@ -16,7 +16,7 @@
             </Description>
         </em:localized>
 
-        <em:creator>Utrecht Digital Humanities Lab</em:creator>
+        <em:creator>Research Software Lab, Centre For Digital Humanities, Utrecht University</em:creator>
         <em:type>2</em:type> <!-- type=extension -->
         <em:iconURL>chrome://lidia-annotations/skin/icon.png</em:iconURL>
         <em:icon64URL>chrome://lidia-annotations/skin/icon64.png</em:icon64URL>
@@ -26,7 +26,7 @@
             <Description>
                 <em:id>zotero@chnm.gmu.edu</em:id>
                 <em:minVersion>6.0</em:minVersion>
-                <em:maxVersion>*</em:maxVersion>
+                <em:maxVersion>6.99</em:maxVersion>
             </Description>
         </em:targetApplication>
     </Description>
