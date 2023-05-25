@@ -56,7 +56,8 @@ def to_sqlite(rows):
 
 def to_json(rows):
     for r in rows:
-        r['term'] = f"{r['term']} → {r['lemma']}" if r['lemmacode'] is None else r['term']
+        if r['lemmacode'] is None:
+            r['term'] = f"{r['term']} → {r['lemma']}"
     with open(os.path.join(PROJROOT, 'vocabulary', 'vocabulary.json'), 'w') as outfile:
         json.dump(rows, outfile, indent=2)
     print("Wrote vocabulary.json")
