@@ -7,7 +7,7 @@
         <em:name>LIDIA Annotations</em:name>
         <em:version>0.2.0</em:version>
         <em:multiprocessCompatible>true</em:multiprocessCompatible>
-        <em:updateURL>https://raw.githubusercontent.com/CentreForDigitalHumanities/lidia-zotero/main/updates.json</em:updateURL>
+        <em:updateURL>https://github.com/CentreForDigitalHumanities/lidia-zotero/releases/download/release/update.rdf</em:updateURL>
         <em:localized>
             <Description>
                 <em:locale>en-US</em:locale>
