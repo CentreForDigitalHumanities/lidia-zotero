@@ -6,6 +6,13 @@
         "release": "zotero-plugin-release",
         "postversion": "git push --follow-tags"
     },
+    "xpi": {
+        "name": "LIDIA Annotations",
+        "iconURL": "chrome://lidia-zotero/skin/lidia.svg",
+        "updateLink": "https://github.com/CentreForDigitalHumanities/lidia-zotero/releases/download/v{version}/lidia-zotero-{version}.xpi",
+        "updateInfoURL": "https://github.com/CentreForDigitalHumanities/lidia-zotero/releases/latest",
+        "releaseURL": "https://github.com/CentreForDigitalHumanities/lidia-zotero/releases/download/release/"
+      },
     "devDependencies": {
         "esbuild": "^0.17",
         "patch-package": "^6.2.2",
