@@ -1,8 +1,8 @@
 import * as esbuild from 'esbuild';
 
 await esbuild.build({
-    entryPoints: ['src/lib.js'],
+    entryPoints: ['plugin/src/lib.js'],
     bundle: true,
     loader: { '.js': 'jsx' },
-    outfile: 'out.js',
+    outfile: 'plugin/out.js',
 });
