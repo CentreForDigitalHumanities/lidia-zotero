@@ -1,4 +1,9 @@
 {
+    "name": "lidia-zotero",
+    "version": "0.2.0",
+    "description": "Structured Linguistic Diagnostics PDF annotations for the LIDIA project",
+    "homepage": "https://github.com/CentreForDigitalHumanities/lidia-zotero",
+    "license": "BSD-3-Clause",
     "scripts": {
         "postinstall": "patch-package",
         "build": "node build.mjs",
