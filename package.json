@@ -12,7 +12,7 @@
     "scripts": {
         "postinstall": "patch-package",
         "build": "node build.mjs",
-        "postbuild": "zotero-plugin-zipup plugin lidia-zotero",
+        "postbuild": "zotero-plugin-zipup . lidia-zotero",
         "release": "zotero-plugin-release",
         "postversion": "git push --follow-tags"
     },

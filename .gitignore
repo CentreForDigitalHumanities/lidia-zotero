@@ -1,6 +1,5 @@
 .idea/
-build/
-gen/
-node_modules/
-xpi/
-out.js
+build
+/out.js
+/out/
+/node_modules/
