@@ -1,8 +1,5 @@
 .idea/
 __pycache__/
-build
-/out.js
-/out/
+/build/
 /node_modules/
-vocabulary/vocabulary.db
-vocabulary/vocabulary.json
+/vocabulary/vocabulary.db
