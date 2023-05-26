@@ -58,7 +58,9 @@ def to_json(rows):
     for r in rows:
         if r['lemmacode'] is None:
             r['term'] = f"{r['term']} → {r['lemma']}"
-    with open(os.path.join(PROJROOT, 'vocabulary', 'vocabulary.json'), 'w') as outfile:
+    # The contents are currently included in the esbuild bundle
+    # Should probably be a static asset?
+    with open(os.path.join(PROJROOT, 'content', 'vocabulary.json'), 'w') as outfile:
         json.dump(rows, outfile, indent=2)
     print("Wrote vocabulary.json")
 

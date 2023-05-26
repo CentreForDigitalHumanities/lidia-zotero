@@ -23,7 +23,7 @@ for (language of getLanguageList()) {
 
 // This works because we're using esbuild?
 // Note: a SQLite file would be ~2.5 times smaller than this JSON
-import vocabularyTerms from '../../vocabulary/vocabulary.json';
+import vocabularyTerms from '../../content/vocabulary.json';
 
 const AnnotationForm = (props) => {
     /**
