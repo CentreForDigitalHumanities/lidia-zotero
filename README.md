@@ -40,6 +40,19 @@ This is achieved by passing the window object of the Zotero main window to
 the bundled JavaScript file when it is loaded in `bootstrap.js` using
 the `Services.scriptloader.loadSubScript` method.
 
+### Release
+
+Releases and local builds are made using [zotero-plugin](https://github.com/retorquere/zotero-plugin).
+
+To create a local build, run `npm run build`.
+
+To create a release:
+
+- Switch to `main` branch
+- Bump the version in `package.json` (e.g. `0.2.1`)
+- Create a tag with the same version (e.g. `git tag v0.2.1`)
+- `git push --follow-tags`
+
 ### Reading
 
 - [Setting Up a Plugin Development Environment](https://www.zotero.org/support/dev/client_coding/plugin_development#setting_up_a_plugin_development_environment).
