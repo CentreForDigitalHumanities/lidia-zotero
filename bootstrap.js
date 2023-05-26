@@ -15,7 +15,7 @@ function log(msg) {
 }
 
 function getString(name) {
-    let stringBundle = Services.strings.createBundle('chrome://lidia-annotations/locale/lidia.properties');
+    let stringBundle = Services.strings.createBundle('chrome://lidia-zotero/locale/lidia.properties');
     let str = undefined;
     try {
         str = stringBundle.GetStringFromName(name);
@@ -139,7 +139,7 @@ async function startup({ id, version, resourceURI, rootURI = resourceURI.spec })
 		// Use strings from lidia.properties (legacy properties format) in Zotero 6
 		// and from lidia.ftl (Fluent) in Zotero 7
 		if (Zotero.platformMajorVersion < 102) {
-			let stringBundle = Services.strings.createBundle('chrome://lidia-annotations/locale/lidia.properties');
+			let stringBundle = Services.strings.createBundle('chrome://lidia-zotero/locale/lidia.properties');
 			Zotero.getMainWindow().document.getElementById('lidia-about')
 				.setAttribute('label', stringBundle.GetStringFromName('lidiaAbout.label'));
 		}

@@ -25,7 +25,7 @@ window.Lidia = {
         this.rootURI = rootURI;
         this.win = Zotero.getMainWindow();
         this.stringBundle = Services.strings.createBundle(
-            'chrome://lidia-annotations/locale/lidia.properties'
+            'chrome://lidia-zotero/locale/lidia.properties'
         );
 
         this.notifierCallback = {
