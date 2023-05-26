@@ -18,6 +18,7 @@
     },
     "xpi": {
         "name": "LIDIA Annotations",
+        "bootstrapped": true,
         "iconURL": "chrome://lidia-zotero/skin/lidia.svg",
         "updateLink": "https://github.com/CentreForDigitalHumanities/lidia-zotero/releases/download/v{version}/lidia-zotero-{version}.xpi",
         "updateInfoURL": "https://github.com/CentreForDigitalHumanities/lidia-zotero/releases/latest",
