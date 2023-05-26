@@ -12,7 +12,6 @@ async function build() {
         outfile: 'build/out.js',
     });
     await fs.copy('bootstrap.js', 'build/bootstrap.js');
-    await fs.copy('chrome', 'build/chrome');
 }
 
 build().catch(err => {
