@@ -13,7 +13,7 @@ Make Zotero ready for the extension (you only need to do this once):
 - Start the new profile: `zotero -P Develop` and exit.
 - `git clone git@github.com:UUDigitalHumanitieslab/lidia-zotero.git /path/to/Projects/LIDIA/lidia-zotero`
 - `mkdir $HOME/.zotero/zotero/Develop/extensions`
-- `echo "/absolute/path/to/Projects/LIDIA/lidia-zotero" > $HOME/.zotero/zotero/Develop/extensions/lidia-zotero@cdh.uu.nl`
+- `echo "<absolute-path-to-source>/build" > $HOME/.zotero/zotero/Develop/extensions/lidia-zotero@cdh.uu.nl`
 - `sed -i '/.*extensions\.lastAppBuildId.*/d' $HOME/.zotero/zotero/Develop/prefs.js`
 - `sed -i '/.*extensions\.lastAppVersion.*/d' $HOME/.zotero/zotero/Develop/prefs.js`
 
