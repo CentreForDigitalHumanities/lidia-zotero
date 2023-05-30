@@ -9,7 +9,7 @@ The project is set up as a bootstrapped plugin for Zotero 6 and 7. Tested only u
 Make Zotero ready for the extension (you only need to do this once):
 
 - Create a new Zotero profile with `zotero --ProfileManager` (here named `Develop`).
-- Configure a custom data directory for the new profile.
+- Configure a custom data directory for the new profile (in this example we use `~/.zotero/zotero/Develop`).
 - Start the new profile: `zotero -P Develop` and exit.
 - `git clone git@github.com:UUDigitalHumanitieslab/lidia-zotero.git /path/to/Projects/LIDIA/lidia-zotero`
 - `mkdir $HOME/.zotero/zotero/Develop/extensions`
