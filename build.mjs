@@ -19,6 +19,7 @@ async function build() {
         bundle: true,
         loader: { '.js': 'jsx' },
         outfile: 'build/out.js',
+        target: 'es2015',
     });
     await fs.copy('bootstrap.js', 'build/bootstrap.js');
 }
