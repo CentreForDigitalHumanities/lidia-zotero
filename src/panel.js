@@ -106,8 +106,12 @@ export class LidiaPanel {
             event.element.removeEventListener("click", event.callback);
             event.element.setAttribute("lidiainit", "false");
         }
-        this.tab.remove();
-        this.tabPanel.remove();
+        if (this.tab) {
+            this.tab.remove();
+        }
+        if (this.tabPanel) {
+            this.tabPanel.remove();
+        }
     }
 
     /**
