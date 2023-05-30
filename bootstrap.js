@@ -5,6 +5,7 @@ var stylesheetID = 'lidia-stylesheet';
 var ftlID = 'lidia-ftl';
 var menuitemID = 'lidia-about';
 var addedElementIDs = [stylesheetID, ftlID, menuitemID];
+var extensionScope;
 
 if (typeof Zotero == 'undefined') {
 	var Zotero;
@@ -154,21 +155,23 @@ async function startup({ id, version, resourceURI, rootURI = resourceURI.spec })
 
 	// Load out.js with the Zotero main window as its scope to make the
 	// window object globally available
-	const scope = Zotero.getMainWindow();
-	Services.scriptloader.loadSubScript(rootURI + 'out.js', scope);
+	extensionScope = Zotero.getMainWindow();
+	Services.scriptloader.loadSubScript(rootURI + 'out.js', extensionScope);
 
 	// Add functions from bootstrap.js to scope to make them available
 	// TODO: move these functions to lib.js
-	scope.log = log;
-	scope.getString = getString;
-	scope.createHElement = createHElement;
-	scope.createXElement = createXElement;
+	extensionScope.log = log;
+	extensionScope.getString = getString;
+	extensionScope.createHElement = createHElement;
+	extensionScope.createXElement = createXElement;
 
-	await scope.Lidia.init(rootURI);
+	await extensionScope.Lidia.init(rootURI);
 }
 
 function shutdown() {
 	log("Shutting down...");
+
+	extensionScope.Lidia.shutdown();
 
 	// Remove stylesheet
 	var zp = Zotero.getActiveZoteroPane();

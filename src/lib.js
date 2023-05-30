@@ -73,4 +73,9 @@ window.Lidia = {
             * the selected annotation was automatically activated. */
         this.panel.disablePanel(undefined);
     },
+
+    shutdown: function() {
+        this.panel.destroy();
+        Zotero.Notifier.unregisterObserver(this.notifierID);
+    }
 };
