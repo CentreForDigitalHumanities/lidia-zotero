@@ -14,6 +14,10 @@ import { getAllLidiaAnnotations } from "./relations.js";
  * as a whole - this panel is shared between Zotero tabs.
  */
 export class LidiaPanel {
+    tab;
+    tabPanel;
+    annotationEvents = [];
+
     /**
      * Create a LidiaPanel object. Can be called as soon as the Zotero main
      * window is ready. Does not yet build the panel UI.
@@ -95,6 +99,19 @@ export class LidiaPanel {
                             onSave={this.onSaveAnnotation.bind(this)}
                             annotations={annotations}
                         />);
+    }
+
+    destroy() {
+        for (const event of this.annotationEvents) {
+            event.element.removeEventListener("click", event.callback);
+            event.element.setAttribute("lidiainit", "false");
+        }
+        if (this.tab) {
+            this.tab.remove();
+        }
+        if (this.tabPanel) {
+            this.tabPanel.remove();
+        }
     }
 
     /**
@@ -237,9 +254,13 @@ export class LidiaPanel {
                 itemKey
             );
 
-            annotation.addEventListener("click", (e) => {
+            const callback = (e) => {
                 this.onAnnotationActivated(annotationItem, true);
                 e.preventDefault();
+            };
+            annotation.addEventListener("click", callback);
+            this.annotationEvents.push({
+                element: annotation, callback: callback
             });
         }
     }

@@ -57,6 +57,13 @@ window.Lidia = {
         ]);
 
         this.panel = new LidiaPanel();
+
+        // If a reader is currently selected, activate it. This is only needed
+        // when a user activates the extension while Zotero is running.
+        const reader = Zotero.Reader.getByTabID(window.Zotero_Tabs._selectedID);
+        if (reader) {
+            this.onReaderSelect(reader);
+        }
     },
 
     onReaderSelect: async function(reader) {
@@ -73,4 +80,9 @@ window.Lidia = {
             * the selected annotation was automatically activated. */
         this.panel.disablePanel(undefined);
     },
+
+    shutdown: function() {
+        this.panel.destroy();
+        Zotero.Notifier.unregisterObserver(this.notifierID);
+    }
 };
