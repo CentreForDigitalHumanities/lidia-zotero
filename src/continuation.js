@@ -16,22 +16,13 @@ export function getPreviousAnnotation(item) {
     /* Sort annotations according to annotationSortIndex
      * (It seems that we already get the annotations in the right order,
      * but not sure if this is guaranteed) */
-    annotations.sort((x, y) => {
-        if (x.annotationSortIndex < y.annotationSortIndex) {
-            return -1;
-        } else if (x.annotationSortIndex > y.annotationSortIndex) {
-            return 1;
-        } else {
-            return 0;
-        }
-    });
+    annotations.sort((x, y) => x.annotationSortIndex - y.annotationSortIndex);
     let currentIndex = 0;
     let found = false;
     for (; currentIndex < annotations.length; currentIndex++) {
         const currentItem = annotations[currentIndex];
         if (currentItem.key === item.key) {
             found = true;
-            log('Current annotation found!');
             break;
         }
     }
@@ -39,7 +30,7 @@ export function getPreviousAnnotation(item) {
         /* Return undefined if the current annotation cannot be found
          * (which is not supposed to happen) or if it has 0 as its index,
          * which means that there is no previous annotation. */
-        return undefined;
+        return null;
     }
     let previousIndex = currentIndex - 1;
     found = false;
@@ -54,6 +45,6 @@ export function getPreviousAnnotation(item) {
     if (found) {
         return annotations[previousIndex];
     } else {
-        return undefined;
+        return null;
     }
 }
