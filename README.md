@@ -50,7 +50,7 @@ To create a release:
 
 - Switch to `main` branch
 - Bump the version in `package.json` (e.g. `0.2.1`)
-- Create an annotated tag with the same version (e.g. `git tag --sign -m "Release v0.2.1" v0.2.1`)
+- Create a signed/annotated tag with the same version (e.g. `git tag --sign -m "Release v0.2.1" v0.2.1`)
 - `git push --follow-tags`
 
 ### Reading
