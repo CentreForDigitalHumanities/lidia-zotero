@@ -1,5 +1,6 @@
 .idea/
 __pycache__/
 /build/
+/content/vocabulary.json
 /node_modules/
 /vocabulary/vocabulary.db
