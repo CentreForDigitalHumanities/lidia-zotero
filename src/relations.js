@@ -33,7 +33,10 @@ export async function getAllLidiaAnnotations(libraryID) {
                             const annotationObj = deserialize(
                                 annotation.annotationComment
                             );
-                            if (annotationObj !== undefined) {
+                            if (
+                                annotationObj !== undefined &&
+                                annotationObj.argcont !== true
+                            ) {
                                 annotationObj.documentTitle = item.getField('title')
                                 annotationObj.zoteroKey = item.key;
                                 lidiaAnnotations.push(annotationObj);
