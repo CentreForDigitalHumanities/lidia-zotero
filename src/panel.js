@@ -23,7 +23,9 @@ export class LidiaPanel {
      * window is ready. Does not yet build the panel UI.
      * @param {Window} win - The Zotero main window
      */
-
+    constructor() {
+        this.annotationEvents = [];
+    }
 
     /**
      * Build the panel. This should be called after the selection of a
