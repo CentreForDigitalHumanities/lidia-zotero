@@ -1,7 +1,7 @@
 {
     "name": "lidia-zotero",
     "id": "lidia-zotero@cdh.uu.nl",
-    "version": "0.2.10",
+    "version": "0.2.11",
     "description": "Structured Linguistic Diagnostics PDF annotations for the LIDIA project",
     "homepage": "https://github.com/CentreForDigitalHumanities/lidia-zotero",
     "license": "BSD-3-Clause",
