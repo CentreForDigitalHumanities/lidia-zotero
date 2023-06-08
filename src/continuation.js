@@ -49,7 +49,7 @@ export function getPreviousAnnotation(item) {
             return null;
         }
     } else {
-        log(JSON.stringify(item.parentItem))
+        log(JSON.stringify(item.parentItem));
         return null;
     }
 }

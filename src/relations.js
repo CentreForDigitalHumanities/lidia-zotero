@@ -43,6 +43,8 @@ export async function getAllLidiaAnnotations(libraryID) {
                             }
                         }
                     }
+                } else {
+                    log(JSON.stringify(attachment));
                 }
             }
         }
