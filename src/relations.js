@@ -26,7 +26,7 @@ export async function getAllLidiaAnnotations(libraryID) {
             let attachmentIDs = item.getAttachments();
             for (let id of attachmentIDs) {
                 let attachment = Zotero.Items.get(id);
-                if (attachment.attachmentContentType === 'application/pdf') {
+                if (attachment.isFileAttachment() && attachment.attachmentContentType === 'application/pdf') {
                     let annotations = attachment.getAnnotations();
                     for (let annotation of annotations) {
                         if (annotation.annotationComment) {
