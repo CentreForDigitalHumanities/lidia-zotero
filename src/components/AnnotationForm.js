@@ -130,6 +130,7 @@ const AnnotationForm = (props) => {
     }
 
     const divStyle = {
+        MozUserSelect: "text",
         margin: '5px',
     };
 
