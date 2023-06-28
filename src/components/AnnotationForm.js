@@ -2,6 +2,9 @@ import React from 'react';
 import { useState } from "react";
 import { iso6393 } from "iso-639-3";
 
+import TermGroup from './TermGroup';
+
+
 let languageList = [];
 function getLanguageList() {
     if (languageList.length > 0) {
@@ -72,6 +75,24 @@ const AnnotationForm = (props) => {
             setFilteredLexiconTerms(_filteredLexiconTerms);
         }
     }
+
+    const defaultTermGroup = {
+        termtype: 'Undefined',
+        articleterm: '',
+        lidiaterm: 'test',
+    }
+
+    const [termGroups, setTermGroups] = useState([{ key: 0, termValues: defaultTermGroup }]);
+
+    const addTermGroup = () => {
+        setTermGroups([...termGroups, { key: termGroups.length, termValues: defaultTermGroup } ]);
+    }
+
+    const handleTermGroupChange = (index, newValue) => {
+        const newTermGroups = [...termGroups];
+        newTermGroups[index].termValues = newValue;
+        setTermGroups(newTermGroups);
+    };
 
     React.useEffect(() => {
         setLidiaFields(props.data)
@@ -153,6 +174,7 @@ const AnnotationForm = (props) => {
 
     return (
         <div style={divStyle}>
+            <div>{JSON.stringify(termGroups)}</div>
 
             <form onSubmit={handleSubmit}>
                 <div style={fullWidthStyle}>
@@ -231,6 +253,18 @@ const AnnotationForm = (props) => {
                             <div>
                                 <label htmlFor="customterm" style={{marginTop: '5px'}}>Custom term:</label>
                                 <input type="text" style={fullWidthStyle} name="customterm" value={getValue("customterm")} onChange={handleChange} />
+                            </div>
+
+                            <div>
+                                <h3>Terms</h3>
+                                {termGroups.map((termGroup, index) => (
+                                    <TermGroup
+                                        key={termGroup.key}
+                                        value={termGroup.termValues}
+                                        onChange={(newValue) => handleTermGroupChange(index, newValue)}
+                                    />
+                                ))}
+                                <button style={{margin: "5px 0 0 0"}} onClick={addTermGroup}>Add more terms</button>
                             </div>
 
                             <div style={labelStyle}>
