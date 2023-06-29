@@ -165,7 +165,7 @@ async function startup({ id, version, resourceURI, rootURI = resourceURI.spec })
 	extensionScope.createHElement = createHElement;
 	extensionScope.createXElement = createXElement;
 
-	await extensionScope.Lidia.init(rootURI);
+	await extensionScope.Lidia.init({ id, version, rootURI });
 }
 
 function shutdown() {

@@ -19,10 +19,14 @@ window.Lidia = {
         , {"id": "relationTo","label": "lidiaArgumentDescription.label"}
     ],
 
-    async init(rootURI) {
+    async init({ id, version, rootURI }) {
+        if (this.initialized) return;
         log('Initializing LIDIA extension (lib.js)');
         log('Window object:' + window.toString());
-        this.rootURI = rootURI;
+		this.id = id;
+		this.version = version;
+		this.rootURI = rootURI;
+		this.initialized = true;
         this.win = Zotero.getMainWindow();
         this.stringBundle = Services.strings.createBundle(
             'chrome://lidia-zotero/locale/lidia.properties'
