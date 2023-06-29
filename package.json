@@ -27,7 +27,7 @@
     "devDependencies": {
         "esbuild": "^0.17",
         "patch-package": "^6.2.2",
-        "zotero-plugin": "^1.4.22"
+        "zotero-plugin": "^1.4.23"
     },
     "dependencies": {
         "iso-639-3": "^3.0.1",
