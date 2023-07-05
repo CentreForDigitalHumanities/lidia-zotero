@@ -55,7 +55,6 @@ const AnnotationForm = (props) => {
     });
 
     // TODO: default values aren´t checked to be valid
-    const defaultArgLang = props.defaults.arglang || null;
     const defaultArgLevel = props.defaults.arglevel || null;
 
     // TODO: ungroup the subfields and duplicate terms across individual subfields
