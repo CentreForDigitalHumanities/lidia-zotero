@@ -82,16 +82,19 @@ const AnnotationForm = (props) => {
         lidiaterm: 'test default',
     }
 
-    const [termGroups, setTermGroups] = useState(lidiaFields.termgroups);
-
-    const addTermGroup = () => {
-        setTermGroups([...termGroups, defaultTermGroup ]);
+    const addTermGroup = (index) => {
+        setLidiaFields((prevState) => {
+            const newTermGroups = [...prevState.termgroups, defaultTermGroup]
+            return { ...prevState, 'termgroups': newTermGroups }
+        });
     }
 
     const handleTermGroupChange = (index, newValue) => {
         const newTermGroups = [...termGroups];
         newTermGroups[index] = newValue;
-        setTermGroups(newTermGroups);
+        setLidiaFields((prevState) => {
+            return { ...prevState, 'termgroups': newTermGroups }
+        });
     };
 
     React.useEffect(() => {
@@ -119,6 +122,7 @@ const AnnotationForm = (props) => {
 
     const getTermGroupValue = (index) =>{
         if (!lidiaFields.argcont) {
+            log(JSON.stringify(lidiaFields['termgroups'][index]));
             return lidiaFields['termgroups'][index];
         } else {
             if (typeof props.previousAnnotationData !== "undefined") {
@@ -186,7 +190,7 @@ const AnnotationForm = (props) => {
 
     return (
         <div style={divStyle}>
-            <div>{JSON.stringify(termGroups)}</div>
+            <div>{JSON.stringify(lidiaFields.termgroups)}</div>
 
             <form onSubmit={handleSubmit}>
                 <div style={fullWidthStyle}>
@@ -269,7 +273,7 @@ const AnnotationForm = (props) => {
 
                             <div>
                                 <h3>Terms</h3>
-                                {termGroups.map((termGroup, index) => (
+                                {lidiaFields.termgroups.map((termGroup, index) => (
                                     <TermGroup
                                         key={index}
                                         value={getTermGroupValue(index)}
