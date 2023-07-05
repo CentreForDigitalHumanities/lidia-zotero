@@ -37,6 +37,8 @@ const AnnotationForm = (props) => {
      * arglang
      * lexiconterm
      * customterm
+     * termgroups: an array of termgroup objects {termtype, articleterm, lidiaterm}
+     *   lidiaterm should be either a vocabulary term or a custom term
      * description
      */
     const [lidiaFields, setLidiaFields] = useState({
@@ -47,6 +49,7 @@ const AnnotationForm = (props) => {
         linglevel: props.data.linglevel,
         lexiconterm: props.data.lexiconterm,
         customterm: props.data.customterm,
+        termgroups: props.data.termgroups,
         arglang: props.data.arglang,
         description: props.data.description,
         relationType: props.data.relationType,
@@ -76,18 +79,18 @@ const AnnotationForm = (props) => {
     const defaultTermGroup = {
         termtype: 'Undefined',
         articleterm: '',
-        lidiaterm: 'test',
+        lidiaterm: 'test default',
     }
 
-    const [termGroups, setTermGroups] = useState([{ key: 0, termValues: defaultTermGroup }]);
+    const [termGroups, setTermGroups] = useState(lidiaFields.termgroups);
 
     const addTermGroup = () => {
-        setTermGroups([...termGroups, { key: termGroups.length, termValues: defaultTermGroup } ]);
+        setTermGroups([...termGroups, defaultTermGroup ]);
     }
 
     const handleTermGroupChange = (index, newValue) => {
         const newTermGroups = [...termGroups];
-        newTermGroups[index].termValues = newValue;
+        newTermGroups[index].termGroup = newValue;
         setTermGroups(newTermGroups);
     };
 
@@ -110,6 +113,18 @@ const AnnotationForm = (props) => {
                 // Return empty value so that the form does not crash
                 // Note: this will not work well for booleans
                 return "";
+            }
+        }
+    }
+
+    const getTermGroupValue = (index) =>{
+        if (!lidiaFields.argcont) {
+            return lidiaFields['termgroups'][index];
+        } else {
+            if (typeof props.previousAnnotationData !== "undefined") {
+                return props.previousAnnotationData['termgroups'][index];
+            } else {
+                return defaultTermGroup;
             }
         }
     }
@@ -256,8 +271,8 @@ const AnnotationForm = (props) => {
                                 <h3>Terms</h3>
                                 {termGroups.map((termGroup, index) => (
                                     <TermGroup
-                                        key={termGroup.key}
-                                        value={termGroup.termValues}
+                                        key={index}
+                                        value={getTermGroupValue(index)}
                                         onChange={(newValue) => handleTermGroupChange(index, newValue)}
                                     />
                                 ))}
