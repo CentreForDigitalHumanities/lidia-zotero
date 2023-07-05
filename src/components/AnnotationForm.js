@@ -90,7 +90,7 @@ const AnnotationForm = (props) => {
     }
 
     const handleTermGroupChange = (index, newValue) => {
-        const newTermGroups = [...termGroups];
+        const newTermGroups = [...lidiaFields.termgroups];
         newTermGroups[index] = newValue;
         setLidiaFields((prevState) => {
             return { ...prevState, 'termgroups': newTermGroups }
@@ -275,12 +275,12 @@ const AnnotationForm = (props) => {
                                 <h3>Terms</h3>
                                 {lidiaFields.termgroups.map((termGroup, index) => (
                                     <TermGroup
-                                        key={index}
+                                        key={lidiaFields.argname + index}
                                         value={getTermGroupValue(index)}
                                         onChange={(newValue) => handleTermGroupChange(index, newValue)}
                                     />
                                 ))}
-                                <button style={{margin: "5px 0 0 0"}} onClick={addTermGroup}>Add more terms</button>
+                                <button style={{margin: "5px 0 0 0"}} type="button" onClick={addTermGroup}>Add more terms</button>
                             </div>
 
                             <div style={labelStyle}>
