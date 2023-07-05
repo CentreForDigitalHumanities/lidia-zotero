@@ -25,7 +25,6 @@ for (language of getLanguageList()) {
 }
 
 // This works because we're using esbuild?
-// Note: a SQLite file would be ~2.5 times smaller than this JSON
 import vocabularyTerms from '../../content/vocabulary.json';
 
 const AnnotationForm = (props) => {
@@ -57,7 +56,6 @@ const AnnotationForm = (props) => {
     // TODO: default values aren´t checked to be valid
     const defaultArgLevel = props.defaults.arglevel || null;
 
-    // TODO: ungroup the subfields and duplicate terms across individual subfields
     const subfields = ["All", "General", "Morphology", "Phonetics", "Phonology", "Semantics", "Syntax"];
     const [lexiconTermSubfield, setLexiconTermSubfield] = useState(defaultArgLevel || "All");
     const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(vocabularyTerms);

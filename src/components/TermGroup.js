@@ -36,7 +36,7 @@ const TermGroup = ({ value, onChange }) => {
             <div style={{display: "inline-block", margin: "0"}}>
                 <label htmlFor="lidiaterm" style={{display: "block"}}>LIDIA term</label>
                 <input name="lidiaterm" type="text" value={termValues.lidiaterm} onChange={handleChange}/>
-                /* TODO: Ideally this would be select-or-other so we don't need another field */
+                {/* TODO: Ideally this would be select-or-other so we don't need another field */}
             </div>
         </div>
     )
