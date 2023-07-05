@@ -90,7 +90,7 @@ const AnnotationForm = (props) => {
 
     const handleTermGroupChange = (index, newValue) => {
         const newTermGroups = [...termGroups];
-        newTermGroups[index].termGroup = newValue;
+        newTermGroups[index] = newValue;
         setTermGroups(newTermGroups);
     };
 
