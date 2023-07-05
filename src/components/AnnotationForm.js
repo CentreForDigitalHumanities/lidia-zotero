@@ -90,7 +90,7 @@ const AnnotationForm = (props) => {
     }
 
     const handleTermGroupChange = (index, newValue) => {
-        const newTermGroups = [...termGroups];
+        const newTermGroups = [...lidiaFields.termgroups];
         newTermGroups[index] = newValue;
         setLidiaFields((prevState) => {
             return { ...prevState, 'termgroups': newTermGroups }
