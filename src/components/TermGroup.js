@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import vocabularyTerms from '../../content/vocabulary.json';
 
 const TermGroup = ({ value, onChange }) => {
 
@@ -12,6 +13,29 @@ const TermGroup = ({ value, onChange }) => {
             return newTermGroupObj;
         });
     };
+
+    // const defaultArgLevel = props.defaults.arglevel || null;
+    const defaultArgLevel = null;
+    const subfields = ["All", "General", "Morphology", "Phonetics", "Phonology", "Semantics", "Syntax"];
+    const [lexiconTermSubfield, setLexiconTermSubfield] = useState(defaultArgLevel || "All");
+    const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(vocabularyTerms);
+
+    const fullWidthStyle = {
+        width: '92%',
+    };
+
+
+    const onLexiconTermSubfieldChange  = (event) => {
+        setLexiconTermSubfield(event.target.value);
+        if (event.target.value === "All") {
+            setFilteredLexiconTerms(vocabularyTerms);
+        } else {
+            const _filteredLexiconTerms = vocabularyTerms.filter((lexiconterm) => {
+                return lexiconterm.linglevels.includes(event.target.value);
+            });
+            setFilteredLexiconTerms(_filteredLexiconTerms);
+        }
+    }
 
     return (
         <div style={{color: "red"}}>
@@ -37,6 +61,30 @@ const TermGroup = ({ value, onChange }) => {
                 <label htmlFor="lidiaterm" style={{display: "block"}}>LIDIA term</label>
                 <input name="lidiaterm" type="text" value={termGroupObj.lidiaterm} onChange={handleChange}/>
                 {/* TODO: Ideally this would be select-or-other so we don't need another field */}
+            </div>
+
+            <div style={{margin: "5px"}}>
+                <label style={{display: "block"}} htmlFor="lexiconterm">Lexicon term</label>
+                <select style={{margin: "0 5px 0 0"}} value={lexiconTermSubfield} onChange={onLexiconTermSubfieldChange}>
+                    {subfields.map((subfield) => (
+                        <option key={subfield} value={subfield}>
+                            {subfield}
+                        </option>
+                        ))
+                    }
+                </select>
+                <select name="lexiconterm" value={termGroupObj.lexiconterm} onChange={handleChange}>
+                    {filteredLexiconTerms.map((option) => (
+                        <option key={option.key} value={option.lemma}>
+                            {option.term}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
+            <div>
+                <label htmlFor="customterm" style={{marginTop: '5px'}}>Custom term:</label>
+                <input type="text" style={fullWidthStyle} name="customterm" value={termGroupObj.customterm} onChange={handleChange} />
             </div>
         </div>
     )
