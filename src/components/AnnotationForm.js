@@ -54,6 +54,7 @@ const AnnotationForm = (props) => {
         description: props.data.description,
         relationType: props.data.relationType,
         relationTo: props.data.relationTo,
+        annotationKey: props.data.annotationKey
     });
 
     // TODO: default values aren´t checked to be valid
@@ -275,7 +276,7 @@ const AnnotationForm = (props) => {
                                 <h3>Terms</h3>
                                 {lidiaFields.termgroups.map((termGroup, index) => (
                                     <TermGroup
-                                        key={lidiaFields.argname + index}
+                                        key={lidiaFields.annotationKey + index}
                                         value={getTermGroupValue(index)}
                                         onChange={(newValue) => handleTermGroupChange(index, newValue)}
                                     />

@@ -84,6 +84,7 @@ export class LidiaPanel {
         if (lidiaData.hasOwnProperty('arglang') && lidiaData.arglang === '' && defaultValues.arglang) {
             lidiaData = {...lidiaData, arglang: defaultValues.arglang};
         }
+        lidiaData.annotationKey = item.key;
         const annotationText = item.annotationText;
         const annotations = await getAllLidiaAnnotations(item.libraryID);
         const previousAnnotation = getPreviousAnnotation(item);
