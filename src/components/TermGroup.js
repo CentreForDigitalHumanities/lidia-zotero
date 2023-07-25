@@ -3,7 +3,10 @@ import React, { useState } from 'react';
 import vocabularyTerms from '../../content/vocabulary.json';
 
 const TermGroup = ({ value, onChange }) => {
-
+    // Set default value - cleaner way possible?
+    if (!value.lexiconterm) {
+        value.lexiconterm = '[Custom]';
+    }
     const [termGroupObj, setTermGroupObj] = useState(value);
 
     const handleChange = (event) => {
@@ -24,6 +27,7 @@ const TermGroup = ({ value, onChange }) => {
         width: '92%',
     };
 
+    const customVisible = termGroupObj.lexiconterm === '[Custom]';
 
     const onLexiconTermSubfieldChange  = (event) => {
         setLexiconTermSubfield(event.target.value);
@@ -36,7 +40,6 @@ const TermGroup = ({ value, onChange }) => {
             setFilteredLexiconTerms(_filteredLexiconTerms);
         }
     }
-
     return (
         <div style={{color: "red"}}>
 
@@ -82,10 +85,12 @@ const TermGroup = ({ value, onChange }) => {
                 </select>
             </div>
 
-            <div>
-                <label htmlFor="customterm" style={{marginTop: '5px'}}>Custom term:</label>
-                <input type="text" style={fullWidthStyle} name="customterm" value={termGroupObj.customterm} onChange={handleChange} />
-            </div>
+            {customVisible && 
+                <div style={{visibility: customVisible}}>
+                    <label stype={{marginTop: '5px'}} htmlFor="customterm">Custom term:</label>
+                    <input type="text" style={fullWidthStyle} name="customterm" value={termGroupObj.customterm} onChange={handleChange} />
+                </div>
+            }
         </div>
     )
 }
