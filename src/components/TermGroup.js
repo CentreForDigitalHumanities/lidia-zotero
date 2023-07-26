@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import vocabularyTerms from '../../content/vocabulary.json';
+import lexiconTerms from '../../content/lexicon.json';
 
 const TermGroup = ({ value, onChange }) => {
     // Set default value - cleaner way possible?
@@ -21,7 +22,7 @@ const TermGroup = ({ value, onChange }) => {
     const defaultArgLevel = null;
     const subfields = ["All", "General", "Morphology", "Phonetics", "Phonology", "Semantics", "Syntax"];
     const [lexiconTermSubfield, setLexiconTermSubfield] = useState(defaultArgLevel || "All");
-    const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(vocabularyTerms);
+    const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(lexiconTerms.entries);
 
     const fullWidthStyle = {
         width: '92%',
@@ -32,10 +33,10 @@ const TermGroup = ({ value, onChange }) => {
     const onLexiconTermSubfieldChange  = (event) => {
         setLexiconTermSubfield(event.target.value);
         if (event.target.value === "All") {
-            setFilteredLexiconTerms(vocabularyTerms);
+            setFilteredLexiconTerms(lexiconTerms.entries);
         } else {
-            const _filteredLexiconTerms = vocabularyTerms.filter((lexiconterm) => {
-                return lexiconterm.linglevels.includes(event.target.value);
+            const _filteredLexiconTerms = lexiconTerms.entries.filter((lexiconterm) => {
+                return lexiconterm.category === event.target.value;
             });
             setFilteredLexiconTerms(_filteredLexiconTerms);
         }
@@ -69,17 +70,17 @@ const TermGroup = ({ value, onChange }) => {
             <div style={{margin: "5px"}}>
                 <label style={{display: "block"}} htmlFor="lexiconterm">Lexicon term</label>
                 <select style={{margin: "0 5px 0 0"}} value={lexiconTermSubfield} onChange={onLexiconTermSubfieldChange}>
-                    {subfields.map((subfield) => (
-                        <option key={subfield} value={subfield}>
-                            {subfield}
+                    {Object.keys(lexiconTerms.categories).map((slug) => (
+                        <option key={slug} value={slug}>
+                            {lexiconTerms.categories[slug]}
                         </option>
                         ))
                     }
                 </select>
                 <select name="lexiconterm" value={termGroupObj.lexiconterm} onChange={handleChange}>
                     {filteredLexiconTerms.map((option) => (
-                        <option key={option.key} value={option.lemma}>
-                            {option.term}
+                        <option key={option.slug} value={option.slug}>
+                            {option.display}
                         </option>
                     ))}
                 </select>
