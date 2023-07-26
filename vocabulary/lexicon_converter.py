@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+'''
+This module takes the LIDIA lexicon (an Excel file) and converts it into
+a JSON file, which will be read by the LIDIA Zotero extension
+'''
 
 import openpyxl
 import json
@@ -27,6 +31,7 @@ def get_rowdicts(worksheet: openpyxl.worksheet.worksheet.Worksheet):
 
 class LexiconProcesser():
     def process_lexicon(self, filepath: Path):
+        '''Process LIDIA lexicon Excel file'''
         wb = openpyxl.load_workbook(filename=str(filepath))
         # First read the categories
         category_ws = wb['categories']
@@ -73,6 +78,7 @@ class LexiconProcesser():
             self.entries.extend(entries_for_head)
 
     def write_json(self, filepath: Path):
+        '''Write data to one JSON file with category dict and entry list'''
         data = {
             'categories': self.categories,
             'entries': self.entries
