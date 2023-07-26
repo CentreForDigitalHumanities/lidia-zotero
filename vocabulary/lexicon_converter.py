@@ -84,5 +84,5 @@ class LexiconProcesser():
 
 if __name__ == '__main__':
     processer = LexiconProcesser()
-    processer.process_lexicon(PROJROOT / 'lexicon.xlsx')
+    processer.process_lexicon(PROJROOT / 'vocabulary' / 'lexicon.xlsx')
     processer.write_json(PROJROOT / 'content' / 'lexicon.json')
