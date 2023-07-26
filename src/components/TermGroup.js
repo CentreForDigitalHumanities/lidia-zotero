@@ -79,7 +79,7 @@ const TermGroup = ({ value, onChange }) => {
                 </select>
                 <select name="lexiconterm" value={termGroupObj.lexiconterm} onChange={handleChange}>
                     {filteredLexiconTerms.map((option) => (
-                        <option key={option.slug} value={option.slug}>
+                        <option key={option.slug} value={option.slug} disabled={!option.selectable}>
                             {option.display}
                         </option>
                     ))}
