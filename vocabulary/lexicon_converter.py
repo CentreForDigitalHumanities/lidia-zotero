@@ -29,6 +29,10 @@ def get_rowdicts(worksheet: openpyxl.worksheet.worksheet.Worksheet):
     return rowdicts
 
 
+class LexiconProcessorException(Exception):
+    pass
+
+
 class LexiconProcesser():
     def process_lexicon(self, filepath: Path):
         '''Process LIDIA lexicon Excel file'''
@@ -43,6 +47,17 @@ class LexiconProcesser():
         # parents as keys and lists of itself and its child items as values
         entry_ws = wb['entries']
         entry_rowdicts = get_rowdicts(entry_ws)
+        # Check if there are no entries that share the same slug
+        slugs = [x['slug'] for x in entry_rowdicts]
+        slugs.sort()
+        previous_slug = None
+        for slug in slugs:
+            if slug == previous_slug:
+                raise LexiconProcessorException(
+                    'Multiple entries found with slug "{}".'.format(slug)
+                )
+            previous_slug = slug
+        # First add all items without parents
         entries_hierarchical: dict[str, list[dict]] = {
             x['slug']: [x] for x in entry_rowdicts if not x['parent']
         }
@@ -68,6 +83,9 @@ class LexiconProcesser():
                     entry['display'] = '- ' + entry['display']
                 if entry['selectable'] is None or entry['selectable'] == '':
                     entry['selectable'] = True
+                if entry['selectable'] == '=FALSE()':
+                    # For some reason we sometimes find FALSE as =FALSE()...
+                    entry['selectable'] = False
             # Sort alphabetically
             # (this will cause the head entry to be put at the end, because
             # the other entries are preceded by a dash)
@@ -76,6 +94,7 @@ class LexiconProcesser():
             head_entry = entries_for_head.pop(len(entries_for_head) - 1)
             entries_for_head.insert(0, head_entry)
             self.entries.extend(entries_for_head)
+        self.success = True
 
     def write_json(self, filepath: Path):
         '''Write data to one JSON file with category dict and entry list'''
@@ -90,5 +109,8 @@ class LexiconProcesser():
 
 if __name__ == '__main__':
     processer = LexiconProcesser()
-    processer.process_lexicon(PROJROOT / 'vocabulary' / 'lexicon.xlsx')
-    processer.write_json(PROJROOT / 'content' / 'lexicon.json')
+    try:
+        processer.process_lexicon(PROJROOT / 'vocabulary' / 'lexicon.xlsx')
+        processer.write_json(PROJROOT / 'content' / 'lexicon.json')
+    except LexiconProcessorException as err:
+        print('Could not finish processing because of error: {}'.format(err))
