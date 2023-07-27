@@ -25,9 +25,9 @@
         "releaseURL": "https://github.com/CentreForDigitalHumanities/lidia-zotero/releases/download/release/"
     },
     "devDependencies": {
-        "esbuild": "^0.17",
+        "esbuild": "^0.18",
         "patch-package": "^6.2.2",
-        "zotero-plugin": "^1.4.22"
+        "zotero-plugin": "^1.4.25"
     },
     "dependencies": {
         "iso-639-3": "^3.0.1",
