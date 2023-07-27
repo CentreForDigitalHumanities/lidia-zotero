@@ -4,6 +4,26 @@ Zotero plugin for capturing PDF reader annotations in a structured format for th
 
 The project is set up as a bootstrapped plugin for Zotero 6 and 7. Tested only under Zotero 6.
 
+## About
+
+This extension is used to create a database of linguistic diagnostic arguments (hence 
+LiDiA). Users can add linguistic academic articles or books to a shared Zotero folder,
+create annotations using the PDF reader and use the extension to describe the
+diagnostic arguments they find in the text. The data is saved as Zotero annotation
+comments in YAML format. The data will then be read out in a separate web application [1]
+in order to create a database for the sake of the general community of linguists.
+The project, together with this Zotero extension, is being documented at [2].
+
+This project is still under active development and is not ready for production use.
+The plugin was specifically created for use with the LIDIA project at Utrecht University, but
+the general principle of this Zotero extension may be applicable to other academic projects
+as well.
+
+Feedback is welcome! You may create an issue or contact one of the developers.
+
+[1] https://github.com/UUDigitalHumanitieslab/lidia
+[2] https://lidia.readthedocs.io/
+
 ## Development
 
 Make Zotero ready for the extension (you only need to do this once):
