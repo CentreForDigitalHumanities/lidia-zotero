@@ -200,8 +200,6 @@ const AnnotationForm = (props) => {
 
     return (
         <div style={divStyle}>
-            <div>{JSON.stringify(lidiaFields.termgroups)}</div>
-
             <form onSubmit={handleSubmit}>
                 <div style={fullWidthStyle}>
                     <input type="checkbox" id="continuation" name="continuation" checked={lidiaFields.argcont ? 1 : 0} onChange={handleToggleContinuation} disabled={(!props.previousAnnotationData) ? 1 : 0} />
@@ -281,19 +279,6 @@ const AnnotationForm = (props) => {
                                 <input type="text" style={fullWidthStyle} name="customterm" value={getValue("customterm")} onChange={handleChange} />
                             </div>
 
-                            <div>
-                                <h3>Terms</h3>
-                                {lidiaFields.termgroups.map((termGroup, index) => (
-                                    <TermGroup
-                                        key={lidiaFields.annotationKey + index}
-                                        value={getTermGroupValue(index)}
-                                        onChange={(newValue) => handleTermGroupChange(index, newValue)}
-                                    />
-                                ))}
-                                <button style={{margin: "5px 0 0 0"}} type="button" onClick={addTermGroup}>Add more terms</button>
-                                <button style={{margin: "5px 0 0 0"}} type="button" onClick={removeLastTermGroup}>Remove last term</button>
-                            </div>
-
                             <div style={labelStyle}>
                                 <label htmlFor="description">Short description:</label>
                             </div>
@@ -316,6 +301,18 @@ const AnnotationForm = (props) => {
                                 <select name="relationTo" style={{margin: "0 5px 0 0"}} value={getValue("relationTo")} onChange={handleChange}>
                                     {annotationRefRows}
                                 </select>
+                            </div>
+
+                            <div>
+                                <h3>Terms</h3>
+                                {lidiaFields.termgroups.map((termGroup, index) => (
+                                    <><h4>Term {index + 1}</h4><TermGroup
+                                        key={lidiaFields.annotationKey + index}
+                                        value={getTermGroupValue(index)}
+                                        onChange={(newValue) => handleTermGroupChange(index, newValue)} /></>
+                                ))}
+                                <button style={{margin: "5px 0 0 0"}} type="button" onClick={addTermGroup}>Add more terms</button>
+                                <button style={{margin: "5px 0 0 0"}} type="button" onClick={removeLastTermGroup}>Remove last term</button>
                             </div>
                         </div>
 
