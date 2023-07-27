@@ -171,7 +171,12 @@ const AnnotationForm = (props) => {
 
     const annotationRefRows = [(<option value="">(none)</option>)];
     for (let annotation of props.annotations) {
-        const display = annotation.documentTitle + ': ' + annotation.argname;
+        let shortTitle = annotation.documentTitle;
+        if (shortTitle.length > 30) {
+            log('cut');
+            shortTitle = shortTitle.substring(0, 28) + "…";
+        }
+        const display = shortTitle + ': ' + annotation.argname;
         annotationRefRows.push(<option value={annotation.zoteroKey}>{display}</option>);
     }
 
@@ -195,12 +200,12 @@ const AnnotationForm = (props) => {
 
                             <div style={{marginTop: "1em", width: "92%"}}>
                                 <div style={{display: "inline-block", margin: "5px;"}}>
-                                    <label htmlFor="pagestart">Page start:</label>
+                                    <label htmlFor="pagestart">Page start: </label>
                                     <input type="text" name="pagestart" value={getValue("pagestart")} onChange={handleChange} />
                                 </div>
 
                                 <div style={{margin: "5px", width: "92%"}}>
-                                    <label htmlFor="pageend">Page end:</label>
+                                    <label htmlFor="pageend">Page end: </label>
                                     <input type="text" name="pageend" value={getValue("pageend")} onChange={handleChange} />
                                 </div>
                             </div>

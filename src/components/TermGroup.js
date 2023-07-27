@@ -21,6 +21,12 @@ const TermGroup = ({ value, onChange }) => {
     }
     const [termGroupObj, setTermGroupObj] = useState(value);
 
+    const findFilteredLexiconTerms = (category) => {
+        return lexiconTerms.entries.filter((lexiconterm) => {
+            return lexiconterm.category === category;
+        });
+    }
+
     const handleChange = (event) => {
         setTermGroupObj((prevState) => {
             const newTermGroupObj = { ...prevState, [event.target.name]: event.target.value };
@@ -28,16 +34,12 @@ const TermGroup = ({ value, onChange }) => {
             return newTermGroupObj;
         });
         if (event.target.name === "category") {
-            const _filteredLexiconTerms = lexiconTerms.entries.filter((lexiconterm) => {
-                return lexiconterm.category === event.target.value;
-            });
+            const _filteredLexiconTerms = findFilteredLexiconTerms(event.target.value);
             setFilteredLexiconTerms(_filteredLexiconTerms);
         }
     };
 
-    // const defaultArgLevel = props.defaults.arglevel || null;
-    const defaultArgLevel = null;
-    const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(lexiconTerms.entries);
+    const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(findFilteredLexiconTerms(value.category));
 
     const fullWidthStyle = {
         width: '92%',
@@ -49,7 +51,7 @@ const TermGroup = ({ value, onChange }) => {
     return (
         <div>
             <div style={{display: "inline-block", margin: "0 5px 0 0"}}>
-                <label htmlFor="termtype" style={{display: "block"}}>Term type</label>
+                <label htmlFor="termtype" style={{display: "block"}}>Term type:</label>
                 <select name="termtype" value={termGroupObj.termtype} onChange={handleChange}>
                     <option value="">Undefined</option>
                     <option value="definiendum">Definiendum</option>
@@ -59,12 +61,12 @@ const TermGroup = ({ value, onChange }) => {
             </div>
 
             <div style={{display: "inline-block", margin: "0 5px 0 0"}}>
-                <label htmlFor="articleterm" style={{display: "block"}}>Article term</label>
+                <label htmlFor="articleterm" style={{display: "block"}}>Article term:</label>
                 <input name="articleterm" type="text" value={termGroupObj.articleterm} onChange={handleChange}/>
             </div>
 
-            <div style={{margin: "5px"}}>
-                <label style={{display: "block"}} htmlFor="lexiconterm">Lexicon term</label>
+            <div style={{display: "inline-block", margin: "0 5px 0 0"}}>
+                <label style={{display: "block"}} htmlFor="lexiconterm">Lexicon term:</label>
                 <select name="category" value={termGroupObj.category} style={{margin: "0 5px 0 0"}} onChange={handleChange}>
                     <option value="">(Choose a category)</option>
                     {Object.keys(lexiconTerms.categories).map((slug) => (
@@ -86,7 +88,7 @@ const TermGroup = ({ value, onChange }) => {
             </div>
 
             {customVisible && 
-                <div style={{visibility: customVisible}}>
+                <div style={{display: "inline-block", margin: "0 5px 0 0", visibility: customVisible}}>
                     <label stype={{marginTop: '5px'}} htmlFor="customterm">Custom term:</label>
                     <input type="text" style={fullWidthStyle} name="customterm" value={termGroupObj.customterm} onChange={handleChange} />
                 </div>
