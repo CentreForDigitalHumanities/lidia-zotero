@@ -111,6 +111,6 @@ export function getLidiaDefaults(extraText) {
         const [k, v] = line.replace(/^lidia\./, '').split(": ");
         if (k && v) { defaultValues[k] = v}
     }
-
+    log(JSON.stringify(defaultValues));
     return defaultValues;
 }

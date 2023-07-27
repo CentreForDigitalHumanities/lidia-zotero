@@ -61,6 +61,9 @@ const AnnotationForm = (props) => {
         lexiconterm: '',
         customterm: ''
     };
+    if (props.defaults.default_termcategory) {
+        defaultTermGroup.category = props.defaults.default_termcategory;
+    }
 
     const addTermGroup = (index) => {
         setLidiaFields((prevState) => {
@@ -174,6 +177,8 @@ const AnnotationForm = (props) => {
         const display = annotation.documentTitle + ': ' + annotation.argname;
         annotationRefRows.push(<option value={annotation.zoteroKey}>{display}</option>);
     }
+
+    log(JSON.stringify(props.defaults));
 
     return (
         <div style={divStyle}>
