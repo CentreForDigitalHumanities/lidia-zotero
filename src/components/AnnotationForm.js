@@ -171,7 +171,12 @@ const AnnotationForm = (props) => {
 
     const annotationRefRows = [(<option value="">(none)</option>)];
     for (let annotation of props.annotations) {
-        const display = annotation.documentTitle + ': ' + annotation.argname;
+        let shortTitle = annotation.documentTitle;
+        if (shortTitle.length > 30) {
+            log('cut');
+            shortTitle = shortTitle.substring(0, 28) + "…";
+        }
+        const display = shortTitle + ': ' + annotation.argname;
         annotationRefRows.push(<option value={annotation.zoteroKey}>{display}</option>);
     }
 
