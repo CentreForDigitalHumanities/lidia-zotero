@@ -90,6 +90,13 @@ const AnnotationForm = (props) => {
         });
     }
 
+    const removeLastTermGroup = (index) => {
+        setLidiaFields((prevState) => {
+            const newTermGroups = prevState.termgroups.slice(0, -1);
+            return { ...prevState, 'termgroups': newTermGroups }
+        });
+    }
+
     const handleTermGroupChange = (index, newValue) => {
         const newTermGroups = [...lidiaFields.termgroups];
         newTermGroups[index] = newValue;
@@ -282,6 +289,7 @@ const AnnotationForm = (props) => {
                                     />
                                 ))}
                                 <button style={{margin: "5px 0 0 0"}} type="button" onClick={addTermGroup}>Add more terms</button>
+                                <button style={{margin: "5px 0 0 0"}} type="button" onClick={removeLastTermGroup}>Remove last term</button>
                             </div>
 
                             <div style={labelStyle}>
