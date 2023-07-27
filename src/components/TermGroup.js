@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-import vocabularyTerms from '../../content/vocabulary.json';
 import lexiconTerms from '../../content/lexicon.json';
 
 const TermGroup = ({ value, onChange }) => {
