@@ -2,6 +2,9 @@ import React from 'react';
 import { useState } from "react";
 import { iso6393 } from "iso-639-3";
 
+import TermGroup from './TermGroup';
+
+
 let languageList = [];
 function getLanguageList() {
     if (languageList.length > 0) {
@@ -22,7 +25,6 @@ for (language of getLanguageList()) {
 }
 
 // This works because we're using esbuild?
-// Note: a SQLite file would be ~2.5 times smaller than this JSON
 import vocabularyTerms from '../../content/vocabulary.json';
 
 const AnnotationForm = (props) => {
@@ -35,6 +37,8 @@ const AnnotationForm = (props) => {
      * arglang
      * lexiconterm
      * customterm
+     * termgroups: an array of termgroup objects {termtype, articleterm, lidiaterm}
+     *   lidiaterm should be either a vocabulary term or a custom term
      * description
      */
     const [lidiaFields, setLidiaFields] = useState({
@@ -42,36 +46,46 @@ const AnnotationForm = (props) => {
         pagestart: props.data.pagestart,
         pageend: props.data.pageend,
         argname: props.data.argname,
-        linglevel: props.data.linglevel,
-        lexiconterm: props.data.lexiconterm,
-        customterm: props.data.customterm,
+        termgroups: props.data.termgroups,
         arglang: props.data.arglang,
         description: props.data.description,
         relationType: props.data.relationType,
         relationTo: props.data.relationTo,
+        annotationKey: props.data.annotationKey
     });
 
-    // TODO: default values aren´t checked to be valid
-    const defaultArgLang = props.defaults.arglang || null;
-    const defaultArgLevel = props.defaults.arglevel || null;
-
-    // TODO: ungroup the subfields and duplicate terms across individual subfields
-    const subfields = ["All", "General", "Morphology", "Phonetics", "Phonology", "Semantics", "Syntax"];
-    const [lexiconTermSubfield, setLexiconTermSubfield] = useState(defaultArgLevel || "All");
-    const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(vocabularyTerms);
-
-
-    const onLexiconTermSubfieldChange  = (event) => {
-        setLexiconTermSubfield(event.target.value);
-        if (event.target.value === "All") {
-            setFilteredLexiconTerms(vocabularyTerms);
-        } else {
-            const _filteredLexiconTerms = vocabularyTerms.filter((lexiconterm) => {
-                return lexiconterm.linglevels.includes(event.target.value);
-            });
-            setFilteredLexiconTerms(_filteredLexiconTerms);
-        }
+    const defaultTermGroup = {
+        termtype: '',
+        articleterm: '',
+        category: '',
+        lexiconterm: '',
+        customterm: ''
+    };
+    if (props.defaults.default_termcategory) {
+        defaultTermGroup.category = props.defaults.default_termcategory;
     }
+
+    const addTermGroup = (index) => {
+        setLidiaFields((prevState) => {
+            const newTermGroups = [...prevState.termgroups, defaultTermGroup]
+            return { ...prevState, 'termgroups': newTermGroups }
+        });
+    }
+
+    const removeLastTermGroup = (index) => {
+        setLidiaFields((prevState) => {
+            const newTermGroups = prevState.termgroups.slice(0, -1);
+            return { ...prevState, 'termgroups': newTermGroups }
+        });
+    }
+
+    const handleTermGroupChange = (index, newValue) => {
+        const newTermGroups = [...lidiaFields.termgroups];
+        newTermGroups[index] = newValue;
+        setLidiaFields((prevState) => {
+            return { ...prevState, 'termgroups': newTermGroups }
+        });
+    };
 
     React.useEffect(() => {
         setLidiaFields(props.data)
@@ -92,6 +106,19 @@ const AnnotationForm = (props) => {
                 // Return empty value so that the form does not crash
                 // Note: this will not work well for booleans
                 return "";
+            }
+        }
+    }
+
+    const getTermGroupValue = (index) =>{
+        if (!lidiaFields.argcont) {
+            log(JSON.stringify(lidiaFields['termgroups'][index]));
+            return lidiaFields['termgroups'][index];
+        } else {
+            if (typeof props.previousAnnotationData !== "undefined") {
+                return props.previousAnnotationData['termgroups'][index];
+            } else {
+                return defaultTermGroup;
             }
         }
     }
@@ -151,9 +178,10 @@ const AnnotationForm = (props) => {
         annotationRefRows.push(<option value={annotation.zoteroKey}>{display}</option>);
     }
 
+    log(JSON.stringify(props.defaults));
+
     return (
         <div style={divStyle}>
-
             <form onSubmit={handleSubmit}>
                 <div style={fullWidthStyle}>
                     <input type="checkbox" id="continuation" name="continuation" checked={lidiaFields.argcont ? 1 : 0} onChange={handleToggleContinuation} disabled={(!props.previousAnnotationData) ? 1 : 0} />
@@ -189,14 +217,6 @@ const AnnotationForm = (props) => {
                             </div>
 
                             <div style={labelStyle}>
-                                <label htmlFor="linglevel">Linguistic level:</label>
-                            </div>
-
-                            <div>
-                                <input type="text" style={fullWidthStyle} name="linglevel" value={getValue("linglevel")} onChange={handleChange} />
-                            </div>
-
-                            <div style={labelStyle}>
                                 <label htmlFor="arglang" style={fullWidthStyle}>Language:</label>
                             </div>
 
@@ -204,33 +224,6 @@ const AnnotationForm = (props) => {
                                 <select name="arglang" value={getValue("arglang")} onChange={handleChange} >
                                     {languageRows}
                                 </select>
-                            </div>
-
-                            <div>
-
-                            </div>
-                            <div style={{margin: "5px"}}>
-                                <label style={{display: "block"}} htmlFor="lexiconterm">Lexicon term</label>
-                                <select style={{margin: "0 5px 0 0"}} value={lexiconTermSubfield} onChange={onLexiconTermSubfieldChange}>
-                                    {subfields.map((subfield) => (
-                                        <option key={subfield} value={subfield}>
-                                            {subfield}
-                                        </option>
-                                        ))
-                                    }
-                                </select>
-                                <select name="lexiconterm" value={getValue("lexiconterm") || null} onChange={handleChange}>
-                                    {filteredLexiconTerms.map((option) => (
-                                        <option key={option.key} value={option.lemma}>
-                                            {option.term}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label htmlFor="customterm" style={{marginTop: '5px'}}>Custom term:</label>
-                                <input type="text" style={fullWidthStyle} name="customterm" value={getValue("customterm")} onChange={handleChange} />
                             </div>
 
                             <div style={labelStyle}>
@@ -255,6 +248,18 @@ const AnnotationForm = (props) => {
                                 <select name="relationTo" style={{margin: "0 5px 0 0"}} value={getValue("relationTo")} onChange={handleChange}>
                                     {annotationRefRows}
                                 </select>
+                            </div>
+
+                            <div>
+                                <h3>Terms</h3>
+                                {lidiaFields.termgroups.map((termGroup, index) => (
+                                    <><h4>Term {index + 1}</h4><TermGroup
+                                        key={lidiaFields.annotationKey + index}
+                                        value={getTermGroupValue(index)}
+                                        onChange={(newValue) => handleTermGroupChange(index, newValue)} /></>
+                                ))}
+                                <button style={{margin: "5px 0 0 0"}} type="button" onClick={addTermGroup}>Add more terms</button>
+                                <button style={{margin: "5px 0 0 0"}} type="button" onClick={removeLastTermGroup}>Remove last term</button>
                             </div>
                         </div>
 

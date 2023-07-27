@@ -14,6 +14,7 @@ window.Lidia = {
         , {"id": "arglang", "label": "lidiaArgumentLanguage.label"}
         , {"id": "articleterm", "label": "lidiaArticleTerm.label"}
         , {"id": "lexiconterm", "label": "lidiaLexiconTerm.label"}
+        , {"id": "termgroups", "label": "lidiaTermGroups.label"}
         , {"id": "description","label": "lidiaArgumentDescription.label"}
         , {"id": "relationType","label": "lidiaArgumentDescription.label"}
         , {"id": "relationTo","label": "lidiaArgumentDescription.label"}

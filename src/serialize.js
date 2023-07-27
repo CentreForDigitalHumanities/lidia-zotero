@@ -47,7 +47,10 @@ export function deserialize(text) {
     if (typeof lidiaObject !== "undefined") {
         // If there are missing fields, assign an empty string to them
         for (const fieldId of fieldIds) {
-            if (typeof lidiaObject[fieldId] === "undefined") {
+            if (typeof lidiaObject[fieldId] === "undefined" && fieldId === "termgroups" ) {
+                lidiaObject[fieldId] = [];
+            }
+            if (typeof lidiaObject[fieldId] === "undefined" && fieldId !== "termgroups") {
                 lidiaObject[fieldId] = '';
             }
         }
@@ -66,7 +69,12 @@ export function getEmptyAnnotation() {
     const fieldIds = Lidia.fields.map(obj => obj.id);
     const data = {};
     for (const fieldId of fieldIds) {
-        data[fieldId] = '';
+        if (fieldId === "termgroups" ) {
+            data[fieldId] = [];
+        }
+        else {
+            data[fieldId] = '';
+        }
     }
     return data;
 }
@@ -103,6 +111,6 @@ export function getLidiaDefaults(extraText) {
         const [k, v] = line.replace(/^lidia\./, '').split(": ");
         if (k && v) { defaultValues[k] = v}
     }
-
+    log(JSON.stringify(defaultValues));
     return defaultValues;
 }
