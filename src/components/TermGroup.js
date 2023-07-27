@@ -6,16 +6,24 @@ import lexiconTerms from '../../content/lexicon.json';
 const TermGroup = ({ value, onChange }) => {
     // Set default value - cleaner way possible?
     if (!value.lexiconterm) {
-        value.lexiconterm = '[Custom]';
+        value.lexiconterm = '';
     }
     if (!value.category) {
-        ; // TODO
+        value.category = '';
+    }
+    if (!value.termtype) {
+        value.termtype = "";
+    }
+    if (!value.articleterm) {
+        value.articleterm = "";
+    }
+    if (!value.customterm) {
+        value.customterm = "";
     }
     const [termGroupObj, setTermGroupObj] = useState(value);
 
     const handleChange = (event) => {
         setTermGroupObj((prevState) => {
-            log('Target name: ' + event.target.name);
             const newTermGroupObj = { ...prevState, [event.target.name]: event.target.value };
             onChange(newTermGroupObj);
             return newTermGroupObj;
@@ -30,14 +38,14 @@ const TermGroup = ({ value, onChange }) => {
 
     // const defaultArgLevel = props.defaults.arglevel || null;
     const defaultArgLevel = null;
-    const subfields = ["All", "General", "Morphology", "Phonetics", "Phonology", "Semantics", "Syntax"];
     const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(lexiconTerms.entries);
 
     const fullWidthStyle = {
         width: '92%',
     };
 
-    const customVisible = termGroupObj.lexiconterm === '[Custom]';
+    // Only show the custom term input box if custom is selected from term list
+    const customVisible = termGroupObj.lexiconterm === 'custom';
 
     return (
         <div style={{color: "red"}}>
@@ -47,10 +55,10 @@ const TermGroup = ({ value, onChange }) => {
             <div style={{display: "inline-block", margin: "0 5px 0 0"}}>
                 <label htmlFor="termtype" style={{display: "block"}}>Term type</label>
                 <select name="termtype" value={termGroupObj.termtype} onChange={handleChange}>
-                    <option value="Undefined">Undefined</option>
-                    <option value="Definiendum">Definiendum</option>
-                    <option value="Definiens">Definiens</option>
-                    <option value="Other">Other</option>
+                    <option value="">Undefined</option>
+                    <option value="definiendum">Definiendum</option>
+                    <option value="definiens">Definiens</option>
+                    <option value="other">Other</option>
                 </select>
             </div>
 
@@ -68,6 +76,7 @@ const TermGroup = ({ value, onChange }) => {
             <div style={{margin: "5px"}}>
                 <label style={{display: "block"}} htmlFor="lexiconterm">Lexicon term</label>
                 <select name="category" value={termGroupObj.category} style={{margin: "0 5px 0 0"}} onChange={handleChange}>
+                    <option value="">(Choose a category)</option>
                     {Object.keys(lexiconTerms.categories).map((slug) => (
                         <option key={slug} value={slug}>
                             {lexiconTerms.categories[slug]}
@@ -76,11 +85,13 @@ const TermGroup = ({ value, onChange }) => {
                     }
                 </select>
                 <select name="lexiconterm" value={termGroupObj.lexiconterm} onChange={handleChange}>
+                    <option value="">(Choose a term)</option>
                     {filteredLexiconTerms.map((option) => (
                         <option key={option.slug} value={option.slug} disabled={!option.selectable}>
                             {option.display}
                         </option>
                     ))}
+                    <option value="custom">(Custom)</option>
                 </select>
             </div>
 

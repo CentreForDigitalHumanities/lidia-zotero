@@ -70,11 +70,7 @@ export function getEmptyAnnotation() {
     const data = {};
     for (const fieldId of fieldIds) {
         if (fieldId === "termgroups" ) {
-            data[fieldId] = [{
-                termtype: 'Undefined',
-                articleterm: '',
-                lidiaterm: 'test new',
-            }];
+            data[fieldId] = [];
         }
         else {
             data[fieldId] = '';

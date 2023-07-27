@@ -78,10 +78,12 @@ const AnnotationForm = (props) => {
     }
 
     const defaultTermGroup = {
-        termtype: 'Undefined',
+        termtype: '',
         articleterm: '',
-        lidiaterm: 'test default',
-    }
+        category: '',
+        lexiconterm: '',
+        customterm: ''
+    };
 
     const addTermGroup = (index) => {
         setLidiaFields((prevState) => {
