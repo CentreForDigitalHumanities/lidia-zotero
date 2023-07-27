@@ -109,8 +109,12 @@ class LexiconProcesser():
 
 if __name__ == '__main__':
     processer = LexiconProcesser()
+    sourcefile = PROJROOT / 'vocabulary' / 'lexicon.xlsx'
+    outfile = PROJROOT / 'content' / 'lexicon.json'
     try:
-        processer.process_lexicon(PROJROOT / 'vocabulary' / 'lexicon.xlsx')
-        processer.write_json(PROJROOT / 'content' / 'lexicon.json')
+        processer.process_lexicon(sourcefile)
+        processer.write_json(outfile)
     except LexiconProcessorException as err:
         print('Could not finish processing because of error: {}'.format(err))
+    else:
+        print('Successfully built {} from {}.'.format(outfile, sourcefile))
