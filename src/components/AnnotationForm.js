@@ -24,9 +24,6 @@ for (language of getLanguageList()) {
     languageRows.push(<option key={language[0]} value={language[0]}>{language[0]} – {language[1]}</option>);
 }
 
-// This works because we're using esbuild?
-import vocabularyTerms from '../../content/vocabulary.json';
-
 const AnnotationForm = (props) => {
     /**
      * argcont: disable the rest of the form
