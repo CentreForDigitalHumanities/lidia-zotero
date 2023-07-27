@@ -21,6 +21,12 @@ const TermGroup = ({ value, onChange }) => {
     }
     const [termGroupObj, setTermGroupObj] = useState(value);
 
+    const findFilteredLexiconTerms = (category) => {
+        return lexiconTerms.entries.filter((lexiconterm) => {
+            return lexiconterm.category === category;
+        });
+    }
+
     const handleChange = (event) => {
         setTermGroupObj((prevState) => {
             const newTermGroupObj = { ...prevState, [event.target.name]: event.target.value };
@@ -28,16 +34,12 @@ const TermGroup = ({ value, onChange }) => {
             return newTermGroupObj;
         });
         if (event.target.name === "category") {
-            const _filteredLexiconTerms = lexiconTerms.entries.filter((lexiconterm) => {
-                return lexiconterm.category === event.target.value;
-            });
+            const _filteredLexiconTerms = findFilteredLexiconTerms(event.target.value);
             setFilteredLexiconTerms(_filteredLexiconTerms);
         }
     };
 
-    // const defaultArgLevel = props.defaults.arglevel || null;
-    const defaultArgLevel = null;
-    const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(lexiconTerms.entries);
+    const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(findFilteredLexiconTerms(value.category));
 
     const fullWidthStyle = {
         width: '92%',
