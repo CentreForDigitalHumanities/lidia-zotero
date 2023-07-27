@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.3.0
         with:
@@ -24,10 +28,9 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
       - name: Install dependencies
         run: npm install
-      - name: Install Python dependencies
+      - name: Generate
         run: |
-          python -m venv .env
-          source .env/bin/activate
+          python -m pip install --upgrade pip
           pip install -r vocabulary/requirements.txt
       - name: Build
         run: npm run build
