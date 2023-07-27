@@ -46,9 +46,6 @@ const AnnotationForm = (props) => {
         pagestart: props.data.pagestart,
         pageend: props.data.pageend,
         argname: props.data.argname,
-        linglevel: props.data.linglevel,
-        lexiconterm: props.data.lexiconterm,
-        customterm: props.data.customterm,
         termgroups: props.data.termgroups,
         arglang: props.data.arglang,
         description: props.data.description,
@@ -56,26 +53,6 @@ const AnnotationForm = (props) => {
         relationTo: props.data.relationTo,
         annotationKey: props.data.annotationKey
     });
-
-    // TODO: default values aren´t checked to be valid
-    const defaultArgLevel = props.defaults.arglevel || null;
-
-    const subfields = ["All", "General", "Morphology", "Phonetics", "Phonology", "Semantics", "Syntax"];
-    const [lexiconTermSubfield, setLexiconTermSubfield] = useState(defaultArgLevel || "All");
-    const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(vocabularyTerms);
-
-
-    const onLexiconTermSubfieldChange  = (event) => {
-        setLexiconTermSubfield(event.target.value);
-        if (event.target.value === "All") {
-            setFilteredLexiconTerms(vocabularyTerms);
-        } else {
-            const _filteredLexiconTerms = vocabularyTerms.filter((lexiconterm) => {
-                return lexiconterm.linglevels.includes(event.target.value);
-            });
-            setFilteredLexiconTerms(_filteredLexiconTerms);
-        }
-    }
 
     const defaultTermGroup = {
         termtype: '',
@@ -235,14 +212,6 @@ const AnnotationForm = (props) => {
                             </div>
 
                             <div style={labelStyle}>
-                                <label htmlFor="linglevel">Linguistic level:</label>
-                            </div>
-
-                            <div>
-                                <input type="text" style={fullWidthStyle} name="linglevel" value={getValue("linglevel")} onChange={handleChange} />
-                            </div>
-
-                            <div style={labelStyle}>
                                 <label htmlFor="arglang" style={fullWidthStyle}>Language:</label>
                             </div>
 
@@ -250,33 +219,6 @@ const AnnotationForm = (props) => {
                                 <select name="arglang" value={getValue("arglang")} onChange={handleChange} >
                                     {languageRows}
                                 </select>
-                            </div>
-
-                            <div>
-
-                            </div>
-                            <div style={{margin: "5px"}}>
-                                <label style={{display: "block"}} htmlFor="lexiconterm">Lexicon term</label>
-                                <select style={{margin: "0 5px 0 0"}} value={lexiconTermSubfield} onChange={onLexiconTermSubfieldChange}>
-                                    {subfields.map((subfield) => (
-                                        <option key={subfield} value={subfield}>
-                                            {subfield}
-                                        </option>
-                                        ))
-                                    }
-                                </select>
-                                <select name="lexiconterm" value={getValue("lexiconterm") || null} onChange={handleChange}>
-                                    {filteredLexiconTerms.map((option) => (
-                                        <option key={option.key} value={option.lemma}>
-                                            {option.term}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label htmlFor="customterm" style={{marginTop: '5px'}}>Custom term:</label>
-                                <input type="text" style={fullWidthStyle} name="customterm" value={getValue("customterm")} onChange={handleChange} />
                             </div>
 
                             <div style={labelStyle}>
