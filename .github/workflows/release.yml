@@ -24,6 +24,11 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
       - name: Install dependencies
         run: npm install
+      - name: Install Python dependencies
+        run: |
+          python -m venv .env
+          source .venv/bin/activate
+          pip install -r vocabulary/requirements.txt
       - name: Build
         run: npm run build
       - name: Release
