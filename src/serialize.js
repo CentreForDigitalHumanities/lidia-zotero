@@ -48,11 +48,7 @@ export function deserialize(text) {
         // If there are missing fields, assign an empty string to them
         for (const fieldId of fieldIds) {
             if (typeof lidiaObject[fieldId] === "undefined" && fieldId === "termgroups" ) {
-                lidiaObject[fieldId] = [{
-                    termtype: 'Undefined',
-                    articleterm: '',
-                    lidiaterm: 'test missing',
-                }];
+                lidiaObject[fieldId] = [];
             }
             if (typeof lidiaObject[fieldId] === "undefined" && fieldId !== "termgroups") {
                 lidiaObject[fieldId] = '';
