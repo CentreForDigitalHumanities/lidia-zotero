@@ -8,20 +8,29 @@ const TermGroup = ({ value, onChange }) => {
     if (!value.lexiconterm) {
         value.lexiconterm = '[Custom]';
     }
+    if (!value.category) {
+        ; // TODO
+    }
     const [termGroupObj, setTermGroupObj] = useState(value);
 
     const handleChange = (event) => {
         setTermGroupObj((prevState) => {
+            log('Target name: ' + event.target.name);
             const newTermGroupObj = { ...prevState, [event.target.name]: event.target.value };
             onChange(newTermGroupObj);
             return newTermGroupObj;
         });
+        if (event.target.name === "category") {
+            const _filteredLexiconTerms = lexiconTerms.entries.filter((lexiconterm) => {
+                return lexiconterm.category === event.target.value;
+            });
+            setFilteredLexiconTerms(_filteredLexiconTerms);
+        }
     };
 
     // const defaultArgLevel = props.defaults.arglevel || null;
     const defaultArgLevel = null;
     const subfields = ["All", "General", "Morphology", "Phonetics", "Phonology", "Semantics", "Syntax"];
-    const [lexiconTermSubfield, setLexiconTermSubfield] = useState(defaultArgLevel || "All");
     const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(lexiconTerms.entries);
 
     const fullWidthStyle = {
@@ -30,17 +39,6 @@ const TermGroup = ({ value, onChange }) => {
 
     const customVisible = termGroupObj.lexiconterm === '[Custom]';
 
-    const onLexiconTermSubfieldChange  = (event) => {
-        setLexiconTermSubfield(event.target.value);
-        if (event.target.value === "All") {
-            setFilteredLexiconTerms(lexiconTerms.entries);
-        } else {
-            const _filteredLexiconTerms = lexiconTerms.entries.filter((lexiconterm) => {
-                return lexiconterm.category === event.target.value;
-            });
-            setFilteredLexiconTerms(_filteredLexiconTerms);
-        }
-    }
     return (
         <div style={{color: "red"}}>
 
@@ -69,7 +67,7 @@ const TermGroup = ({ value, onChange }) => {
 
             <div style={{margin: "5px"}}>
                 <label style={{display: "block"}} htmlFor="lexiconterm">Lexicon term</label>
-                <select style={{margin: "0 5px 0 0"}} value={lexiconTermSubfield} onChange={onLexiconTermSubfieldChange}>
+                <select name="category" value={termGroupObj.category} style={{margin: "0 5px 0 0"}} onChange={handleChange}>
                     {Object.keys(lexiconTerms.categories).map((slug) => (
                         <option key={slug} value={slug}>
                             {lexiconTerms.categories[slug]}
