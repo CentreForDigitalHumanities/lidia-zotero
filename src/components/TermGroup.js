@@ -20,7 +20,7 @@ const TermGroup = ({ value, onChange }) => {
         value.customterm = "";
     }
     if (!value.customcategory) {
-        value.customterm = "";
+        value.customcategory = "";
     }
     const [termGroupObj, setTermGroupObj] = useState(value);
 
@@ -44,6 +44,15 @@ const TermGroup = ({ value, onChange }) => {
             const _filteredLexiconTerms = findFilteredLexiconTerms(event.target.value);
             setFilteredLexiconTerms(_filteredLexiconTerms);
         }
+    };
+
+    const copyArticleTerm = (event) => {
+        // Copy article term to custom term
+        setTermGroupObj((prevState) => {
+            const newTermGroupObj = { ...prevState, customterm: event.target.value, lexiconterm: 'custom' };
+            onChange(newTermGroupObj);
+            return newTermGroupObj;
+        });
     };
 
     const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(findFilteredLexiconTerms(value.category));
@@ -70,7 +79,7 @@ const TermGroup = ({ value, onChange }) => {
 
             <div style={{display: "inline-block", margin: "0 5px 0 0"}}>
                 <label htmlFor="articleterm" style={{display: "block"}}>Article term:</label>
-                <input name="articleterm" type="text" value={termGroupObj.articleterm} onChange={handleChange}/>
+                <input name="articleterm" type="text" value={termGroupObj.articleterm} onDoubleClick={copyArticleTerm} onChange={handleChange}/>
             </div>
 
             <div style={{display: "inline-block", margin: "0 5px 0 0"}}>
