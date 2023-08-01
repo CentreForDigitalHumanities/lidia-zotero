@@ -67,14 +67,21 @@ const AnnotationForm = (props) => {
             const newTermGroups = [...prevState.termgroups, defaultTermGroup]
             return { ...prevState, 'termgroups': newTermGroups }
         });
-    }
+    };
 
     const removeLastTermGroup = (index) => {
         setLidiaFields((prevState) => {
             const newTermGroups = prevState.termgroups.slice(0, -1);
             return { ...prevState, 'termgroups': newTermGroups }
         });
-    }
+    };
+
+    const takeTermsFromPrevious = () => {
+        setLidiaFields((prevState) => {
+            const newTermGroups = props.previousAnnotationData.termgroups;
+            return { ...prevState, 'termgroups': newTermGroups };
+        });
+    };
 
     const handleTermGroupChange = (index, newValue) => {
         const newTermGroups = [...lidiaFields.termgroups];
@@ -182,6 +189,8 @@ const AnnotationForm = (props) => {
 
     log(JSON.stringify(props.defaults));
 
+    const takeTermsFromPreviousDisabled = (typeof props.previousAnnotationData === "undefined" || !props.previousAnnotationData.termgroups) ? true : false;
+
     return (
         <div style={divStyle}>
             <form onSubmit={handleSubmit}>
@@ -262,6 +271,10 @@ const AnnotationForm = (props) => {
                                 ))}
                                 <button style={{margin: "5px 0 0 0"}} type="button" onClick={addTermGroup}>Add more terms</button>
                                 <button style={{margin: "5px 0 0 0"}} type="button" onClick={removeLastTermGroup}>Remove last term</button>
+                                {
+                                    lidiaFields.termgroups.length === 0 && 
+                                    <><br /><button style={{margin: "5px 0 0 0"}} type="button" disabled={takeTermsFromPreviousDisabled} onClick={takeTermsFromPrevious}>Take from previous annotation</button></>
+                                }
                             </div>
                         </div>
 

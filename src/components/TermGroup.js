@@ -19,6 +19,9 @@ const TermGroup = ({ value, onChange }) => {
     if (!value.customterm) {
         value.customterm = "";
     }
+    if (!value.customcategory) {
+        value.customcategory = "";
+    }
     const [termGroupObj, setTermGroupObj] = useState(value);
 
     const findFilteredLexiconTerms = (category) => {
@@ -30,6 +33,10 @@ const TermGroup = ({ value, onChange }) => {
     const handleChange = (event) => {
         setTermGroupObj((prevState) => {
             const newTermGroupObj = { ...prevState, [event.target.name]: event.target.value };
+            if (event.target.name === "category" && event.target.value === "custom") {
+                // If custom category is selected, term should be custom as well
+                newTermGroupObj.lexiconterm = "custom";
+            }
             onChange(newTermGroupObj);
             return newTermGroupObj;
         });
@@ -39,14 +46,24 @@ const TermGroup = ({ value, onChange }) => {
         }
     };
 
+    const copyArticleTerm = (event) => {
+        // Copy article term to custom term
+        setTermGroupObj((prevState) => {
+            const newTermGroupObj = { ...prevState, customterm: event.target.value, lexiconterm: 'custom' };
+            onChange(newTermGroupObj);
+            return newTermGroupObj;
+        });
+    };
+
     const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(findFilteredLexiconTerms(value.category));
 
     const fullWidthStyle = {
         width: '92%',
     };
 
-    // Only show the custom term input box if custom is selected from term list
-    const customVisible = termGroupObj.lexiconterm === 'custom';
+    // Only show the custom category or term input box if custom is selected from term list
+    const customCategory = termGroupObj.category === 'custom';
+    const customTerm = termGroupObj.lexiconterm === 'custom';
 
     return (
         <div>
@@ -62,7 +79,7 @@ const TermGroup = ({ value, onChange }) => {
 
             <div style={{display: "inline-block", margin: "0 5px 0 0"}}>
                 <label htmlFor="articleterm" style={{display: "block"}}>Article term:</label>
-                <input name="articleterm" type="text" value={termGroupObj.articleterm} onChange={handleChange}/>
+                <input name="articleterm" type="text" value={termGroupObj.articleterm} onDoubleClick={copyArticleTerm} onChange={handleChange}/>
             </div>
 
             <div style={{display: "inline-block", margin: "0 5px 0 0"}}>
@@ -75,20 +92,28 @@ const TermGroup = ({ value, onChange }) => {
                         </option>
                         ))
                     }
+                    <option value="custom">(Custom category)</option>
                 </select>
                 <select name="lexiconterm" value={termGroupObj.lexiconterm} onChange={handleChange}>
-                    <option value="">(Choose a term)</option>
+                    {!customCategory && <option value="">(Choose a term)</option>}
                     {filteredLexiconTerms.map((option) => (
                         <option key={option.slug} value={option.slug} disabled={!option.selectable}>
                             {option.display}
                         </option>
                     ))}
-                    <option value="custom">(Custom)</option>
+                    <option value="custom">(Custom term)</option>
                 </select>
             </div>
 
-            {customVisible && 
-                <div style={{display: "inline-block", margin: "0 5px 0 0", visibility: customVisible}}>
+            {customCategory && 
+                <div style={{display: "inline-block", margin: "0 5px 0 0"}}>
+                    <label stype={{marginTop: '5px'}} htmlFor="customcategory">Custom category:</label>
+                    <input type="text" style={fullWidthStyle} name="customcategory" value={termGroupObj.customcategory} onChange={handleChange} />
+                </div>
+            }
+
+            {customTerm && 
+                <div style={{display: "inline-block", margin: "0 5px 0 0"}}>
                     <label stype={{marginTop: '5px'}} htmlFor="customterm">Custom term:</label>
                     <input type="text" style={fullWidthStyle} name="customterm" value={termGroupObj.customterm} onChange={handleChange} />
                 </div>
