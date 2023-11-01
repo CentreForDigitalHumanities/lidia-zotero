@@ -51,6 +51,8 @@ const AnnotationForm = (props) => {
         annotationKey: props.data.annotationKey
     });
 
+    const [manualChange, setManualChange] = useState(false);
+
     const defaultTermGroup = {
         termtype: '',
         articleterm: '',
@@ -67,6 +69,7 @@ const AnnotationForm = (props) => {
             const newTermGroups = [...prevState.termgroups, defaultTermGroup]
             return { ...prevState, 'termgroups': newTermGroups }
         });
+        setManualChange(true);
     };
 
     const removeLastTermGroup = (index) => {
@@ -74,6 +77,7 @@ const AnnotationForm = (props) => {
             const newTermGroups = prevState.termgroups.slice(0, -1);
             return { ...prevState, 'termgroups': newTermGroups }
         });
+        setManualChange(true);
     };
 
     const takeTermsFromPrevious = () => {
@@ -81,6 +85,7 @@ const AnnotationForm = (props) => {
             const newTermGroups = props.previousAnnotationData.termgroups;
             return { ...prevState, 'termgroups': newTermGroups };
         });
+        setManualChange(true);
     };
 
     const handleTermGroupChange = (index, newValue) => {
@@ -89,11 +94,18 @@ const AnnotationForm = (props) => {
         setLidiaFields((prevState) => {
             return { ...prevState, 'termgroups': newTermGroups }
         });
+        setManualChange(true);
     };
 
+    /* Fire onEdit if a change to lidiaFields has been made caused by
+     * a manual edit. This check is important, because otherwise it is
+     * called immediately after opening the form, which would mean that
+     * empty annotations are saved. */
     React.useEffect(() => {
-        setLidiaFields(props.data)
-    }, [props.data]);
+        if (manualChange) {
+            props.onEdit(lidiaFields);
+        }
+    }, [lidiaFields]);
 
     const getValue = (field) => {
         // Get the value of a field that has to be displayed. In the case
@@ -131,6 +143,7 @@ const AnnotationForm = (props) => {
         setLidiaFields((prevState) => {
             return { ...prevState, [event.target.name]: event.target.value }
         });
+        setManualChange(true);
     };
 
     const handleSubmit = (event) => {
@@ -142,22 +155,7 @@ const AnnotationForm = (props) => {
         setLidiaFields((prevState) => {
             return { ...prevState, "argcont": event.target.checked}
         });
-    }
-
-    const dataWillBeOverwritten = () => {
-        // If the annotation is set as a continuation while lidiaFields contains
-        // any other data, this data will not be saved and will be lost.
-        // This function is used to determine whether this warning should be
-        // shown.
-        if (lidiaFields.argcont) {
-            for (const [key, value] of Object.entries(lidiaFields)) {
-                if (key !== 'argcont' && value)
-                    return true;
-            }
-            return false;
-        } else {
-            return false;
-        }
+        setManualChange(true);
     }
 
     const divStyle = {
@@ -180,14 +178,11 @@ const AnnotationForm = (props) => {
     for (let annotation of props.annotations) {
         let shortTitle = annotation.documentTitle;
         if (shortTitle.length > 30) {
-            log('cut');
             shortTitle = shortTitle.substring(0, 28) + "…";
         }
         const display = shortTitle + ': ' + annotation.argname;
         annotationRefRows.push(<option value={annotation.zoteroKey}>{display}</option>);
     }
-
-    log(JSON.stringify(props.defaults));
 
     const takeTermsFromPreviousDisabled = (typeof props.previousAnnotationData === "undefined" || !props.previousAnnotationData.termgroups) ? true : false;
 
@@ -196,7 +191,7 @@ const AnnotationForm = (props) => {
             <form onSubmit={handleSubmit}>
                 <div style={fullWidthStyle}>
                     <input type="checkbox" id="continuation" name="continuation" checked={lidiaFields.argcont ? 1 : 0} onChange={handleToggleContinuation} disabled={(!props.previousAnnotationData) ? 1 : 0} />
-                    <label htmlFor="continuation">Annotation is continuation of previous argument</label>
+                    <label htmlFor="continuation">Annotation is continuation of previous argument (overwrites existing data)</label>
                 </div>
 
                 {props.data &&
@@ -282,10 +277,6 @@ const AnnotationForm = (props) => {
 
                     </fieldset>
                 }
-                <div>
-                    <button type='submit'>Save</button>
-                    { dataWillBeOverwritten() && <p><strong>Warning: saving will overwrite previously entered data!</strong></p> }
-                </div>
             </form>
         </div>
     );
