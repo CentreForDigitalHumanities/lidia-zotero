@@ -69,7 +69,6 @@ export function deserialize(text) {
 export function getEmptyAnnotation() {
     const fieldIds = Lidia.fields.map(obj => obj.id);
     const data = {};
-    data.lidiaId = uuid;
     for (const fieldId of fieldIds) {
         if (fieldId === "termgroups" ) {
             data[fieldId] = [];
