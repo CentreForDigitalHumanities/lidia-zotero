@@ -181,7 +181,8 @@ const AnnotationForm = (props) => {
         if (shortTitle.length > 30) {
             shortTitle = shortTitle.substring(0, 28) + "…";
         }
-        const display = shortTitle + ': ' + annotation.argname;
+        const argname = annotation.argname || "(untitled argument)";
+        const display = shortTitle + ': ' + argname;
         annotationRefRows.push(<option value={annotation.zoteroKey}>{display}</option>);
     }
 
