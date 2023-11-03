@@ -96,7 +96,6 @@ export class LidiaPanel {
             lidiaData = {...lidiaData, arglang: defaultValues.default_arglang};
         }
         log('Data after defaults:\n' + JSON.stringify(lidiaData));
-        lidiaData.annotationKey = item.key;
         const annotationText = item.annotationText;
         const annotations = await getAllLidiaAnnotations(item.libraryID);
         const previousAnnotation = getPreviousAnnotation(item);
