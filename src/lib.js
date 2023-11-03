@@ -60,7 +60,7 @@ window.Lidia = {
 
 		this.menuitem = createXElement('menuitem');
 		this.menuitem.id = 'lidia-migrate';
-        this.menuitem.setAttribute('label', 'Migrate LIDIA items to newest version')
+        this.menuitem.setAttribute('label', 'Migrate LIDIA items to newest version...')
         this.menuitem.addEventListener('click', () => {this.onMigrateItemsClicked()});
 		this.doc.getElementById('menu_EditPopup').appendChild(this.menuitem);
 
@@ -100,6 +100,13 @@ window.Lidia = {
         const dryRunResults = await migrateAllLidiaAnnotations(
             libraryID, true
         );
+        if (dryRunResults.migratedLidiaAnnotations === 0) {
+            this.win.alert(
+                "All annotations in the currently selected library are already " +
+                "up to date. No changes made."
+            );
+            return;
+        }
         if (this.win.confirm(
             `Are you sure you want to migrate all LIDIA annotations ` +
             `in the currently selected library? This operation will ` +
