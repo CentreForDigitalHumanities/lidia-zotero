@@ -89,7 +89,7 @@ window.Lidia = {
 
     shutdown: function() {
         this.panel.destroy();
-        this.menuitem.destroy();
+        this.menuitem.remove();
 
         Zotero.Notifier.unregisterObserver(this.notifierID);
     },
