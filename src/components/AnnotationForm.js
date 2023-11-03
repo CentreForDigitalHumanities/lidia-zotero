@@ -48,7 +48,8 @@ const AnnotationForm = (props) => {
         description: props.data.description,
         relationType: props.data.relationType,
         relationTo: props.data.relationTo,
-        annotationKey: props.data.annotationKey
+        annotationKey: props.data.annotationKey,
+        lidiaId: props.data.lidiaId,
     });
 
     const [manualChange, setManualChange] = useState(false);
