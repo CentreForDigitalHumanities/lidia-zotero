@@ -175,10 +175,15 @@ const AnnotationForm = (props) => {
     }
 
     const annotationRefRows = [(<option value="">(none)</option>)];
+
+    let relationFound = false;
     for (let annotation of props.annotations) {
         if (annotation.lidiaId === lidiaFields.lidiaId) {
             // Do not allow self-reference
             continue;
+        }
+        if (lidiaFields.relationTo === annotation.lidiaId) {
+            relationFound = true;
         }
         let shortTitle = annotation.documentTitle;
         if (shortTitle.length > 30) {
@@ -187,6 +192,9 @@ const AnnotationForm = (props) => {
         const argname = annotation.argname || "(untitled argument)";
         const display = shortTitle + ': ' + argname;
         annotationRefRows.push(<option value={annotation.lidiaId}>{display}</option>);
+    }
+    if (lidiaFields.relationTo && !relationFound) {
+        annotationRefRows.push(<option value={lidiaFields.relationTo}>(previously deleted annotation)</option>);
     }
 
     const takeTermsFromPreviousDisabled = (typeof props.previousAnnotationData === "undefined" || !props.previousAnnotationData.termgroups) ? true : false;
