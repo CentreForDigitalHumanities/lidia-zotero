@@ -16,6 +16,9 @@ import { getAllLidiaAnnotations } from "./relations.js";
 export class LidiaPanel {
     tab;
     tabPanel;
+    currentAnnotation;
+    currentLidiaData;
+    currentLidiaDataChanged;
     annotationEvents = [];
 
     /**
@@ -24,6 +27,8 @@ export class LidiaPanel {
      */
     constructor() {
         this.annotationEvents = [];
+        this.currentLidiaData = null;
+        this.currentLidiaDataChanged = false;
     }
 
     /**
@@ -100,8 +105,12 @@ export class LidiaPanel {
                             defaults={defaultValues}
                             previousAnnotationData={previousAnnotationData}
                             onSave={this.onSaveAnnotation.bind(this)}
+                            onEdit={this.onEditAnnotation.bind(this)}
                             annotations={annotations}
+                            key={item.key}
                         />);
+        this.currentLidiaData = null;
+        this.activateAutosave();
     }
 
     destroy() {
@@ -145,6 +154,8 @@ export class LidiaPanel {
      * @param {DataObject} item - the selected Zotero item
      */
     async receiveAnnotation(item) {
+        // First autosave the current annotation
+        this.autosave();
         this.currentAnnotation = item;
         log('receiveAnnotation: 0')
         let data;
@@ -179,6 +190,38 @@ export class LidiaPanel {
         }
     }
 
+
+    /**
+     * Save current state of form for autosave
+     */
+    onEditAnnotation(lidiaData) {
+        this.currentLidiaData = lidiaData;
+        this.currentLidiaDataChanged = true;
+    }
+
+    /**
+     * Perform automatic save based on this.lidiaData
+     */
+    autosave() {
+        if (this.currentAnnotation && this.currentLidiaData && this.currentLidiaDataChanged) {
+            log("Performing an automatic save");
+            this.onSaveAnnotation(this.currentLidiaData);
+            this.currentLidiaDataChanged = false;
+        }
+    }
+
+    activateAutosave() {
+        log("Activating autosave");
+        this.deactivateAutosave();
+        this.autosaveInterval = setInterval(() => {this.autosave()}, 1000);
+    }
+
+    deactivateAutosave() {
+        if (this.autosaveInterval) {
+            log("Disabling autosave");
+            clearInterval(this.autosaveInterval)
+        }
+    }
 
     /**
      * Serialize contents of the form and save to database

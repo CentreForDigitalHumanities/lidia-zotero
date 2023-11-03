@@ -4,6 +4,7 @@ import lexiconTerms from '../../content/lexicon.json';
 
 const TermGroup = ({ value, onChange }) => {
     // Set default value - cleaner way possible?
+    value = value || {};
     if (!value.lexiconterm) {
         value.lexiconterm = '';
     }
