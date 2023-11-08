@@ -1,4 +1,5 @@
 import { parse, stringify } from 'yaml';
+import { v4 as uuidv4 } from 'uuid';
 
 /* global window, Zotero, Lidia */
 
@@ -76,7 +77,29 @@ export function getEmptyAnnotation() {
             data[fieldId] = '';
         }
     }
+    assignLidiaId(data);
     return data;
+}
+
+/**
+ * Assign a unique ID to a LIDIA JavaScript object. If the object already
+ * has an ID, leave it intact. The object is changed in-place.
+ * @param {Object} data - the LIDIA JavaScript object
+ */
+export function assignLidiaId(data) {
+    if (!data.lidiaId) {
+        data.lidiaId = uuidv4();
+        log("Assigned LIDIA ID: " + data.lidiaId);
+    }
+}
+
+/**
+ * Migrate a LIDIA JavaScript object to the newest version.
+ * The object is changed in-place.
+ * @param {Object} data - the LIDIA JavaScript object
+ */
+export function migrateLidiaObject(data) {
+    assignLidiaId(data);
 }
 
 /**
@@ -90,7 +113,13 @@ export function serialize(data) {
     // If annotations have been imported but none have yet been converted to
     // a LidiaAnnotation, data will be undefined  here
     if (data && data.argcont) {
-        data = {argcont: true}
+        // If the annotation is a continuation, only this information
+        // has to be saved, together with the unique ID.
+        const newdata = {argcont: true}
+        if (data.lidiaId) {
+            newdata.lidiaId = data.lidiaId;
+        }
+        data = newdata;
     }
     output += stringify(data);
     return output;

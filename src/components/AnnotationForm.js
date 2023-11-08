@@ -48,7 +48,7 @@ const AnnotationForm = (props) => {
         description: props.data.description,
         relationType: props.data.relationType,
         relationTo: props.data.relationTo,
-        annotationKey: props.data.annotationKey
+        lidiaId: props.data.lidiaId,
     });
 
     const [manualChange, setManualChange] = useState(false);
@@ -175,13 +175,26 @@ const AnnotationForm = (props) => {
     }
 
     const annotationRefRows = [(<option value="">(none)</option>)];
+
+    let relationFound = false;
     for (let annotation of props.annotations) {
+        if (annotation.lidiaId === lidiaFields.lidiaId) {
+            // Do not allow self-reference
+            continue;
+        }
+        if (lidiaFields.relationTo === annotation.lidiaId) {
+            relationFound = true;
+        }
         let shortTitle = annotation.documentTitle;
         if (shortTitle.length > 30) {
             shortTitle = shortTitle.substring(0, 28) + "…";
         }
-        const display = shortTitle + ': ' + annotation.argname;
-        annotationRefRows.push(<option value={annotation.zoteroKey}>{display}</option>);
+        const argname = annotation.argname || "(untitled argument)";
+        const display = shortTitle + ': ' + argname;
+        annotationRefRows.push(<option value={annotation.lidiaId}>{display}</option>);
+    }
+    if (lidiaFields.relationTo && !relationFound) {
+        annotationRefRows.push(<option value={lidiaFields.relationTo}>(previously deleted annotation)</option>);
     }
 
     const takeTermsFromPreviousDisabled = (typeof props.previousAnnotationData === "undefined" || !props.previousAnnotationData.termgroups) ? true : false;
@@ -260,7 +273,7 @@ const AnnotationForm = (props) => {
                                 <h3>Terms</h3>
                                 {lidiaFields.termgroups.map((termGroup, index) => (
                                     <><h4>Term {index + 1}</h4><TermGroup
-                                        key={lidiaFields.annotationKey + index}
+                                        key={lidiaFields.lidiaId + index}
                                         value={getTermGroupValue(index)}
                                         onChange={(newValue) => handleTermGroupChange(index, newValue)} /></>
                                 ))}

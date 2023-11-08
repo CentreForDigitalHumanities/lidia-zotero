@@ -1,7 +1,13 @@
 import React from "react";
 import { createRoot } from 'react-dom/client';
 
-import { deserialize, getEmptyAnnotation, getLidiaDefaults, serialize } from "./serialize.js";
+import { 
+    deserialize,
+    getEmptyAnnotation,
+    getLidiaDefaults,
+    migrateLidiaObject,
+    serialize
+} from "./serialize.js";
 import AnnotationForm from "./components/AnnotationForm";
 import PleaseSelect from "./components/PleaseSelect";
 import { getPreviousAnnotation } from "./continuation.js";
@@ -90,7 +96,6 @@ export class LidiaPanel {
             lidiaData = {...lidiaData, arglang: defaultValues.default_arglang};
         }
         log('Data after defaults:\n' + JSON.stringify(lidiaData));
-        lidiaData.annotationKey = item.key;
         const annotationText = item.annotationText;
         const annotations = await getAllLidiaAnnotations(item.libraryID);
         const previousAnnotation = getPreviousAnnotation(item);
@@ -167,6 +172,7 @@ export class LidiaPanel {
         }
         if (data !== undefined) {
             log('receiveAnnotation: 1: loadAnnotationForm with data');
+            migrateLidiaObject(data);
             await this.loadAnnotationForm(item, data);
         } else {
             // Data is undefined if it could not be parsed. Disable the
