@@ -78,10 +78,6 @@ window.Lidia = {
 
     onReaderSelect: async function(reader) {
         log("Reader selected");
-        const item = Zotero.Items.get(reader.itemID);
-        log(
-            "We are in file: " + `${item.getField("title")}`
-        );
         await this.panel.buildSideBarPanel();
         await this.panel.addSelectEvents();
 
