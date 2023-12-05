@@ -44,9 +44,18 @@ export class LidiaPanel {
      */
     async buildSideBarPanel() {
         log("Building LIDIA panel");
+        
+        // Get the tab container (the container of the tabs in the pane on the right)
+        const tabContainer = document.getElementById(`${window.Zotero_Tabs._selectedID}-context`);
+        const tabbox = tabContainer.querySelector("tabbox");
+        if (!tabbox) {
+            log("Cannot create LIDIA panel for now, it seems that UI is not ready");
+            return;
+        }
+        
         let tab = this.tab;
         if (!tab) {
-            tab = document.createElement("tab");
+            tab = createXElement("tab");
             tab.setAttribute("id", "lidia-tab");
             tab.setAttribute(
                 "label",
@@ -54,10 +63,8 @@ export class LidiaPanel {
             );
             this.tab = tab;
         }
-
-        const tabContainer = document.getElementById(`${window.Zotero_Tabs._selectedID}-context`);
-        const tabbox = tabContainer.querySelector("tabbox");
         tabbox.querySelector("tabs").appendChild(tab);
+
 
         // panel = this.tabPanel
         if (!this.tabPanel) {
@@ -77,10 +84,6 @@ export class LidiaPanel {
             this.formRoot.render(<PleaseSelect status="noselection" />);
         }
         tabbox.querySelector("tabpanels").appendChild(this.tabPanel);
-        tabbox.selectedIndex = Array.prototype.indexOf.call(
-                tabbox.querySelector("tabs").childNodes,
-                tabbox.querySelector("#lidia-tab")
-        );
     }
 
 
