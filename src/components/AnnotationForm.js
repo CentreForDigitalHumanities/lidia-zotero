@@ -186,7 +186,9 @@ const AnnotationForm = (props) => {
             relationFound = true;
         }
         let shortTitle = annotation.documentTitle;
-        if (shortTitle.length > 30) {
+        if (!shortTitle) {
+            shortTitle = "(untitled document)";
+        } else if (shortTitle.length > 30) {
             shortTitle = shortTitle.substring(0, 28) + "…";
         }
         const argname = annotation.argname || "(untitled argument)";
