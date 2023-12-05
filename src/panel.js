@@ -1,7 +1,13 @@
 import React from "react";
 import { createRoot } from 'react-dom/client';
 
-import { deserialize, getEmptyAnnotation, getLidiaDefaults, serialize } from "./serialize.js";
+import { 
+    deserialize,
+    getEmptyAnnotation,
+    getLidiaDefaults,
+    migrateLidiaObject,
+    serialize
+} from "./serialize.js";
 import AnnotationForm from "./components/AnnotationForm";
 import PleaseSelect from "./components/PleaseSelect";
 import { getPreviousAnnotation } from "./continuation.js";
@@ -16,6 +22,9 @@ import { getAllLidiaAnnotations } from "./relations.js";
 export class LidiaPanel {
     tab;
     tabPanel;
+    currentAnnotation;
+    currentLidiaData;
+    currentLidiaDataChanged;
     annotationEvents = [];
 
     /**
@@ -24,6 +33,8 @@ export class LidiaPanel {
      */
     constructor() {
         this.annotationEvents = [];
+        this.currentLidiaData = null;
+        this.currentLidiaDataChanged = false;
     }
 
     /**
@@ -81,9 +92,10 @@ export class LidiaPanel {
         const publication = item.parentItem.parentItem;
         const extra = publication.getField("extra");
         const defaultValues = getLidiaDefaults(extra);
-        if (lidiaData.hasOwnProperty('arglang') && lidiaData.arglang === '' && defaultValues.arglang) {
-            lidiaData = {...lidiaData, arglang: defaultValues.arglang};
+        if (lidiaData.hasOwnProperty('arglang') && lidiaData.arglang === '' && defaultValues.default_arglang) {
+            lidiaData = {...lidiaData, arglang: defaultValues.default_arglang};
         }
+        log('Data after defaults:\n' + JSON.stringify(lidiaData));
         const annotationText = item.annotationText;
         const annotations = await getAllLidiaAnnotations(item.libraryID);
         const previousAnnotation = getPreviousAnnotation(item);
@@ -98,8 +110,12 @@ export class LidiaPanel {
                             defaults={defaultValues}
                             previousAnnotationData={previousAnnotationData}
                             onSave={this.onSaveAnnotation.bind(this)}
+                            onEdit={this.onEditAnnotation.bind(this)}
                             annotations={annotations}
+                            key={item.key}
                         />);
+        this.currentLidiaData = null;
+        this.activateAutosave();
     }
 
     destroy() {
@@ -143,6 +159,8 @@ export class LidiaPanel {
      * @param {DataObject} item - the selected Zotero item
      */
     async receiveAnnotation(item) {
+        // First autosave the current annotation
+        this.autosave();
         this.currentAnnotation = item;
         log('receiveAnnotation: 0')
         let data;
@@ -154,6 +172,7 @@ export class LidiaPanel {
         }
         if (data !== undefined) {
             log('receiveAnnotation: 1: loadAnnotationForm with data');
+            migrateLidiaObject(data);
             await this.loadAnnotationForm(item, data);
         } else {
             // Data is undefined if it could not be parsed. Disable the
@@ -177,6 +196,38 @@ export class LidiaPanel {
         }
     }
 
+
+    /**
+     * Save current state of form for autosave
+     */
+    onEditAnnotation(lidiaData) {
+        this.currentLidiaData = lidiaData;
+        this.currentLidiaDataChanged = true;
+    }
+
+    /**
+     * Perform automatic save based on this.lidiaData
+     */
+    autosave() {
+        if (this.currentAnnotation && this.currentLidiaData && this.currentLidiaDataChanged) {
+            log("Performing an automatic save");
+            this.onSaveAnnotation(this.currentLidiaData);
+            this.currentLidiaDataChanged = false;
+        }
+    }
+
+    activateAutosave() {
+        log("Activating autosave");
+        this.deactivateAutosave();
+        this.autosaveInterval = setInterval(() => {this.autosave()}, 1000);
+    }
+
+    deactivateAutosave() {
+        if (this.autosaveInterval) {
+            log("Disabling autosave");
+            clearInterval(this.autosaveInterval)
+        }
+    }
 
     /**
      * Serialize contents of the form and save to database

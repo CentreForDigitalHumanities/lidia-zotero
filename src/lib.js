@@ -1,6 +1,7 @@
 import React from "react";
 
 import { LidiaPanel } from "./panel.js";
+import { migrateAllLidiaAnnotations } from "./relations.js";
 /* global window, Zotero */
 
 
@@ -10,10 +11,8 @@ window.Lidia = {
         , {"id": "argname", "label": "lidiaArgumentName.label"}
         , {"id": "pagestart", "label": "lidiaPageStart.label"}
         , {"id": "pageend", "label": "lidiaPageEnd.label"}
-        , {"id": "linglevel", "label": "lidiaLinguisticLevel.label"}
         , {"id": "arglang", "label": "lidiaArgumentLanguage.label"}
-        , {"id": "articleterm", "label": "lidiaArticleTerm.label"}
-        , {"id": "lexiconterm", "label": "lidiaLexiconTerm.label"}
+        , {"id": "termgroups", "label": "lidiaTermGroups.label"}
         , {"id": "description","label": "lidiaArgumentDescription.label"}
         , {"id": "relationType","label": "lidiaArgumentDescription.label"}
         , {"id": "relationTo","label": "lidiaArgumentDescription.label"}
@@ -28,6 +27,7 @@ window.Lidia = {
 		this.rootURI = rootURI;
 		this.initialized = true;
         this.win = Zotero.getMainWindow();
+        this.doc = this.win.document;
         this.stringBundle = Services.strings.createBundle(
             'chrome://lidia-zotero/locale/lidia.properties'
         );
@@ -62,6 +62,12 @@ window.Lidia = {
 
         this.panel = new LidiaPanel();
 
+		this.menuitem = createXElement('menuitem');
+		this.menuitem.id = 'lidia-migrate';
+        this.menuitem.setAttribute('label', 'Migrate LIDIA items to newest version...')
+        this.menuitem.addEventListener('click', () => {this.onMigrateItemsClicked()});
+		this.doc.getElementById('menu_EditPopup').appendChild(this.menuitem);
+
         // If a reader is currently selected, activate it. This is only needed
         // when a user activates the extension while Zotero is running.
         const reader = Zotero.Reader.getByTabID(window.Zotero_Tabs._selectedID);
@@ -87,6 +93,34 @@ window.Lidia = {
 
     shutdown: function() {
         this.panel.destroy();
+        this.menuitem.remove();
+
         Zotero.Notifier.unregisterObserver(this.notifierID);
+    },
+
+    onMigrateItemsClicked: async function() {
+        const libraryID = ZoteroPane.getSelectedLibraryID();
+        log("Migrating items of library with ID " + libraryID);
+        const dryRunResults = await migrateAllLidiaAnnotations(
+            libraryID, true
+        );
+        if (dryRunResults.migratedLidiaAnnotations === 0) {
+            this.win.alert(
+                "All annotations in the currently selected library are already " +
+                "up to date. No changes made."
+            );
+            return;
+        }
+        if (this.win.confirm(
+            `Are you sure you want to migrate all LIDIA annotations ` +
+            `in the currently selected library? This operation will ` +
+            `touch ${dryRunResults.migratedLidiaAnnotations} annotations.`
+        )) {
+            const results = await migrateAllLidiaAnnotations(libraryID);
+            this.win.alert(
+                `Migrated ${results.migratedLidiaAnnotations} out ` +
+                `of ${results.allLidiaAnnotations} in current library.`
+            );
+        }
     }
 };

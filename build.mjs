@@ -10,7 +10,7 @@ import 'zotero-plugin/version.js';
 const execFile = promisify(execFileCb);
 
 async function prebuild() {
-    await execFile('python', ['vocabulary/vocabulary.py']);
+    await execFile('python', ['vocabulary/lexicon_converter.py']);
 }
 
 async function build() {

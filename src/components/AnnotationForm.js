@@ -2,6 +2,9 @@ import React from 'react';
 import { useState } from "react";
 import { iso6393 } from "iso-639-3";
 
+import TermGroup from './TermGroup';
+
+
 let languageList = [];
 function getLanguageList() {
     if (languageList.length > 0) {
@@ -21,10 +24,6 @@ for (language of getLanguageList()) {
     languageRows.push(<option key={language[0]} value={language[0]}>{language[0]} – {language[1]}</option>);
 }
 
-// This works because we're using esbuild?
-// Note: a SQLite file would be ~2.5 times smaller than this JSON
-import vocabularyTerms from '../../content/vocabulary.json';
-
 const AnnotationForm = (props) => {
     /**
      * argcont: disable the rest of the form
@@ -35,6 +34,8 @@ const AnnotationForm = (props) => {
      * arglang
      * lexiconterm
      * customterm
+     * termgroups: an array of termgroup objects {termtype, articleterm, lidiaterm}
+     *   lidiaterm should be either a vocabulary term or a custom term
      * description
      */
     const [lidiaFields, setLidiaFields] = useState({
@@ -42,40 +43,69 @@ const AnnotationForm = (props) => {
         pagestart: props.data.pagestart,
         pageend: props.data.pageend,
         argname: props.data.argname,
-        linglevel: props.data.linglevel,
-        lexiconterm: props.data.lexiconterm,
-        customterm: props.data.customterm,
+        termgroups: props.data.termgroups,
         arglang: props.data.arglang,
         description: props.data.description,
         relationType: props.data.relationType,
         relationTo: props.data.relationTo,
+        lidiaId: props.data.lidiaId,
     });
 
-    // TODO: default values aren´t checked to be valid
-    const defaultArgLang = props.defaults.arglang || null;
-    const defaultArgLevel = props.defaults.arglevel || null;
+    const [manualChange, setManualChange] = useState(false);
 
-    // TODO: ungroup the subfields and duplicate terms across individual subfields
-    const subfields = ["All", "General", "Morphology", "Phonetics", "Phonology", "Semantics", "Syntax"];
-    const [lexiconTermSubfield, setLexiconTermSubfield] = useState(defaultArgLevel || "All");
-    const [filteredLexiconTerms, setFilteredLexiconTerms] = useState(vocabularyTerms);
-
-
-    const onLexiconTermSubfieldChange  = (event) => {
-        setLexiconTermSubfield(event.target.value);
-        if (event.target.value === "All") {
-            setFilteredLexiconTerms(vocabularyTerms);
-        } else {
-            const _filteredLexiconTerms = vocabularyTerms.filter((lexiconterm) => {
-                return lexiconterm.linglevels.includes(event.target.value);
-            });
-            setFilteredLexiconTerms(_filteredLexiconTerms);
-        }
+    const defaultTermGroup = {
+        termtype: '',
+        articleterm: '',
+        category: '',
+        lexiconterm: '',
+        customterm: ''
+    };
+    if (props.defaults.default_termcategory) {
+        defaultTermGroup.category = props.defaults.default_termcategory;
     }
 
+    const addTermGroup = (index) => {
+        setLidiaFields((prevState) => {
+            const newTermGroups = [...prevState.termgroups, defaultTermGroup]
+            return { ...prevState, 'termgroups': newTermGroups }
+        });
+        setManualChange(true);
+    };
+
+    const removeLastTermGroup = (index) => {
+        setLidiaFields((prevState) => {
+            const newTermGroups = prevState.termgroups.slice(0, -1);
+            return { ...prevState, 'termgroups': newTermGroups }
+        });
+        setManualChange(true);
+    };
+
+    const takeTermsFromPrevious = () => {
+        setLidiaFields((prevState) => {
+            const newTermGroups = props.previousAnnotationData.termgroups;
+            return { ...prevState, 'termgroups': newTermGroups };
+        });
+        setManualChange(true);
+    };
+
+    const handleTermGroupChange = (index, newValue) => {
+        const newTermGroups = [...lidiaFields.termgroups];
+        newTermGroups[index] = newValue;
+        setLidiaFields((prevState) => {
+            return { ...prevState, 'termgroups': newTermGroups }
+        });
+        setManualChange(true);
+    };
+
+    /* Fire onEdit if a change to lidiaFields has been made caused by
+     * a manual edit. This check is important, because otherwise it is
+     * called immediately after opening the form, which would mean that
+     * empty annotations are saved. */
     React.useEffect(() => {
-        setLidiaFields(props.data)
-    }, [props.data]);
+        if (manualChange) {
+            props.onEdit(lidiaFields);
+        }
+    }, [lidiaFields]);
 
     const getValue = (field) => {
         // Get the value of a field that has to be displayed. In the case
@@ -96,10 +126,24 @@ const AnnotationForm = (props) => {
         }
     }
 
+    const getTermGroupValue = (index) =>{
+        if (!lidiaFields.argcont) {
+            log(JSON.stringify(lidiaFields['termgroups'][index]));
+            return lidiaFields['termgroups'][index];
+        } else {
+            if (typeof props.previousAnnotationData !== "undefined") {
+                return props.previousAnnotationData['termgroups'][index];
+            } else {
+                return defaultTermGroup;
+            }
+        }
+    }
+
     const handleChange = (event) => {
         setLidiaFields((prevState) => {
             return { ...prevState, [event.target.name]: event.target.value }
         });
+        setManualChange(true);
     };
 
     const handleSubmit = (event) => {
@@ -111,22 +155,7 @@ const AnnotationForm = (props) => {
         setLidiaFields((prevState) => {
             return { ...prevState, "argcont": event.target.checked}
         });
-    }
-
-    const dataWillBeOverwritten = () => {
-        // If the annotation is set as a continuation while lidiaFields contains
-        // any other data, this data will not be saved and will be lost.
-        // This function is used to determine whether this warning should be
-        // shown.
-        if (lidiaFields.argcont) {
-            for (const [key, value] of Object.entries(lidiaFields)) {
-                if (key !== 'argcont' && value)
-                    return true;
-            }
-            return false;
-        } else {
-            return false;
-        }
+        setManualChange(true);
     }
 
     const divStyle = {
@@ -146,18 +175,38 @@ const AnnotationForm = (props) => {
     }
 
     const annotationRefRows = [(<option value="">(none)</option>)];
+
+    let relationFound = false;
     for (let annotation of props.annotations) {
-        const display = annotation.documentTitle + ': ' + annotation.argname;
-        annotationRefRows.push(<option value={annotation.zoteroKey}>{display}</option>);
+        if (annotation.lidiaId === lidiaFields.lidiaId) {
+            // Do not allow self-reference
+            continue;
+        }
+        if (lidiaFields.relationTo === annotation.lidiaId) {
+            relationFound = true;
+        }
+        let shortTitle = annotation.documentTitle;
+        if (!shortTitle) {
+            shortTitle = "(untitled document)";
+        } else if (shortTitle.length > 30) {
+            shortTitle = shortTitle.substring(0, 28) + "…";
+        }
+        const argname = annotation.argname || "(untitled argument)";
+        const display = shortTitle + ': ' + argname;
+        annotationRefRows.push(<option value={annotation.lidiaId}>{display}</option>);
     }
+    if (lidiaFields.relationTo && !relationFound) {
+        annotationRefRows.push(<option value={lidiaFields.relationTo}>(previously deleted annotation)</option>);
+    }
+
+    const takeTermsFromPreviousDisabled = (typeof props.previousAnnotationData === "undefined" || !props.previousAnnotationData.termgroups) ? true : false;
 
     return (
         <div style={divStyle}>
-
             <form onSubmit={handleSubmit}>
                 <div style={fullWidthStyle}>
                     <input type="checkbox" id="continuation" name="continuation" checked={lidiaFields.argcont ? 1 : 0} onChange={handleToggleContinuation} disabled={(!props.previousAnnotationData) ? 1 : 0} />
-                    <label htmlFor="continuation">Annotation is continuation of previous argument</label>
+                    <label htmlFor="continuation">Annotation is continuation of previous argument (overwrites existing data)</label>
                 </div>
 
                 {props.data &&
@@ -170,12 +219,12 @@ const AnnotationForm = (props) => {
 
                             <div style={{marginTop: "1em", width: "92%"}}>
                                 <div style={{display: "inline-block", margin: "5px;"}}>
-                                    <label htmlFor="pagestart">Page start:</label>
+                                    <label htmlFor="pagestart">Page start: </label>
                                     <input type="text" name="pagestart" value={getValue("pagestart")} onChange={handleChange} />
                                 </div>
 
                                 <div style={{margin: "5px", width: "92%"}}>
-                                    <label htmlFor="pageend">Page end:</label>
+                                    <label htmlFor="pageend">Page end: </label>
                                     <input type="text" name="pageend" value={getValue("pageend")} onChange={handleChange} />
                                 </div>
                             </div>
@@ -189,14 +238,6 @@ const AnnotationForm = (props) => {
                             </div>
 
                             <div style={labelStyle}>
-                                <label htmlFor="linglevel">Linguistic level:</label>
-                            </div>
-
-                            <div>
-                                <input type="text" style={fullWidthStyle} name="linglevel" value={getValue("linglevel")} onChange={handleChange} />
-                            </div>
-
-                            <div style={labelStyle}>
                                 <label htmlFor="arglang" style={fullWidthStyle}>Language:</label>
                             </div>
 
@@ -204,33 +245,6 @@ const AnnotationForm = (props) => {
                                 <select name="arglang" value={getValue("arglang")} onChange={handleChange} >
                                     {languageRows}
                                 </select>
-                            </div>
-
-                            <div>
-
-                            </div>
-                            <div style={{margin: "5px"}}>
-                                <label style={{display: "block"}} htmlFor="lexiconterm">Lexicon term</label>
-                                <select style={{margin: "0 5px 0 0"}} value={lexiconTermSubfield} onChange={onLexiconTermSubfieldChange}>
-                                    {subfields.map((subfield) => (
-                                        <option key={subfield} value={subfield}>
-                                            {subfield}
-                                        </option>
-                                        ))
-                                    }
-                                </select>
-                                <select name="lexiconterm" value={getValue("lexiconterm") || null} onChange={handleChange}>
-                                    {filteredLexiconTerms.map((option) => (
-                                        <option key={option.key} value={option.lemma}>
-                                            {option.term}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label htmlFor="customterm" style={{marginTop: '5px'}}>Custom term:</label>
-                                <input type="text" style={fullWidthStyle} name="customterm" value={getValue("customterm")} onChange={handleChange} />
                             </div>
 
                             <div style={labelStyle}>
@@ -256,16 +270,28 @@ const AnnotationForm = (props) => {
                                     {annotationRefRows}
                                 </select>
                             </div>
+
+                            <div>
+                                <h3>Terms</h3>
+                                {lidiaFields.termgroups.map((termGroup, index) => (
+                                    <><h4>Term {index + 1}</h4><TermGroup
+                                        key={lidiaFields.lidiaId + index}
+                                        value={getTermGroupValue(index)}
+                                        onChange={(newValue) => handleTermGroupChange(index, newValue)} /></>
+                                ))}
+                                <button style={{margin: "5px 0 0 0"}} type="button" onClick={addTermGroup}>Add more terms</button>
+                                <button style={{margin: "5px 0 0 0"}} type="button" onClick={removeLastTermGroup}>Remove last term</button>
+                                {
+                                    lidiaFields.termgroups.length === 0 && 
+                                    <><br /><button style={{margin: "5px 0 0 0"}} type="button" disabled={takeTermsFromPreviousDisabled} onClick={takeTermsFromPrevious}>Take from previous annotation</button></>
+                                }
+                            </div>
                         </div>
 
 
 
                     </fieldset>
                 }
-                <div>
-                    <button type='submit'>Save</button>
-                    { dataWillBeOverwritten() && <p><strong>Warning: saving will overwrite previously entered data!</strong></p> }
-                </div>
             </form>
         </div>
     );

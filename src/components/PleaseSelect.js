@@ -27,7 +27,8 @@ function PleaseSelect(props) {
             {props.status === 'noselection' &&
                 <div>
                     <p>
-                        Please select an annotation or create a new annotation.
+                        Please select an annotation in the panel on the left 
+                        side of the screen.
                     </p>
                 </div>
             }

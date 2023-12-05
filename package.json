@@ -1,13 +1,13 @@
 {
     "name": "lidia-zotero",
     "id": "lidia-zotero@cdh.uu.nl",
-    "version": "0.2.13",
+    "version": "0.4.1",
     "description": "Structured Linguistic Diagnostics PDF annotations for the LIDIA project",
     "homepage": "https://github.com/CentreForDigitalHumanities/lidia-zotero",
     "license": "BSD-3-Clause",
     "author": {
         "name": "Research Software Lab, Centre For Digital Humanities, Utrecht University",
-        "email": "digitalhumanities@uu.nl"
+        "email": "cdh@uu.nl"
     },
     "scripts": {
         "postinstall": "patch-package",
@@ -25,15 +25,16 @@
         "releaseURL": "https://github.com/CentreForDigitalHumanities/lidia-zotero/releases/download/release/"
     },
     "devDependencies": {
-        "esbuild": "^0.17",
+        "esbuild": "^0.18",
         "patch-package": "^6.2.2",
-        "zotero-plugin": "^1.4.23"
+        "zotero-plugin": "^1.4.25"
     },
     "dependencies": {
         "iso-639-3": "^3.0.1",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "yaml": "^1.10.2"
+        "yaml": "^1.10.2",
+        "uuid": "^9.0.1"
     },
     "repository": {
         "type": "git",
