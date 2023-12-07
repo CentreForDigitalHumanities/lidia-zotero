@@ -80,11 +80,6 @@ window.Lidia = {
         log("Reader selected");
         await this.panel.buildSideBarPanel();
         await this.panel.addSelectEvents();
-
-        /* Disable the panel after a tab is selected, because the user
-            * first has to select an annotation. It would be better if
-            * the selected annotation was automatically activated. */
-        this.panel.disablePanel(undefined);
     },
 
     shutdown: function() {

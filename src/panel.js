@@ -22,6 +22,9 @@ import { getAllLidiaAnnotations } from "./relations.js";
 export class LidiaPanel {
     tab;
     tabPanel;
+    tabs;
+    tabPanels;
+    formRoots;
     currentAnnotation;
     currentLidiaData;
     currentLidiaDataChanged;
@@ -35,6 +38,13 @@ export class LidiaPanel {
         this.annotationEvents = [];
         this.currentLidiaData = null;
         this.currentLidiaDataChanged = false;
+        this.tabs = new Object();
+        this.tabPanels = new Object();
+        this.formRoots = new Object();
+    }
+
+    getSelectedTab() {
+        return window.Zotero_Tabs._selectedID;
     }
 
     /**
@@ -43,47 +53,61 @@ export class LidiaPanel {
      * After zotero-pdf-translate extension.
      */
     async buildSideBarPanel() {
-        log("Building LIDIA panel");
-        
-        // Get the tab container (the container of the tabs in the pane on the right)
-        const tabContainer = document.getElementById(`${window.Zotero_Tabs._selectedID}-context`);
-        const tabbox = tabContainer.querySelector("tabbox");
-        if (!tabbox) {
-            log("Cannot create LIDIA panel for now, it seems that UI is not ready");
+        /* Check if a sidebar tab and tab panel has already been created for 
+         * the currently selected Zotero tab. If not, create it. */
+        const selectedZoteroTab = this.getSelectedTab();
+        let tab = this.tabs[selectedZoteroTab];
+        let tabPanel = this.tabPanels[selectedZoteroTab];
+        if (tab && tabPanel) {
+            log(`LIDIA tab and tab panel already present for Zotero tab ${selectedZoteroTab}`);
             return;
         }
-        
-        let tab = this.tab;
-        if (!tab) {
-            tab = createXElement("tab");
-            tab.setAttribute("id", "lidia-tab");
-            tab.setAttribute(
-                "label",
-                'LIDIA'
-            );
-            this.tab = tab;
+        log(`Creating LIDIA tab and tab panel for Zotero tab ${selectedZoteroTab}`);
+
+        // Get the tab container (the container of the tabs in the pane on the right)
+        const tabContainer = document.getElementById(`${selectedZoteroTab}-context`);
+        let tabbox = tabContainer.querySelector("tabbox");
+        if (!tabbox) {
+            const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+            await sleep(1000);
+            tabbox = tabContainer.querySelector("tabbox");
+            log("Cannot create LIDIA panel, either the UI is not ready or the attachment has no parent item");
+            return;
         }
+        const tabPanels = tabbox.querySelector("tabpanels");
+       
+        // Create the tab (just the button)
+        tab = createXElement("tab");
+        tab.setAttribute("id", `lidia-tab-${selectedZoteroTab}`);
+        tab.setAttribute(
+            "label",
+            'LIDIA'
+        );
+        this.tabs[selectedZoteroTab] = tab;
         tabbox.querySelector("tabs").appendChild(tab);
 
+        // Create the panel
+        tabPanel = createXElement("tabpanel");
+        tabPanel.setAttribute("id", `lidia-tabpanel-${selectedZoteroTab}`);
+        tabPanel.setAttribute("flex", "1");
+        const hbox = createXElement("vbox");
+        hbox.setAttribute("flex", "1");
+        tabPanel.append(hbox);
+        const formContainer = createHElement("div");
+        formContainer.setAttribute("id", "lidia-annotation-form");
+        // createRoot should be used only once per element
+        const formRoot = createRoot(formContainer);
+        hbox.append(formContainer);
+        formRoot.render(<PleaseSelect status="noselection" />);
+        this.tabPanels[selectedZoteroTab] = tabPanel;
+        this.formRoots[selectedZoteroTab] = formRoot;
+        
+        tabPanels.appendChild(tabPanel);
+    }
 
-        // panel = this.tabPanel
-        if (!this.tabPanel) {
-            // The direct child of a XUL "tab" must also be XUL
-            const panel = createXElement("tabpanel");
-            panel.setAttribute("id", "lidia-tabpanel");
-            panel.setAttribute("flex", "1");
-            const hbox = createXElement("vbox");
-            hbox.setAttribute("flex", "1");
-            panel.append(hbox);
-            let formContainer = createHElement("div");
-            formContainer.setAttribute("id", "lidia-annotation-form");
-            // createRoot should be used only once per element
-            this.formRoot = createRoot(formContainer);
-            hbox.append(formContainer);
-            this.tabPanel = panel;
-            this.formRoot.render(<PleaseSelect status="noselection" />);
-        }
-        tabbox.querySelector("tabpanels").appendChild(this.tabPanel);
+
+    getFormRoot() {
+        return this.formRoots[this.getSelectedTab()];
     }
 
 
@@ -107,7 +131,7 @@ export class LidiaPanel {
             previousAnnotationData = deserialize(previousAnnotation.annotationComment);
         }
         // TODO: defaults can be removed when default subfield/linglevel is added to lidiaData
-        this.formRoot.render(<AnnotationForm
+        this.getFormRoot().render(<AnnotationForm
                             annotationText={annotationText}
                             data={lidiaData}
                             defaults={defaultValues}
@@ -126,11 +150,11 @@ export class LidiaPanel {
             event.element.removeEventListener("click", event.callback);
             event.element.setAttribute("lidiainit", "false");
         }
-        if (this.tab) {
-            this.tab.remove();
+        for (const tab of Object.values(this.tabs)) {
+            tab.remove();
         }
-        if (this.tabPanel) {
-            this.tabPanel.remove();
+        for (const tabPanel of Object.values(this.tabPanels)) {
+            tabPanel.remove();
         }
     }
 
@@ -153,7 +177,7 @@ export class LidiaPanel {
                 convertible = true;
             }
         }
-        this.formRoot.render(<PleaseSelect status={status} convertible={convertible} onConvert={this.convertToLidiaAnnotation.bind(this)} />);
+        this.getFormRoot().render(<PleaseSelect status={status} convertible={convertible} onConvert={this.convertToLidiaAnnotation.bind(this)} />);
     }
 
     /**
