@@ -174,6 +174,10 @@ const AnnotationForm = (props) => {
         width: '92%',
     }
 
+    /* Hack for Zotero 7: select elements with drop down lists don't open,
+     * so change them into a scrolling list box by adjusting size property */
+    const selectSize = getZoteroVersion() == 7 ? 5 : 1;
+
     const annotationRefRows = [(<option value="">(none)</option>)];
 
     let relationFound = false;
@@ -242,7 +246,7 @@ const AnnotationForm = (props) => {
                             </div>
 
                             <div>
-                                <select name="arglang" value={getValue("arglang")} onChange={handleChange} >
+                                <select name="arglang" size={selectSize} value={getValue("arglang")} onChange={handleChange} >
                                     {languageRows}
                                 </select>
                             </div>
@@ -258,7 +262,7 @@ const AnnotationForm = (props) => {
                                 <label>Relation:</label>
                             </div>
                             <div>
-                                <select name="relationType" style={{margin: "0 5px 0 0"}} value={getValue("relationType")} onChange={handleChange}>
+                                <select name="relationType" size={selectSize} style={{margin: "0 5px 0 0"}} value={getValue("relationType")} onChange={handleChange}>
                                     <option value="">(none)</option>
                                     <option value="contradicts">Contradicts</option>
                                     <option value="generalizes">Generalizes</option>
@@ -266,7 +270,7 @@ const AnnotationForm = (props) => {
                                     <option value="specialcase">Is a special case of</option>
                                     <option value="supports">Supports</option>
                                 </select>
-                                <select name="relationTo" style={{margin: "0 5px 0 0"}} value={getValue("relationTo")} onChange={handleChange}>
+                                <select name="relationTo" size={selectSize} style={{margin: "0 5px 0 0"}} value={getValue("relationTo")} onChange={handleChange}>
                                     {annotationRefRows}
                                 </select>
                             </div>

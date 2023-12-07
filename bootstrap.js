@@ -28,6 +28,14 @@ function getString(name) {
 }
 
 /**
+ * Return the Zotero major version number, 6 or 7
+ * (other versions are not supported)
+ */
+function getZoteroVersion() {
+    return Zotero.platformMajorVersion < 102 ? 6 : 7;
+}
+
+/**
  * Create an HTML element according to the Mozilla platform version
  */
 function createHElement(type) {
@@ -111,7 +119,7 @@ async function install() {
 async function startup({ id, version, resourceURI, rootURI = resourceURI.spec }) {
 	await waitForZotero();
 	
-	log("Starting");
+	log(`Starting. Zotero version: ${getZoteroVersion()}`);
 	
 	// 'Services' may not be available in Zotero 6
 	if (typeof Services == 'undefined') {
@@ -164,6 +172,7 @@ async function startup({ id, version, resourceURI, rootURI = resourceURI.spec })
 	extensionScope.getString = getString;
 	extensionScope.createHElement = createHElement;
 	extensionScope.createXElement = createXElement;
+    extensionScope.getZoteroVersion = getZoteroVersion;
 
 	await extensionScope.Lidia.init({ id, version, rootURI });
 }
