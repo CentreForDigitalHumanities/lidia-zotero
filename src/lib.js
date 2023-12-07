@@ -62,11 +62,22 @@ window.Lidia = {
 
         this.panel = new LidiaPanel();
 
-		this.menuitem = createXElement('menuitem');
-		this.menuitem.id = 'lidia-migrate';
-        this.menuitem.setAttribute('label', 'Migrate LIDIA items to newest version...')
-        this.menuitem.addEventListener('click', () => {this.onMigrateItemsClicked()});
-		this.doc.getElementById('menu_EditPopup').appendChild(this.menuitem);
+		this.migrateMenuitem = createXElement('menuitem');
+		this.migrateMenuitem.id = 'lidia-migrate';
+        this.migrateMenuitem.setAttribute('label', 'Migrate LIDIA items to newest version...')
+        this.migrateMenuitem.addEventListener('click', () => {this.onMigrateItemsClicked()});
+		this.doc.getElementById('menu_EditPopup').appendChild(this.migrateMenuitem);
+
+        this.aboutMenuitem = createXElement('menuitem');
+        this.aboutMenuitem.id = 'lidia-about';
+        this.aboutMenuitem.setAttribute('label', 'About LIDIA plugin');
+        this.aboutMenuitem.addEventListener('click', () => {
+            window.alert(
+                `LIDIA extension for Zotero version ${this.version}\n` +
+                `For help, see https://lidia.readthedocs.io/`
+            );
+        });
+        this.doc.getElementById('menu_HelpPopup').appendChild(this.aboutMenuitem);
 
         // If a reader is currently selected, activate it. This is only needed
         // when a user activates the extension while Zotero is running.
@@ -84,7 +95,8 @@ window.Lidia = {
 
     shutdown: function() {
         this.panel.destroy();
-        this.menuitem.remove();
+        this.migrateMenuitem.remove();
+        this.aboutMenuitem.remove();
 
         Zotero.Notifier.unregisterObserver(this.notifierID);
     },

@@ -4,7 +4,7 @@
 var stylesheetID = 'lidia-stylesheet';
 var ftlID = 'lidia-ftl';
 var menuitemID = 'lidia-about';
-var addedElementIDs = [stylesheetID, ftlID, menuitemID];
+var addedElementIDs = [stylesheetID, ftlID];
 var extensionScope;
 
 if (typeof Zotero == 'undefined') {
@@ -141,16 +141,10 @@ async function startup({ id, version, resourceURI, rootURI = resourceURI.spec })
 		stylesheetLink.href = rootURI + 'style.css';
 		doc.documentElement.appendChild(stylesheetLink);
 
-		let menuitem = doc.createElementNS(XUL_NS, 'menuitem');
-		menuitem.id = menuitemID;
-		doc.getElementById('menu_HelpPopup').appendChild(menuitem);
-
 		// Use strings from lidia.properties (legacy properties format) in Zotero 6
 		// and from lidia.ftl (Fluent) in Zotero 7
 		if (Zotero.platformMajorVersion < 102) {
 			let stringBundle = Services.strings.createBundle('chrome://lidia-zotero/locale/lidia.properties');
-			Zotero.getMainWindow().document.getElementById('lidia-about')
-				.setAttribute('label', stringBundle.GetStringFromName('lidiaAbout.label'));
 		}
 		else {
 			let ftlLink = doc.createElementNS(HTML_NS, 'link');
