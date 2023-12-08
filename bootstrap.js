@@ -4,7 +4,7 @@
 var stylesheetID = 'lidia-stylesheet';
 var ftlID = 'lidia-ftl';
 var menuitemID = 'lidia-about';
-var addedElementIDs = [stylesheetID, ftlID, menuitemID];
+var addedElementIDs = [stylesheetID, ftlID];
 var extensionScope;
 
 if (typeof Zotero == 'undefined') {
@@ -25,6 +25,14 @@ function getString(name) {
         str = name;
     }
     return str;
+}
+
+/**
+ * Return the Zotero major version number, 6 or 7
+ * (other versions are not supported)
+ */
+function getZoteroVersion() {
+    return Zotero.platformMajorVersion < 102 ? 6 : 7;
 }
 
 /**
@@ -111,7 +119,7 @@ async function install() {
 async function startup({ id, version, resourceURI, rootURI = resourceURI.spec }) {
 	await waitForZotero();
 	
-	log("Starting");
+	log(`Starting. Zotero version: ${getZoteroVersion()}`);
 	
 	// 'Services' may not be available in Zotero 6
 	if (typeof Services == 'undefined') {
@@ -133,16 +141,10 @@ async function startup({ id, version, resourceURI, rootURI = resourceURI.spec })
 		stylesheetLink.href = rootURI + 'style.css';
 		doc.documentElement.appendChild(stylesheetLink);
 
-		let menuitem = doc.createElementNS(XUL_NS, 'menuitem');
-		menuitem.id = menuitemID;
-		doc.getElementById('menu_HelpPopup').appendChild(menuitem);
-
 		// Use strings from lidia.properties (legacy properties format) in Zotero 6
 		// and from lidia.ftl (Fluent) in Zotero 7
 		if (Zotero.platformMajorVersion < 102) {
 			let stringBundle = Services.strings.createBundle('chrome://lidia-zotero/locale/lidia.properties');
-			Zotero.getMainWindow().document.getElementById('lidia-about')
-				.setAttribute('label', stringBundle.GetStringFromName('lidiaAbout.label'));
 		}
 		else {
 			let ftlLink = doc.createElementNS(HTML_NS, 'link');
@@ -164,8 +166,9 @@ async function startup({ id, version, resourceURI, rootURI = resourceURI.spec })
 	extensionScope.getString = getString;
 	extensionScope.createHElement = createHElement;
 	extensionScope.createXElement = createXElement;
+    extensionScope.getZoteroVersion = getZoteroVersion;
 
-	await extensionScope.Lidia.init(rootURI);
+	await extensionScope.Lidia.init({ id, version, rootURI });
 }
 
 function shutdown() {

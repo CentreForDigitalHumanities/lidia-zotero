@@ -18,10 +18,14 @@ window.Lidia = {
         , {"id": "relationTo","label": "lidiaArgumentDescription.label"}
     ],
 
-    async init(rootURI) {
+    async init({ id, version, rootURI }) {
+        if (this.initialized) return;
         log('Initializing LIDIA extension (lib.js)');
         log('Window object:' + window.toString());
-        this.rootURI = rootURI;
+		this.id = id;
+		this.version = version;
+		this.rootURI = rootURI;
+		this.initialized = true;
         this.win = Zotero.getMainWindow();
         this.doc = this.win.document;
         this.stringBundle = Services.strings.createBundle(
@@ -58,11 +62,22 @@ window.Lidia = {
 
         this.panel = new LidiaPanel();
 
-		this.menuitem = createXElement('menuitem');
-		this.menuitem.id = 'lidia-migrate';
-        this.menuitem.setAttribute('label', 'Migrate LIDIA items to newest version...')
-        this.menuitem.addEventListener('click', () => {this.onMigrateItemsClicked()});
-		this.doc.getElementById('menu_EditPopup').appendChild(this.menuitem);
+		this.migrateMenuitem = createXElement('menuitem');
+		this.migrateMenuitem.id = 'lidia-migrate';
+        this.migrateMenuitem.setAttribute('label', 'Migrate LIDIA items to newest version...')
+        this.migrateMenuitem.addEventListener('click', () => {this.onMigrateItemsClicked()});
+		this.doc.getElementById('menu_EditPopup').appendChild(this.migrateMenuitem);
+
+        this.aboutMenuitem = createXElement('menuitem');
+        this.aboutMenuitem.id = 'lidia-about';
+        this.aboutMenuitem.setAttribute('label', 'About LIDIA plugin');
+        this.aboutMenuitem.addEventListener('click', () => {
+            window.alert(
+                `LIDIA extension for Zotero version ${this.version}\n` +
+                `For help, see https://lidia.readthedocs.io/`
+            );
+        });
+        this.doc.getElementById('menu_HelpPopup').appendChild(this.aboutMenuitem);
 
         // If a reader is currently selected, activate it. This is only needed
         // when a user activates the extension while Zotero is running.
@@ -74,22 +89,14 @@ window.Lidia = {
 
     onReaderSelect: async function(reader) {
         log("Reader selected");
-        const item = Zotero.Items.get(reader.itemID);
-        log(
-            "We are in file: " + `${item.getField("title")}`
-        );
         await this.panel.buildSideBarPanel();
         await this.panel.addSelectEvents();
-
-        /* Disable the panel after a tab is selected, because the user
-            * first has to select an annotation. It would be better if
-            * the selected annotation was automatically activated. */
-        this.panel.disablePanel(undefined);
     },
 
     shutdown: function() {
         this.panel.destroy();
-        this.menuitem.remove();
+        this.migrateMenuitem.remove();
+        this.aboutMenuitem.remove();
 
         Zotero.Notifier.unregisterObserver(this.notifierID);
     },

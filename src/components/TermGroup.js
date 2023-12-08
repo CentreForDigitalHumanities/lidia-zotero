@@ -66,11 +66,15 @@ const TermGroup = ({ value, onChange }) => {
     const customCategory = termGroupObj.category === 'custom';
     const customTerm = termGroupObj.lexiconterm === 'custom';
 
+    /* Hack for Zotero 7: select elements with drop down lists don't open,
+     * so change them into a scrolling list box by adjusting size property */
+    const selectSize = getZoteroVersion() == 7 ? 3 : 1;
+
     return (
         <div>
             <div style={{display: "inline-block", margin: "0 5px 0 0"}}>
                 <label htmlFor="termtype" style={{display: "block"}}>Term type:</label>
-                <select name="termtype" value={termGroupObj.termtype} onChange={handleChange}>
+                <select name="termtype" size={selectSize} value={termGroupObj.termtype} onChange={handleChange}>
                     <option value="">Undefined</option>
                     <option value="definiendum">Definiendum</option>
                     <option value="definiens">Definiens</option>
@@ -85,7 +89,7 @@ const TermGroup = ({ value, onChange }) => {
 
             <div style={{display: "inline-block", margin: "0 5px 0 0"}}>
                 <label style={{display: "block"}} htmlFor="lexiconterm">Lexicon term:</label>
-                <select name="category" value={termGroupObj.category} style={{margin: "0 5px 0 0"}} onChange={handleChange}>
+                <select name="category" size={selectSize} value={termGroupObj.category} style={{margin: "0 5px 0 0"}} onChange={handleChange}>
                     <option value="">(Choose a category)</option>
                     {Object.keys(lexiconTerms.categories).map((slug) => (
                         <option key={slug} value={slug}>
@@ -95,7 +99,7 @@ const TermGroup = ({ value, onChange }) => {
                     }
                     <option value="custom">(Custom category)</option>
                 </select>
-                <select name="lexiconterm" value={termGroupObj.lexiconterm} onChange={handleChange}>
+                <select name="lexiconterm" size={selectSize} value={termGroupObj.lexiconterm} onChange={handleChange}>
                     {!customCategory && <option value="">(Choose a term)</option>}
                     {filteredLexiconTerms.map((option) => (
                         <option key={option.slug} value={option.slug} disabled={!option.selectable}>
