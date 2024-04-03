@@ -1,0 +1,32 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: lidia-zotero
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Tijmen
+    family-names: Baarda
+    affiliation: 'Centre for Digital Humanities, Utrecht University'
+    orcid: 'https://orcid.org/0000-0002-2577-4948'
+  - given-names: Arjan
+    family-names: Mossel
+    affiliation: 'Centre for Digital Humanities, Utrecht University'
+    orcid: 'https://orcid.org/0000-0001-7492-3789'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.10411579
+    description: The concept DOI of the repository
+repository-code: 'https://github.com/CentreForDigitalHumanities/lidia-zotero'
+url: 'https://lidia.readthedocs.io/'
+abstract: >-
+  Zotero plugin for capturing PDF reader annotations for the
+  LIDIA project
+keywords:
+  - Zotero
+  - annotation
+  - linguistics
+license: BSD-3-Clause
