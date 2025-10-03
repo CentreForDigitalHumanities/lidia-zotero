@@ -3,7 +3,7 @@ import { promisify } from 'util';
 import { execFile as execFileCb } from 'child_process';
 import fs from 'fs-extra';
 import 'zotero-plugin/copy-assets.js';
-import 'zotero-plugin/rdf.js';
+import 'zotero-plugin/manifest.js';
 import 'zotero-plugin/version.js';
 
 

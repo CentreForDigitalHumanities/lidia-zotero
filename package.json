@@ -12,8 +12,8 @@
     "scripts": {
         "postinstall": "patch-package",
         "build": "node build.mjs",
-        "postbuild": "zotero-plugin-zipup build lidia-zotero",
-        "release": "zotero-plugin-release",
+        "postbuild": "zp-zipup build lidia-zotero",
+        "release": "zp-release",
         "postversion": "git push --follow-tags"
     },
     "xpi": {
