@@ -42,6 +42,13 @@ This will enable the plugin from the source directory.
 Install npm packages:
 - `npm install`
 
+Install the Python dependencies for processing the vocabulary form the build script. For example:
+```sh
+uv venv
+source .venv/bin/activate
+uv pip install vocabulary/requirements.txt
+```
+
 Build and run:
 - Make changes in your source
 - `npm run build`

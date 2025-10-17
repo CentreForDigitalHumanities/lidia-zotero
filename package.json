@@ -25,16 +25,16 @@
         "releaseURL": "https://github.com/CentreForDigitalHumanities/lidia-zotero/releases/download/release/"
     },
     "devDependencies": {
-        "esbuild": "^0.18",
-        "patch-package": "^6.2.2",
-        "zotero-plugin": "^1.4.25"
+        "esbuild": "^0.25",
+        "patch-package": "^8.0.1",
+        "zotero-plugin": "5.0.21"
     },
     "dependencies": {
         "iso-639-3": "^3.0.1",
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0",
-        "yaml": "^1.10.2",
-        "uuid": "^9.0.1"
+        "react": "18.3.1",
+        "react-dom": "18.3.1",
+        "yaml": "^1.10.0",
+        "uuid": "^13.0.0"
     },
     "repository": {
         "type": "git",
