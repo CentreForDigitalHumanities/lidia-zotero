@@ -4,6 +4,8 @@ Zotero plugin for capturing PDF reader annotations in a structured format for th
 
 The project is set up as a bootstrapped plugin for Zotero 6 and 7. Tested only under Zotero 6.
 
+The LIDIA project has concluded, and this repository has been archived.
+
 ## About
 
 This extension is used to create a database of linguistic diagnostic arguments (hence 
@@ -14,7 +16,6 @@ comments in YAML format. The data will then be read out in a separate web applic
 in order to create a database for the sake of the general community of linguists.
 The project, together with this Zotero extension, is being documented at [2].
 
-This project is still under active development and is not ready for production use.
 The plugin was specifically created for use with the LIDIA project at Utrecht University, but
 the general principle of this Zotero extension may be applicable to other academic projects
 as well.
